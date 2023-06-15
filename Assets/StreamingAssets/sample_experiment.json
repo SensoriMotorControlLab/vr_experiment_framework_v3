@@ -1,0 +1,37 @@
+{
+  "experiment_name": "reach_to_target",
+  "use_vr": false,
+  "optional_params": [],
+  "trials_in_block": [
+    4,
+    1,
+    4
+  ],
+  "per_block_task": [
+    "reach_to_target",
+    "instruction",
+    "reach_to_target"
+  ],
+  "per_block_rotation": [
+    0,
+    0,
+    30
+  ],
+  "per_block_instruction": [
+    null,
+    "ins1",
+    null
+  ],
+  "per_trial_target_angle": [
+    95,
+    85,
+    105,
+    75,
+    null,
+    90,
+    90,
+    90,
+    90
+  ],
+  "ins1": "Reach to the target as fast as possible."
+}
