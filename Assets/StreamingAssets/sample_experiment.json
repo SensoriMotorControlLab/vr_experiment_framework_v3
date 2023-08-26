@@ -23,15 +23,11 @@
     null
   ],
   "per_trial_target_angle": [
-    95,
-    85,
-    105,
-    75,
+    "ta1",
     null,
-    90,
-    90,
-    90,
-    90
+    "ta2"
   ],
+  "ta1":[90,45,125, 100],
+  "ta2":[50,130,70, 110],
   "ins1": "Reach to the target as fast as possible."
 }
