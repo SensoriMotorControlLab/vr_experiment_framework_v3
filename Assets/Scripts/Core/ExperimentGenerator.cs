@@ -44,9 +44,12 @@ public class ExperimentGenerator : MonoBehaviour
             theBlock.settings.SetValue("use_vr", ExperimentController.Instance.UseVR);
         }
 
+        //now go through the keys and then set them for the blocks
+        //prefixes will be removed to be more streamlined
         //for each key in the JSON
         foreach (string key in keys)
         {
+            //for per block parameters
             if (key.StartsWith("per_block_"))
             {
                 //key minus the prefix
@@ -59,6 +62,7 @@ public class ExperimentGenerator : MonoBehaviour
                     session.blocks[i].settings.SetValue(newKey, perBlockList[i]);
                 }
             }
+            //for per trial parameters, they will be pseudo randomized and then set
             else if (key.StartsWith("per_trial_"))
             {
                 //key minus the prefix
@@ -69,12 +73,13 @@ public class ExperimentGenerator : MonoBehaviour
                     break;
 
                 //the number of elements in the per trial list
+                //should be equal or divisible to the number of trials
                 int perTrialCount = session.settings.GetObjectList(key).Count;
                 //the per trial list
                 List<object> perTrialList = session.settings.GetObjectList(key);
                 //the resulting list after being pseudo randomized
                 List<object> pseudoList = new List<object>();
-                //loop for each block and pseudo random
+                //loop for each block and pseudo randomize
                 //the count of per trial should be the same as the number of blocks
                 for (int i = 0; i < perTrialCount; i++)
                 {
@@ -90,14 +95,18 @@ public class ExperimentGenerator : MonoBehaviour
         }
     }
     ///<summary>
-    ///Create task objects based on experiment settings
+    ///Create task objects based on experiment settings from JSON file. When creating a new Task object, said object needs to be added here or it will not be handled.
     ///</summary>
     public void GenerateTasks()
     {
         Session s = ExperimentController.Instance.Session;
 
+        //for each block create a task
+        //for every block there is a corresponding task object
         foreach (Block theBlock in s.blocks)
         {
+            //based on task type create a Task object as a script component
+            //disable the script and add it to the task list
             switch (theBlock.settings.GetString("task"))
             {
                 case ("reach_to_target"):
@@ -112,8 +121,15 @@ public class ExperimentGenerator : MonoBehaviour
                     break;
             }
         }
-    }
 
+        //add a end screen to the end
+        EndSessionTask endTask = ExperimentController.Instance.gameObject.AddComponent<EndSessionTask>();
+        endTask.enabled = false;
+        ExperimentController.Instance.Tasks.Add(endTask);
+    }
+    /// <summary>
+    /// Pseudo randomize a list
+    /// </summary>
     public object PseudoRandom(string key, Block theBlock)
     {
         List<object> list = Session.instance.settings.GetObjectList(key);
@@ -146,6 +162,7 @@ public class ExperimentGenerator : MonoBehaviour
             throw new NullReferenceException();
         }
 
+        //loop through and randomly set new values
         for (int i = 0; i < list.Count; i++)
         {
             //get a random value based off the size of the copyList

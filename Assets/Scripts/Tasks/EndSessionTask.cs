@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class InstructionTask : BaseTask
+public class EndSessionTask : BaseTask
 {
+    Camera endCamera;
     GameObject instructionPrefab;
-    Camera instructionCam;
     TMP_Text instructionText;
 
-    public InstructionTask()
+    public EndSessionTask()
     {
-        taskType = "instruction";
+        taskType = "endsessions";
     }
 
     // Start is called before the first frame update
@@ -23,16 +23,17 @@ public class InstructionTask : BaseTask
     // Update is called once per frame
     void Update()
     {
-        //once there is a key down input
         if (Input.anyKeyDown)
         {
             IncrementStep();
+            TaskEnd();
+            enabled = false;
         }
     }
 
     public override void LogParameters()
     {
-        
+
     }
 
     public override void SetUp()
@@ -43,24 +44,22 @@ public class InstructionTask : BaseTask
 
         instructionPrefab = Instantiate(expController.Prefabs["InstructionPrefab"], expController.transform);
 
-        instructionCam = GameObject.Find("InstructionCamera").GetComponent<Camera>();
+        endCamera = GameObject.Find("InstructionCamera").GetComponent<Camera>();
         if (ExperimentController.Instance.UseVR == false)
-            Camera.SetupCurrent(instructionCam);
+            Camera.SetupCurrent(endCamera);
 
         instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
-        //in the JSON the per_block is just the key to the text key-value
-        string insKey = expController.Session.CurrentBlock.settings.GetString("instruction");
-        string insString = expController.Session.settings.GetString(insKey);
-        instructionText.text = insString;
+        instructionText.text = "You have completed all trials\n[Press anything to finish]";
     }
 
     public override void TaskBegin()
     {
-        
+
     }
 
     public override void TaskEnd()
     {
         Destroy(instructionPrefab);
+        Application.Quit();
     }
 }

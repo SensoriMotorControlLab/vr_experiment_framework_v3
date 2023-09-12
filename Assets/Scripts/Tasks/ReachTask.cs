@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Reach task
+/// </summary>
 public class ReachTask : BaseTask
 {
     List<float> targetAngles = new List<float>();
@@ -16,7 +18,7 @@ public class ReachTask : BaseTask
 
     public ReachTask()
     {
-        experimentMode = "reach_to_target";
+        taskType = "reach_to_target";
     }
 
     // Start is called before the first frame update

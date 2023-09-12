@@ -11,13 +11,25 @@ public class ExperimentController : MonoBehaviour
     private ExperimentGenerator expGenerator = null;
     private Session session;
 
-    //Dictionary of the lists for the experiment
+    /// <summary>
+    ///Dictionary of the lists for the experiment
+    /// </summary>
     Dictionary<string, List<object>> expLists = new Dictionary<string, List<object>>();
-    //List of the task objects that run the trials
+    /// <summary>
+    /// List of the task objects that run the trials
+    /// </summary>
     List<BaseTask> tasks = new List<BaseTask>();
+    /// <summary>
+    /// The prefabs for the scene to be instanced
+    /// </summary>
     public GameObject[] scenePrefabs;
+    /// <summary>
+    /// Dictionary of scene prefabs, key is prefab name defined in scenePrefabs
+    /// </summary>
     Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
-    //The active 
+    /// <summary>
+    /// The active task
+    /// </summary>
     BaseTask currentTask;
     //The total number of trials for the experiment
     int totalNumOfTrials = 0;
@@ -27,6 +39,7 @@ public class ExperimentController : MonoBehaviour
     bool useVR = false;
     //Has the task been setup yet
     bool taskReady = false;
+    //Is the experiment running
     bool isRunning = false;
 
     // Start is called before the first frame update
@@ -43,7 +56,7 @@ public class ExperimentController : MonoBehaviour
     {
         // when the experiment is running
         // this is here because the experimentcontroller object exists before the
-        // experiment starts and the parameters are made
+        // experiment starts and the parameters are made in UXF
         if (isRunning)
         {
             if (currentTask.Finished)
@@ -108,7 +121,9 @@ public class ExperimentController : MonoBehaviour
     {
         get { return prefabs; }
     }
-
+    /// <summary>
+    /// UXF SessionBegin method
+    /// </summary>
     public void SessionBegin(Session session)
     {
         this.session = session;
@@ -133,7 +148,9 @@ public class ExperimentController : MonoBehaviour
 
         BeginNextTrial();
     }
-
+    /// <summary>
+    /// Begin the next trial, if available. On the final trial this call will end the experiment.
+    /// </summary>
     public void BeginNextTrial()
     {
         //for the first trial
@@ -148,7 +165,9 @@ public class ExperimentController : MonoBehaviour
             session.End();
         }
     }
-
+    /// <summary>
+    /// UXF TrialBegin method
+    /// </summary>
     public void TrialBegin()
     {
         //if the task hasn't been setup yet
@@ -160,7 +179,9 @@ public class ExperimentController : MonoBehaviour
         }
         currentTask.TaskBegin();
     }
-
+    /// <summary>
+    /// UXF TrialEnd method
+    /// </summary>
     public void TrialEnd()
     {
         //TODO Log Parameters
@@ -183,10 +204,16 @@ public class ExperimentController : MonoBehaviour
 
         BeginNextTrial();
     }
-
+    /// <summary>
+    /// UXF OnSessionEnd method
+    /// </summary>
     public void OnSessionEnd()
     {
-        Application.Quit();
+        //Application.Quit();
+        //Display end screen
+        currentTask.enabled = true;
+        currentTask.SetUp();
+        currentTask.TaskBegin();
     }
 
 }

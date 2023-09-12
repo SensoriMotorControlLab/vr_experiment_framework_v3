@@ -1,20 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// Abstract class to define a task, all task objects should inherit from this task
+/// </summary>
 public abstract class BaseTask : MonoBehaviour
 {
     // The experiment controller
     protected ExperimentController expController;
     // The type of task
-    protected string experimentMode;
+    protected string taskType;
     // Current step of the task
     protected int currentStep;
     // Number of steps this task has
     protected int maxSteps;
-    // Are we out of steps
+    /// <summary>
+    /// Have we reached the final step
+    /// </summary>
     protected bool finished;
-    // Has the task been setup
+    /// <summary>
+    /// Has the task been setup by calling SetUp()
+    /// </summary>
     protected bool ready;
 
     //the current trial num
@@ -37,7 +43,9 @@ public abstract class BaseTask : MonoBehaviour
     {
         
     }
-
+    /// <summary>
+    /// Increment the step and return if we have reached the final step
+    /// </summary>
     public virtual bool IncrementStep()
     {
         currentStep++;
@@ -66,10 +74,10 @@ public abstract class BaseTask : MonoBehaviour
         set { finished = value; }
     }
 
-    public string ExperimentMode
+    public string TaskType
     {
-        get { return experimentMode; }
-        set { experimentMode = value; }
+        get { return taskType; }
+        set { taskType = value; }
     }
 
     /// <summary>
