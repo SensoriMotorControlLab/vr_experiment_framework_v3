@@ -82,8 +82,8 @@ public class ReachTask : BaseTask
         reachPrefab.transform.position = Vector3.zero;
 
         reachCamera = GameObject.Find("ReachCamera").GetComponent<Camera>();
-        
-        if(ExperimentController.Instance.UseVR == false)
+
+        if (ExperimentController.Instance.UseVR == false)
             Camera.SetupCurrent(reachCamera);
 
         reachSurface = GameObject.Find("ReachSurface");

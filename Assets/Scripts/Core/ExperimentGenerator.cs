@@ -44,7 +44,7 @@ public class ExperimentGenerator : MonoBehaviour
             theBlock.settings.SetValue("use_vr", ExperimentController.Instance.UseVR);
         }
 
-        //now go through the keys and then set them for the blocks
+        //loop through the keys and then set them for the blocks
         //prefixes will be removed to be more streamlined
         //for each key in the JSON
         foreach (string key in keys)

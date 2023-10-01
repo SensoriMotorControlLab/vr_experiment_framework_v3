@@ -137,7 +137,7 @@ public class ExperimentController : MonoBehaviour
             GameObject.Find("OVRPlayerController").SetActive(false);
 
         //define the scene prefabs
-        foreach(GameObject g in scenePrefabs)
+        foreach (GameObject g in scenePrefabs)
         {
             prefabs[g.name] = g;
         }

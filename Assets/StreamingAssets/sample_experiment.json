@@ -13,7 +13,7 @@
     "reach_to_target"
   ],
   "per_block_rotation": [
-    0,
+    30,
     0,
     30
   ],
