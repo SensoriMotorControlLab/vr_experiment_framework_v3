@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UXF;
 /// <summary>
 /// Reach task
 /// </summary>
@@ -66,7 +67,13 @@ public class ReachTask : BaseTask
 
     public override void LogParameters()
     {
-        print(gameObject.name);
+        Session session = expController.Session;
+
+        session.CurrentTrial.result["type"] = session.CurrentBlock.settings.GetString("task");
+        session.CurrentTrial.result["home_pos"] = home.transform.position;
+        session.CurrentTrial.result["target_angle"] = session.CurrentBlock.settings.GetFloatList("target_angle")[session.currentTrialNum-1];
+        session.CurrentTrial.result["target_size_m"] = target.transform.localScale.x;
+        session.CurrentTrial.result["cursor_pos"] = cursor.transform.position;
     }
 
     public override void SetUp()
@@ -127,4 +134,6 @@ public class ReachTask : BaseTask
     {
         Destroy(reachPrefab);
     }
+
+    
 }

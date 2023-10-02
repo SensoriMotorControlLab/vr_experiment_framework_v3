@@ -9,6 +9,8 @@ public class CursorController : MonoBehaviour
     private static CursorController instance = null;
     private Dictionary<string,GameObject> vrHands = new Dictionary<string, GameObject>();
     private string domHand = "LeftHand";
+    public GameObject home;
+    public GameObject target;
     GameObject cursor;
     MovementType moveType;
 
@@ -87,10 +89,8 @@ public class CursorController : MonoBehaviour
     public Vector3 ConvertCursorPosition()
     {
         ExperimentController expCtrl = ExperimentController.Instance;
-        GameObject t = GameObject.Find("Target");
-        GameObject h = GameObject.Find("Home");
-        Vector3 target = t != null ? t.transform.position : Vector3.zero;
-        Vector3 home = h != null ? h.transform.position : Vector3.zero;
+        Vector3 targetPos = target != null ? target.transform.position : Vector3.zero;
+        Vector3 homePos = home != null ? home.transform.position : Vector3.zero;
 
         switch (moveType)
         {
@@ -98,10 +98,10 @@ public class CursorController : MonoBehaviour
                 return cursor.transform.position;
             case MovementType.rotated:
                 float rotation = expCtrl.Session.CurrentBlock.settings.GetFloat("rotation");
-                cursor.transform.position = Quaternion.Euler(0, -rotation, 0) * (cursor.transform.position - home) + home;
+                cursor.transform.position = Quaternion.Euler(0, -rotation, 0) * (cursor.transform.position - homePos) + homePos;
                 return cursor.transform.position;
             case MovementType.clamped:
-                Vector3 normal = target - home;
+                Vector3 normal = targetPos - h;
 
                 // Rotate vector by 90 degrees to get plane parallel to the vector
                 normal = Quaternion.Euler(0f, -90f, 0f) * normal;
@@ -115,7 +115,7 @@ public class CursorController : MonoBehaviour
                          home X
                  */
 
-                cursor.transform.position = Vector3.ProjectOnPlane(cursor.transform.position - home, normal.normalized) + home;
+                cursor.transform.position = Vector3.ProjectOnPlane(cursor.transform.position - homePos, normal.normalized) + homePos;
                 return cursor.transform.position;
             default:
                 throw new System.ArgumentOutOfRangeException("No moveType defined for CursorController");
