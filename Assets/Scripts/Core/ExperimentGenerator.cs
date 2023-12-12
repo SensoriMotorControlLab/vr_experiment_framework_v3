@@ -16,7 +16,6 @@ public class ExperimentGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
     ///<summary>
     ///Read the experiment JSON file and generate the blocks
@@ -57,7 +56,7 @@ public class ExperimentGenerator : MonoBehaviour
                 List<object> perBlockList = new List<object>(session.settings.GetObjectList(key));
                 ExperimentController.Instance.ExperimentLists[newKey] = new List<object>(perBlockList);
                 //set the value for each block
-                for(int i = 0; i < session.blocks.Count; i++)
+                for (int i = 0; i < session.blocks.Count; i++)
                 {
                     session.blocks[i].settings.SetValue(newKey, perBlockList[i]);
                 }
@@ -84,12 +83,21 @@ public class ExperimentGenerator : MonoBehaviour
                 for (int i = 0; i < perTrialCount; i++)
                 {
                     if (perTrialList[i] != null)
-                        pseudoList.Add(PseudoRandom(perTrialList[i].ToString(),session.blocks[i]));
+                        pseudoList.Add(PseudoRandom(perTrialList[i].ToString(), session.blocks[i]));
                     else
                         pseudoList.Add(new List<object>());
 
                     //set the value in the block
                     session.blocks[i].settings.SetValue(newKey, pseudoList[i]);
+                }
+            }
+            else
+            {
+                if (!ExperimentController.Instance.ExperimentLists.ContainsKey(key))
+                {
+                    ExperimentController.Instance.ExperimentLists[key] = new List<object>();
+                    ExperimentController.Instance.ExperimentLists[key].Add(session.settings.GetObject(key));
+                    //session.settings.SetValue(key, session.settings.GetObject(key));
                 }
             }
         }
@@ -114,10 +122,19 @@ public class ExperimentGenerator : MonoBehaviour
                     reachTask.enabled = false;
                     ExperimentController.Instance.Tasks.Add(reachTask);
                     break;
+                case ("sling_shot"):
+                    SlingShotTask slingShotTask = ExperimentController.Instance.gameObject.AddComponent<SlingShotTask>();
+                    slingShotTask.enabled = false;
+                    ExperimentController.Instance.Tasks.Add(slingShotTask);
+                    break;
                 case ("instruction"):
                     InstructionTask instructionTask = ExperimentController.Instance.gameObject.AddComponent<InstructionTask>();
                     instructionTask.enabled = false;
                     ExperimentController.Instance.Tasks.Add(instructionTask);
+                    break;
+
+                default:
+                    Debug.LogError("THE TASK HAS NO BEEN DEFINED IN: ExperimentGenerator.GenerateTasks()");
                     break;
             }
         }

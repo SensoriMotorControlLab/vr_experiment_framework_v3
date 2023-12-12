@@ -28,6 +28,14 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
     /// <summary>
+    /// The VR controller
+    /// </summary>
+    public GameObject vrCtlr;
+    /// <summary>
+    /// The prefab to spawn if using VR
+    /// </summary>
+    public GameObject vrPrefab;
+    /// <summary>
     /// The active task
     /// </summary>
     BaseTask currentTask;
@@ -62,6 +70,12 @@ public class ExperimentController : MonoBehaviour
             if (currentTask.Finished)
             {
                 session.EndCurrentTrial();
+            }
+
+
+            if (Input.GetKey(KeyCode.J))
+            {
+                CenterOVRPlayerController();
             }
         }
     }
@@ -132,10 +146,9 @@ public class ExperimentController : MonoBehaviour
         tasks.Capacity = TotalNumOfTrials;
         expGenerator.GenerateTasks();
 
-        // disable VR prefab if not using VR
-        if (useVR == false)
-            GameObject.Find("OVRPlayerController").SetActive(false);
-
+        // if using VR create the VR controller
+        if (useVR == true)
+            vrCtlr = Instantiate(vrPrefab);
         //define the scene prefabs
         foreach (GameObject g in scenePrefabs)
         {
@@ -146,8 +159,19 @@ public class ExperimentController : MonoBehaviour
         currentTask.enabled = true;
         isRunning = true;
 
+        CursorController.Instance.FindHandAnchors();
+
         BeginNextTrial();
     }
+
+    /// <summary>
+    /// Center the OVRPlayerController to the dock location
+    /// </summary>
+    public void CenterOVRPlayerController()
+    {
+        vrCtlr.transform.position = new Vector3(currentTask.Dock.transform.position.x, vrCtlr.transform.position.y, currentTask.Dock.transform.position.z);
+    }
+
     /// <summary>
     /// Begin the next trial, if available. On the final trial this call will end the experiment.
     /// </summary>

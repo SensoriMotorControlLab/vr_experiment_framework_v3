@@ -22,6 +22,16 @@ public abstract class BaseTask : MonoBehaviour
     /// Has the task been setup by calling SetUp()
     /// </summary>
     protected bool ready;
+    /// <summary>
+    /// The home for the experiment
+    /// </summary>
+    protected GameObject home { get; set; }
+    public GameObject Home { get { return home; } }
+    /// <summary>
+    /// The docking position for the experiment
+    /// </summary>
+    protected GameObject dock { get; set; }
+    public GameObject Dock { get { return home; } }
 
     //the current trial num
     protected int currentTrial;

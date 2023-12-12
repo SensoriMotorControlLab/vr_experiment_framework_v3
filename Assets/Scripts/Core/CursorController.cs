@@ -7,6 +7,7 @@ using UnityEngine;
 public class CursorController : MonoBehaviour
 {
     private static CursorController instance = null;
+
     private Dictionary<string,GameObject> vrHands = new Dictionary<string, GameObject>();
     private string domHand = "LeftHand";
     public GameObject home;
@@ -30,18 +31,21 @@ public class CursorController : MonoBehaviour
         if (!instance)
             instance = this;
 
+        moveType = MovementType.aligned;
+    }
+
+    public void FindHandAnchors()
+    {
         vrHands["LeftHand"] = GameObject.Find("LeftHandAnchor");
         vrHands["RightHand"] = GameObject.Find("RightHandAnchor");
 
         if (!vrHands["LeftHand"])
-            Debug.LogError("No GameObject for left hand found");
+            Debug.LogWarning("No GameObject for left hand found");
 
         vrHands["RightHand"] = GameObject.Find("RightHandAnchor");
 
         if (!vrHands["RightHand"])
-            Debug.LogError("No GameObject for right hand found");
-
-        moveType = MovementType.aligned;
+            Debug.LogWarning("No GameObject for right hand found");
     }
 
     // Update is called once per frame
@@ -75,7 +79,7 @@ public class CursorController : MonoBehaviour
         get 
         {
             if (!instance)
-                Debug.LogWarning("ExperimentController is unitialized"); 
+                Debug.LogError("ExperimentController is unitialized"); 
             return instance; 
         }
     }
@@ -101,7 +105,7 @@ public class CursorController : MonoBehaviour
                 cursor.transform.position = Quaternion.Euler(0, -rotation, 0) * (cursor.transform.position - homePos) + homePos;
                 return cursor.transform.position;
             case MovementType.clamped:
-                Vector3 normal = targetPos - h;
+                Vector3 normal = targetPos - homePos;
 
                 // Rotate vector by 90 degrees to get plane parallel to the vector
                 normal = Quaternion.Euler(0f, -90f, 0f) * normal;
@@ -120,5 +124,31 @@ public class CursorController : MonoBehaviour
             default:
                 throw new System.ArgumentOutOfRangeException("No moveType defined for CursorController");
         }
+    }
+
+    public void ChangeDominantHand(string newDomHand)
+    {
+        domHand = newDomHand;
+    }
+
+    public Vector3 GetHandPosition(string handName)
+    {
+        if(vrHands[handName])
+            return vrHands[handName].transform.position;
+
+        return Vector3.zero;
+    }
+
+    public string GetDominantHand()
+    {
+        return domHand;
+    }
+
+    public Vector3 GetHandPosition()
+    {
+        if (vrHands[domHand])
+            return vrHands[domHand].transform.position;
+
+        return Vector3.zero;
     }
 }

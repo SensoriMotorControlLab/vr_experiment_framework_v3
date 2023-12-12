@@ -8,9 +8,9 @@
     4
   ],
   "per_block_task": [
-    "reach_to_target",
+    "sling_shot",
     "instruction",
-    "reach_to_target"
+    "sling_shot"
   ],
   "per_block_rotation": [
     30,

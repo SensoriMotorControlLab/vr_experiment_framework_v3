@@ -122,6 +122,7 @@ public class OVRDebugInfo : MonoBehaviour
         }
 
         //todo: enable for Unity Input System
+        /*
 #if ENABLE_LEGACY_INPUT_MANAGER
         if (Input.GetKeyDown(KeyCode.Space) && riftPresentTimeout < 0.0f)
         {
@@ -129,6 +130,7 @@ public class OVRDebugInfo : MonoBehaviour
             showVRVars ^= true;
         }
 #endif
+        */
 
         UpdateDeviceDetection();
 

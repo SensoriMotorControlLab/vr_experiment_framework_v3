@@ -10,8 +10,6 @@ public class ReachTask : BaseTask
     List<float> targetAngles = new List<float>();
     GameObject reachPrefab, reachSurface;
     Camera reachCamera;
-    GameObject home;
-    GameObject dock;
     GameObject target;
     GameObject cursor;
 
@@ -111,6 +109,8 @@ public class ReachTask : BaseTask
         //set up target position and hide it
         target.transform.position = reachPrefab.transform.position;
         target.SetActive(false);
+
+        reachPrefab.transform.position = new Vector3(reachPrefab.transform.position.x,CursorController.Instance.GetHandPosition().y, reachPrefab.transform.position.z);
     }
 
     public override void TaskBegin()
