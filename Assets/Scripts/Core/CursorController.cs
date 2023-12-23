@@ -9,11 +9,14 @@ public class CursorController : MonoBehaviour
     private static CursorController instance = null;
 
     private Dictionary<string,GameObject> vrHands = new Dictionary<string, GameObject>();
-    private string domHand = "LeftHand";
     public GameObject home;
     public GameObject target;
+    //For non-VR to the cursor at a certain height
+    public float clampedY = 0.0f;
     GameObject cursor;
     MovementType moveType;
+
+    private string domHand = "LeftHand";
 
     /// <summary>
     /// The behaviour of the cursor
@@ -57,7 +60,7 @@ public class CursorController : MonoBehaviour
             //update the cursor posiiton 
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            pos.y = 0.0f;
+            pos.y = clampedY;
             cursor.transform.position = pos;
         }
         else if(ExperimentController.Instance.UseVR == true)
