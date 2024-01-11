@@ -33,6 +33,7 @@ public class ExperimentGenerator : MonoBehaviour
         ExperimentController.Instance.TotalNumOfBlocks = trialsPerBlock.Count;
 
         //loop and create each block
+        //not very efficient but this just gurantees the creation of the blocks
         for (int i = 0; i < trialsPerBlock.Count; i++)
         {
             //the created block
@@ -43,9 +44,9 @@ public class ExperimentGenerator : MonoBehaviour
             theBlock.settings.SetValue("use_vr", ExperimentController.Instance.UseVR);
         }
 
+        //for each key in the JSON
         //loop through the keys and then set them for the blocks
         //prefixes will be removed to be more streamlined
-        //for each key in the JSON
         foreach (string key in keys)
         {
             //for per block parameters
@@ -91,6 +92,7 @@ public class ExperimentGenerator : MonoBehaviour
                     session.blocks[i].settings.SetValue(newKey, pseudoList[i]);
                 }
             }
+            //for anything else
             else
             {
                 if (!ExperimentController.Instance.ExperimentLists.ContainsKey(key))
@@ -123,7 +125,7 @@ public class ExperimentGenerator : MonoBehaviour
                     ExperimentController.Instance.Tasks.Add(reachTask);
                     break;
                 case ("sling_shot"):
-                    SlingShotTask slingShotTask = ExperimentController.Instance.gameObject.AddComponent<SlingShotTask>();
+                    SlingshotTask slingShotTask = ExperimentController.Instance.gameObject.AddComponent<SlingshotTask>();
                     slingShotTask.enabled = false;
                     ExperimentController.Instance.Tasks.Add(slingShotTask);
                     break;

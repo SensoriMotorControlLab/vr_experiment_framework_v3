@@ -58,10 +58,16 @@ public abstract class BaseTask : MonoBehaviour
     /// </summary>
     public virtual bool IncrementStep()
     {
+
         currentStep++;
 
         //TODO add time
         finished = currentStep == maxSteps;
+
+        if (finished)
+            currentTrial++;
+
+        //Debug.Log(name + "step: " + currentStep);
 
         return finished;
     }

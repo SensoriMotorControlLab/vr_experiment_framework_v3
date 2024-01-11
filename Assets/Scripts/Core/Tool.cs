@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grabbable : MonoBehaviour
+public class Tool : MonoBehaviour
 {
     Collider[] colliders;
     const float GRAB_DISTANCE = 0.5f;
@@ -14,6 +14,11 @@ public class Grabbable : MonoBehaviour
     void Start()
     {
         colliders = GetComponents<Collider>();
+
+        if(colliders.Length == 0)
+        {
+            Debug.LogWarning(name + " does not have any colliders");
+        }
     }
 
     // Update is called once per frame

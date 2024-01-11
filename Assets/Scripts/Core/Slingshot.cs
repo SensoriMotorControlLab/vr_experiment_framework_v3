@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Grab : MonoBehaviour
+public class Slingshot : MonoBehaviour
 {
     //parent for the entire slingshot object
     public GameObject parent;
@@ -15,7 +15,7 @@ public class Grab : MonoBehaviour
     //grabbable part of the sling
     public GameObject sling;
     //script of the sling
-    public Grabbable grabbable;
+    public Tool grabbable;
     //ball that is shot
     GameObject shotBall;
     //bar that fills up showing amount of pull
@@ -35,7 +35,7 @@ public class Grab : MonoBehaviour
     //force to launch the ball
     const float BALL_FORCE = 1000.0f;
     //velocity mag to consider the shot ball has stopped
-    const float BALL_LOW_VEL_THRES = 0.1f;
+    //const float BALL_LOW_VEL_THRES = 0.1f;
     //speed to move the sling back
     float speed = 0.25f;
     //amount to fill the bar
@@ -79,6 +79,8 @@ public class Grab : MonoBehaviour
             parent.transform.rotation = Quaternion.LookRotation(dir, transform.up);
         }
 
+        //FOR DEBUGGING
+        /*
         //if the ball has been shot after it reaches the velocity threshold do something
         if (!isLoaded && shotBall)
         {
@@ -86,6 +88,7 @@ public class Grab : MonoBehaviour
             if(shotBall.GetComponent<Rigidbody>().velocity.magnitude <= BALL_LOW_VEL_THRES && ballFromSlingDist > AWAY_FROM_HOME_DIST)
                 ReloadSlingshot();
         }
+        */
     }
 
     /// <summary>
@@ -141,4 +144,30 @@ public class Grab : MonoBehaviour
             }
         }
     }
+
+    public bool IsGrabbed
+    {
+        get { return isGrabbed; }
+    }
+    public bool IsAwayFromHome
+    {
+        get { return awayFromHome; }
+    }
+    public bool IsLoaded
+    {
+        get { return isLoaded; }
+    }
+    public bool SlingFired
+    {
+        get {
+            float ballFromSlingDist = Vector3.Distance(shotBall.transform.position, ball.transform.position);
+            return !isLoaded && shotBall && ballFromSlingDist > AWAY_FROM_HOME_DIST; 
+        }
+    }
+    public GameObject ShotBall
+    {
+        get { return shotBall; }
+    }
+
+
 }

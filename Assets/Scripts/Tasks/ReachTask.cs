@@ -56,7 +56,6 @@ public class ReachTask : BaseTask
                 {
                     target.SetActive(false);
                     IncrementStep();
-                    currentTrial++;
                     //expController.Session.EndCurrentTrial();
                 }
                 break;
