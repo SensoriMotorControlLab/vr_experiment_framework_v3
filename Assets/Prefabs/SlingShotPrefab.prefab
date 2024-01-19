@@ -160,7 +160,7 @@ GameObject:
   - component: {fileID: 2068657333294351190}
   m_Layer: 0
   m_Name: Cursor
-  m_TagString: Untagged
+  m_TagString: Cursor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -760,7 +760,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6668086248953714891}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000015318394}
+  m_LocalPosition: {x: 0, y: 0, z: 49}
   m_LocalScale: {x: 0.1908225, y: 0.99972993, z: 0.99972993}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -793,7 +793,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.26415092, g: 0.25293696, b: 0.25293696, a: 0.36078432}
+  m_Color: {r: 0.26415092, g: 0.25293696, b: 0.25293696, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -805,7 +805,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 1
-  m_FillAmount: 0
+  m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 1
   m_UseSpriteMesh: 0
@@ -1130,8 +1130,8 @@ RectTransform:
   m_LocalScale: {x: 0.015564202, y: 0.015564202, z: 0.015564202}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6896561343191678431}
   - {fileID: 6541042776231603394}
+  - {fileID: 6896561343191678431}
   m_Father: {fileID: 4373962280162878959}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

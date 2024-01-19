@@ -62,14 +62,14 @@ public class Slingshot : MonoBehaviour
         //set the clamped height
         CursorController.Instance.clampedY = transform.position.y;
 
-        //set if the sling is grabbed
-        isGrabbed = grabbable.IsGrabbed || awayFromHome && grabbable.IsGrabbing;
-
         //the distance of the sling from the home position
         float distanceFromHome = Vector3.Distance(sling.transform.position, homePos);
 
         //set if the sling is away from home
         awayFromHome = distanceFromHome > AWAY_FROM_HOME_DIST;
+
+        //set if the sling is grabbed
+        isGrabbed = grabbable.IsGrabbed || awayFromHome && grabbable.IsGrabbing;
 
         if (isGrabbed)
         {
@@ -125,7 +125,8 @@ public class Slingshot : MonoBehaviour
         else if(!isGrabbed && awayFromHome)
         {
             //move the sling back to home
-            sling.transform.position = Vector3.Lerp(homePos, sling.transform.position, speed * Time.deltaTime);
+            //sling.transform.position = Vector3.Lerp(homePos, sling.transform.position, speed * Time.deltaTime);
+            sling.transform.position = homePos;
             distance = Vector3.Distance(sling.transform.position, homePos);
 
             //if the sling is loaded and we have reached home

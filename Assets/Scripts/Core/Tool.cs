@@ -57,22 +57,26 @@ public class Tool : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        isProximity = true;
+        if(collision.gameObject.tag == "Cursor")
+            isProximity = true;
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        isProximity = false;
+        if (collision.gameObject.tag == "Cursor")
+            isProximity = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        isProximity = true;
+        if(other.tag == "Cursor")
+            isProximity = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        isProximity = false;
+        if (other.tag == "Cursor")
+            isProximity = false;
     }
 
     public bool IsGrabbed

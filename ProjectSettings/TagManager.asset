@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Tool
   - Projectile
+  - Cursor
   layers:
   - Default
   - TransparentFX
