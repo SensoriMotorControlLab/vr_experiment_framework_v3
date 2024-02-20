@@ -1,6 +1,6 @@
 {
   "experiment_name": "reach_to_target",
-  "use_vr": false,
+  "use_vr": true,
   "optional_params": [],
   "trials_in_block": [
     4,

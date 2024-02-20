@@ -85,7 +85,7 @@ public class ExperimentController : MonoBehaviour
         get
         {
             if (!instance)
-                Debug.LogWarning("ExperimentController is unitialized");
+                Debug.LogError("ExperimentController is unitialized");
             
             return instance; 
         }
@@ -148,7 +148,13 @@ public class ExperimentController : MonoBehaviour
 
         // if using VR create the VR controller
         if (useVR == true)
+        {
+            Debug.Log("The experiment is being run in VR");
             vrCtlr = Instantiate(vrPrefab);
+            Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
+            CursorController.Instance.FindHandAnchors();
+        }
+
         //define the scene prefabs
         foreach (GameObject g in scenePrefabs)
         {
@@ -159,7 +165,6 @@ public class ExperimentController : MonoBehaviour
         currentTask.enabled = true;
         isRunning = true;
 
-        CursorController.Instance.FindHandAnchors();
 
         BeginNextTrial();
     }

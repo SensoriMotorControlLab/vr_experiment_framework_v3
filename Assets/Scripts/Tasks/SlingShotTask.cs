@@ -66,6 +66,7 @@ public class SlingshotTask : BaseTask
         slingshotPrefab.transform.position = Vector3.zero;
 
         slingshotCamera = GameObject.Find("SlingshotCamera").GetComponent<Camera>();
+        dock = GameObject.Find("Dock");
         cursor = GameObject.Find("Cursor");
         slingshotGameObject = GameObject.Find("Slingshot");
         slingshot = slingshotGameObject.GetComponent<Slingshot>();

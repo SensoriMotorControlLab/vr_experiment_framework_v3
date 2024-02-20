@@ -25,13 +25,13 @@ public abstract class BaseTask : MonoBehaviour
     /// <summary>
     /// The home for the experiment
     /// </summary>
-    protected GameObject home { get; set; }
-    public GameObject Home { get { return home; } }
+    protected GameObject home;
+    public GameObject Home { get { return home; } set { home = value; } }
     /// <summary>
     /// The docking position for the experiment
     /// </summary>
-    protected GameObject dock { get; set; }
-    public GameObject Dock { get { return home; } }
+    protected GameObject dock;
+    public GameObject Dock { get { return home; } set { home = value; } }
 
     //the current trial num
     protected int currentTrial;

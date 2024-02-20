@@ -42,13 +42,19 @@ public class Target : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Projectile")
+        if (collision.gameObject.tag == "Projectile" || collision.gameObject == projectile)
+        {
+            Debug.Log("Projectile collided with " + name);
             targetHit = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Projectile")
+        if (other.gameObject.tag == "Projectile" || other.gameObject == projectile)
+        {
+            Debug.Log("Projectile triggered " + name);
             targetHit = true;
+        }
     }
 }
