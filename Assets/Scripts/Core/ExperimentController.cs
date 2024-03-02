@@ -152,6 +152,7 @@ public class ExperimentController : MonoBehaviour
             Debug.Log("The experiment is being run in VR");
             vrCtlr = Instantiate(vrPrefab);
             Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
+            Debug.Log(Camera.main);
             CursorController.Instance.FindHandAnchors();
         }
 

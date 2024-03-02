@@ -58,7 +58,7 @@ public class Slingshot : MonoBehaviour
     void Update()
     {
         //set the clamp cursor
-        clampedCursor = new Vector3(CursorController.Instance.Cursor.transform.position.x, transform.position.y, CursorController.Instance.Cursor.transform.position.z);
+        clampedCursor = new Vector3(CursorController.Instance.CursorPos.x, transform.position.y, CursorController.Instance.CursorPos.z);
         //set the clamped height
         CursorController.Instance.clampedY = transform.position.y;
 

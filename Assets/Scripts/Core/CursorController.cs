@@ -35,6 +35,7 @@ public class CursorController : MonoBehaviour
             instance = this;
 
         moveType = MovementType.aligned;
+        //FindHandAnchors();
     }
 
     public void FindHandAnchors()
@@ -45,10 +46,11 @@ public class CursorController : MonoBehaviour
         if (!vrHands["LeftHand"])
             Debug.LogWarning("No GameObject for left hand found");
 
-        vrHands["RightHand"] = GameObject.Find("RightHandAnchor");
-
         if (!vrHands["RightHand"])
             Debug.LogWarning("No GameObject for right hand found");
+
+        Debug.Log(vrHands["LeftHand"]);
+        Debug.Log(vrHands["RightHand"]);
     }
 
     // Update is called once per frame
@@ -61,11 +63,13 @@ public class CursorController : MonoBehaviour
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             pos.y = clampedY;
-            cursor.transform.position = pos;
+            if(cursor)
+                cursor.transform.position = pos;
         }
         else if(ExperimentController.Instance.UseVR == true)
         {
-            cursor.transform.position = vrHands[domHand].transform.position;
+            if(cursor)
+                cursor.transform.position = vrHands[domHand].transform.position;
         }
 
         if(cursor)
@@ -91,6 +95,23 @@ public class CursorController : MonoBehaviour
     {
         get { return cursor; }
         set { cursor = value; }
+    }
+
+    public Vector3 CursorPos
+    {
+        get
+        {
+            if (cursor)
+                return cursor.transform.position;
+
+            return Vector3.zero;
+        }
+
+        set
+        {
+            if (cursor)
+                cursor.transform.position = value;
+        }
     }
 
     public Vector3 ConvertCursorPosition()
