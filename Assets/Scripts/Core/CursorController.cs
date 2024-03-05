@@ -16,7 +16,7 @@ public class CursorController : MonoBehaviour
     GameObject cursor;
     MovementType moveType;
 
-    private string domHand = "LeftHand";
+    private string domHand = "RightHand";
 
     /// <summary>
     /// The behaviour of the cursor
@@ -40,8 +40,8 @@ public class CursorController : MonoBehaviour
 
     public void FindHandAnchors()
     {
-        vrHands["LeftHand"] = GameObject.Find("LeftHandAnchor");
-        vrHands["RightHand"] = GameObject.Find("RightHandAnchor");
+        vrHands["LeftHand"] = GameObject.Find("LeftHand Controller");
+        vrHands["RightHand"] = GameObject.Find("RightHand Controller");
 
         if (!vrHands["LeftHand"])
             Debug.LogWarning("No GameObject for left hand found");

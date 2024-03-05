@@ -88,8 +88,13 @@ public class ReachTask : BaseTask
         reachCamera = GameObject.Find("ReachCamera").GetComponent<Camera>();
 
         if (ExperimentController.Instance.UseVR == false)
+        {
             Camera.SetupCurrent(reachCamera);
-
+        }
+        else
+        {
+            reachCamera.gameObject.SetActive(false);
+        }
         reachSurface = GameObject.Find("ReachSurface");
         cursor = GameObject.Find("Cursor");
         CursorController.Instance.Cursor = cursor;

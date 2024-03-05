@@ -68,9 +68,11 @@ public class SlingshotTask : BaseTask
         slingshotCamera = GameObject.Find("SlingshotCamera").GetComponent<Camera>();
         dock = GameObject.Find("Dock");
         cursor = GameObject.Find("Cursor");
+        CursorController.Instance.Cursor = cursor;
         slingshotGameObject = GameObject.Find("Slingshot");
         slingshot = slingshotGameObject.GetComponent<Slingshot>();
         target = GameObject.Find("Bullseye");
+
         if (target)
             targetScript = target.GetComponent<Target>();
         else
@@ -79,7 +81,10 @@ public class SlingshotTask : BaseTask
         if (ExperimentController.Instance.UseVR == false)
         {
             Camera.SetupCurrent(slingshotCamera);
-            CursorController.Instance.Cursor = cursor;
+        }
+        else
+        {
+            slingshotCamera.gameObject.SetActive(false);
         }
     }
 

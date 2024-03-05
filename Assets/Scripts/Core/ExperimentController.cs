@@ -150,8 +150,9 @@ public class ExperimentController : MonoBehaviour
         if (useVR == true)
         {
             Debug.Log("The experiment is being run in VR");
-            vrCtlr = Instantiate(vrPrefab);
-            Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
+            //vrCtlr = Instantiate(vrPrefab);
+            //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
+            Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
             Debug.Log(Camera.main);
             CursorController.Instance.FindHandAnchors();
         }
@@ -185,10 +186,14 @@ public class ExperimentController : MonoBehaviour
     {
         //for the first trial
         if (session.currentTrialNum == 0)
+        {
             session.FirstTrial.Begin();
+        }
         //every other trial
         else if (session.currentTrialNum < totalNumOfTrials)
+        {
             session.BeginNextTrialSafe();
+        }
         else if (session.currentTrialNum == totalNumOfTrials) 
         {
             isRunning = false;
