@@ -44,13 +44,16 @@ public class CursorController : MonoBehaviour
         vrHands["RightHand"] = GameObject.Find("RightHand Controller");
 
         if (!vrHands["LeftHand"])
+        {
             Debug.LogWarning("No GameObject for left hand found");
-
+        }
         if (!vrHands["RightHand"])
+        {
             Debug.LogWarning("No GameObject for right hand found");
+        }
 
-        Debug.Log(vrHands["LeftHand"]);
-        Debug.Log(vrHands["RightHand"]);
+        //Debug.Log(vrHands["LeftHand"]);
+        //Debug.Log(vrHands["RightHand"]);
     }
 
     // Update is called once per frame
@@ -63,17 +66,24 @@ public class CursorController : MonoBehaviour
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             pos.y = clampedY;
-            if(cursor)
+            if (cursor)
+            {
                 cursor.transform.position = pos;
+            }
         }
         else if(ExperimentController.Instance.UseVR == true)
         {
-            if(cursor)
+            if (cursor)
+            {
+                Debug.Log(vrHands[domHand].transform.position);
                 cursor.transform.position = vrHands[domHand].transform.position;
+            }
         }
 
-        if(cursor)
+        if (cursor)
+        {
             ConvertCursorPosition();
+        }
 
     }
 
@@ -102,7 +112,9 @@ public class CursorController : MonoBehaviour
         get
         {
             if (cursor)
+            {
                 return cursor.transform.position;
+            }
 
             return Vector3.zero;
         }
@@ -157,8 +169,10 @@ public class CursorController : MonoBehaviour
 
     public Vector3 GetHandPosition(string handName)
     {
-        if(vrHands[handName])
+        if (vrHands[handName])
+        {
             return vrHands[handName].transform.position;
+        }
 
         return Vector3.zero;
     }
@@ -171,7 +185,9 @@ public class CursorController : MonoBehaviour
     public Vector3 GetHandPosition()
     {
         if (vrHands[domHand])
+        {
             return vrHands[domHand].transform.position;
+        }
 
         return Vector3.zero;
     }

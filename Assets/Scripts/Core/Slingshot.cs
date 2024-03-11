@@ -20,8 +20,6 @@ public class Slingshot : MonoBehaviour
     GameObject shotBall;
     //bar that fills up showing amount of pull
     public Image fillBar;
-    //cursor in the scene that is clamped to move on the plane of the sling
-    Vector3 clampedCursor;
     //center position of the sling
     Vector3 homePos;
     //color for the fillbar when the sling is pulled a minimum amount
@@ -57,8 +55,6 @@ public class Slingshot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //set the clamp cursor
-        clampedCursor = new Vector3(CursorController.Instance.CursorPos.x, transform.position.y, CursorController.Instance.CursorPos.z);
         //set the clamped height
         CursorController.Instance.clampedY = transform.position.y;
 
@@ -74,7 +70,7 @@ public class Slingshot : MonoBehaviour
         if (isGrabbed)
         {
             //rotate the entire object to aim the sling
-            Vector3 dir = Vector3.Normalize(homePos - clampedCursor);
+            Vector3 dir = Vector3.Normalize(homePos - CursorController.Instance.CursorPos);
 
             parent.transform.rotation = Quaternion.LookRotation(dir, transform.up);
         }
@@ -103,7 +99,7 @@ public class Slingshot : MonoBehaviour
 
     private void LateUpdate()
     {
-        float distance = Vector3.Distance(clampedCursor, homePos);
+        float distance = Vector3.Distance(CursorController.Instance.CursorPos, homePos);
 
         //set the fillAmount based on the cursor 
         float slingDist = Vector3.Distance(sling.transform.position, homePos);
@@ -115,7 +111,7 @@ public class Slingshot : MonoBehaviour
             //if below the pull distance move the sling to the cursor position
             if (distance <= PULL_DISTANCE)
                 //transform.position = new Vector3(transform.position.x, transform.position.y, clampedCursor.z);
-                sling.transform.position = clampedCursor;
+                sling.transform.position = CursorController.Instance.CursorPos;
 
             //set the fillBar amount as we are pulling
             fillBar.fillAmount = fillAmount;
