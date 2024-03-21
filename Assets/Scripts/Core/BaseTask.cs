@@ -31,7 +31,7 @@ public abstract class BaseTask : MonoBehaviour
     /// The docking position for the experiment
     /// </summary>
     protected GameObject dock;
-    public GameObject Dock { get { return home; } set { home = value; } }
+    public GameObject Dock { get { return dock; } set { dock = value; } }
 
     //the current trial num
     protected int currentTrial;

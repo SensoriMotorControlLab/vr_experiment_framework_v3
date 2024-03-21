@@ -153,7 +153,7 @@ public class ExperimentController : MonoBehaviour
             //vrCtlr = Instantiate(vrPrefab);
             //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
             Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
-            Debug.Log(Camera.main);
+            //Debug.Log(Camera.main);
             CursorController.Instance.FindHandAnchors();
         }
 
@@ -176,7 +176,7 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void CenterOVRPlayerController()
     {
-        vrCtlr.transform.position = new Vector3(currentTask.Dock.transform.position.x, vrCtlr.transform.position.y, currentTask.Dock.transform.position.z);
+        vrCtlr.transform.position = new Vector3(currentTask.Dock.transform.position.x, currentTask.Dock.transform.position.y, currentTask.Dock.transform.position.z);
     }
 
     /// <summary>

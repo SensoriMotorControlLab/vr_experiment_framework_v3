@@ -32,6 +32,7 @@ public class Tool : MonoBehaviour
             if (CursorController.Instance.GetDominantHand() == "LeftHand")
             {
                 primaryButton = Input.GetButton("XRI_Left_PrimaryButton");
+
                 secondaryButton = Input.GetButton("XRI_Left_SecondaryButton");
 
             }

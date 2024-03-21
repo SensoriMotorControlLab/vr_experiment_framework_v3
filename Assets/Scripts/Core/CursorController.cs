@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 /// <summary>
 /// Controller for the experiment cursor
 /// </summary>
@@ -9,6 +10,7 @@ public class CursorController : MonoBehaviour
     private static CursorController instance = null;
 
     private Dictionary<string,GameObject> vrHands = new Dictionary<string, GameObject>();
+    private RawInput rawInput;
     public GameObject home;
     public GameObject target;
     //For non-VR to the cursor at a certain height
@@ -28,11 +30,23 @@ public class CursorController : MonoBehaviour
         clamped
     }
 
+    private struct RawInput
+    {  
+        public Vector3 rawPos;
+        public Quaternion rawRotation;
+        public InputDevice inputType;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         if (!instance)
             instance = this;
+
+        foreach(InputDevice d in InputSystem.devices)
+        {
+            Debug.Log(d.name);
+        }
 
         moveType = MovementType.aligned;
         //FindHandAnchors();
@@ -62,6 +76,9 @@ public class CursorController : MonoBehaviour
         //if not use vr and both a camera and a cursor object has been set
         if (ExperimentController.Instance.UseVR == false && Camera.main && cursor)
         {
+            //Set the position of the mouse
+            rawInput.rawPos = Input.mousePosition;
+
             //update the cursor posiiton 
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -73,9 +90,11 @@ public class CursorController : MonoBehaviour
         }
         else if(ExperimentController.Instance.UseVR == true)
         {
+            rawInput.rawPos = vrHands[domHand].transform.position;
+            rawInput.rawRotation = vrHands[domHand].transform.rotation;
+
             if (cursor)
             {
-                Debug.Log(vrHands[domHand].transform.position);
                 cursor.transform.position = vrHands[domHand].transform.position;
             }
         }
@@ -190,5 +209,15 @@ public class CursorController : MonoBehaviour
         }
 
         return Vector3.zero;
+    }
+
+    public Vector3 GetRawPos()
+    {
+        return new Vector3(rawInput.rawPos.x, rawInput.rawPos.y, rawInput.rawPos.z);
+    }
+
+    public Quaternion GetRawRotation()
+    {
+        return new Quaternion(rawInput.rawRotation.x, rawInput.rawRotation.y, rawInput.rawRotation.z, rawInput.rawRotation.w);
     }
 }
