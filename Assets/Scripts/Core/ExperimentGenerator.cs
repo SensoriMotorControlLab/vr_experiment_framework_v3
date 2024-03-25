@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UXF;
 /// <summary>
@@ -8,15 +9,8 @@ using UXF;
 /// </summary>
 public class ExperimentGenerator : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
+    private List<int> pseudoRandomOrder = new List<int>();
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
     ///<summary>
     ///Read the experiment JSON file and generate the blocks
     ///</summary>
@@ -44,16 +38,57 @@ public class ExperimentGenerator : MonoBehaviour
             theBlock.settings.SetValue("use_vr", ExperimentController.Instance.UseVR);
         }
 
+        Dictionary<string, object> dict = session.settings.GetDict("optional_params");
+
+        if(dict.Keys.Contains("linkPseudoRandom"))
+        {
+            List<object> list = dict["linkPseudoRandom"] as List<object>;
+            List<object> perTrialList = session.settings.GetObjectList(list[0].ToString());
+
+            //the resulting list after being pseudo randomized
+            List<object> pseudoList = new List<object>();
+            //key minus the prefix
+            string firstKey = list[0].ToString().Substring(15);
+
+            for (int i = 0; i < perTrialList.Count; i++)
+            {
+                if (perTrialList[i].ToString() != null)
+                {
+                    pseudoList.Add(PseudoRandom(perTrialList[i].ToString(), session.blocks[i]));
+                    List<object> pairList = new List<object>();
+                    for (int j = 1; j < list.Count; j++)
+                    {
+                        List<object> pairTrialList = session.settings.GetObjectList(list[j].ToString());
+                        if(pairTrialList[j] != null)
+                        {
+                            foreach (int index in pseudoRandomOrder)
+                            {
+                                pairList.Add(session.settings.GetObjectList(pairTrialList[i].ToString())[index]);
+                            }
+                            
+                            string key = list[j].ToString().Substring(15);
+                            session.blocks[i].settings.SetValue(key, pairList);
+                        }                           
+                    }
+                }
+                else
+                {
+                    pseudoList.Add(new List<object>());
+                }
+                session.blocks[i].settings.SetValue(firstKey, pseudoList[i]);
+            }
+        }
+
         //for each key in the JSON
         //loop through the keys and then set them for the blocks
         //prefixes will be removed to be more streamlined
         foreach (string key in keys)
         {
             //for per block parameters
-            if (key.StartsWith("per_block_"))
+            if (key.StartsWith("per_block_") && !key.StartsWith("per_block_list_"))
             {
                 //key minus the prefix
-                string newKey = key.Substring(10, key.Length - 10);
+                string newKey = key.Substring(10);
                 List<object> perBlockList = new List<object>(session.settings.GetObjectList(key));
                 ExperimentController.Instance.ExperimentLists[newKey] = new List<object>(perBlockList);
                 //set the value for each block
@@ -63,10 +98,17 @@ public class ExperimentGenerator : MonoBehaviour
                 }
             }
             //for per trial parameters, they will be pseudo randomized and then set
-            else if (key.StartsWith("per_trial_"))
+            else if (key.StartsWith("per_block_list_"))
             {
                 //key minus the prefix
-                string newKey = key.Substring(10, key.Length - 10);
+                string newKey = key.Substring(15);
+
+                if(session.blocks[0].settings.ContainsKey(newKey))
+                {
+                    break;
+                }
+
+                session.blocks[0].settings.SetValue(newKey, session.settings.GetObjectList(key));
 
                 //if we already have that list move on
                 if (ExperimentController.Instance.ExperimentLists.ContainsKey(newKey))
@@ -84,10 +126,13 @@ public class ExperimentGenerator : MonoBehaviour
                 for (int i = 0; i < perTrialCount; i++)
                 {
                     if (perTrialList[i] != null)
+                    {
                         pseudoList.Add(PseudoRandom(perTrialList[i].ToString(), session.blocks[i]));
+                    }
                     else
+                    {
                         pseudoList.Add(new List<object>());
-
+                    }
                     //set the value in the block
                     session.blocks[i].settings.SetValue(newKey, pseudoList[i]);
                 }
@@ -152,12 +197,12 @@ public class ExperimentGenerator : MonoBehaviour
     public object PseudoRandom(string key, Block theBlock)
     {
         List<object> list = Session.instance.settings.GetObjectList(key);
-        //a copy of the list
-        List<object> copyList = new List<object>(list);
         //a pseudo random version of the list
-        List<object> randomList = new List<object>();
-        //set the capacity to be the size of the original list
-        randomList.Capacity = list.Count;
+        List<object> randomList = new List<object>
+        {
+            //set the capacity to be the size of the original list
+            Capacity = list.Count
+        };
 
         //if it is not divisible by the number of trials
         if (theBlock.trials.Count % list.Count != 0)
@@ -166,8 +211,10 @@ public class ExperimentGenerator : MonoBehaviour
         }
 
         //if the passed key has these prefixes
-        if (key.StartsWith("per_trial_") || key.StartsWith("per_block_"))
-            key = key.Substring(10, key.Length - 10);
+        if (key.StartsWith("per_block_list_") )
+        {
+            key = key.Substring(15);
+        }
 
         //If the experiment list does not contain this object list
         if (!ExperimentController.Instance.ExperimentLists.ContainsKey(key))
@@ -181,17 +228,37 @@ public class ExperimentGenerator : MonoBehaviour
             throw new NullReferenceException();
         }
 
+        List<int> RandomOrder = GenerateIntegerList(0, list.Count - 1);
+        pseudoRandomOrder = ShuffleList(RandomOrder);
+        
         //loop through and randomly set new values
-        for (int i = 0; i < list.Count; i++)
+        foreach (int i in pseudoRandomOrder)
         {
-            //get a random value based off the size of the copyList
-            int randomVal = UnityEngine.Random.Range(0, copyList.Count);
-            //set the value for the copy list
-            randomList.Add(copyList[randomVal]);
-            //remove the random element from the copy list
-            copyList.RemoveAt(randomVal);
+            randomList.Add(list[i]);
         }
 
         return randomList;
+    }
+
+    List<int> GenerateIntegerList(int min, int max)
+    {
+        List<int> list = new List<int>();
+        for (int i = min; i <= max; i++)
+        {
+            list.Add(i);
+        }
+        return list;
+    }
+
+    List<int> ShuffleList(List<int> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            int temp = list[i];
+            int randomIndex = UnityEngine.Random.Range(i, list.Count);
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
+        }
+        return list;
     }
 }
