@@ -1,25 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 /// <summary>
 /// Controller for the experiment cursor
 /// </summary>
 public class CursorController : MonoBehaviour
 {
     private static CursorController instance = null;
-
-    private Dictionary<string,GameObject> vrHands = new Dictionary<string, GameObject>();
-    private RawInput rawInput;
     public GameObject home;
     public GameObject target;
-    //For non-VR to the cursor at a certain height
-    public float clampedY = 0.0f;
     GameObject cursor;
     MovementType moveType;
-
-    private string domHand = "RightHand";
-
+    
     /// <summary>
     /// The behaviour of the cursor
     /// </summary>
@@ -30,44 +22,14 @@ public class CursorController : MonoBehaviour
         clamped
     }
 
-    private struct RawInput
-    {  
-        public Vector3 rawPos;
-        public Quaternion rawRotation;
-        public InputDevice inputType;
-    }
-
     // Start is called before the first frame update
     void Start()
     {
         if (!instance)
             instance = this;
 
-        foreach(InputDevice d in InputSystem.devices)
-        {
-            Debug.Log(d.name);
-        }
-
         moveType = MovementType.aligned;
         //FindHandAnchors();
-    }
-
-    public void FindHandAnchors()
-    {
-        vrHands["LeftHand"] = GameObject.Find("LeftHand Controller");
-        vrHands["RightHand"] = GameObject.Find("RightHand Controller");
-
-        if (!vrHands["LeftHand"])
-        {
-            Debug.LogWarning("No GameObject for left hand found");
-        }
-        if (!vrHands["RightHand"])
-        {
-            Debug.LogWarning("No GameObject for right hand found");
-        }
-
-        //Debug.Log(vrHands["LeftHand"]);
-        //Debug.Log(vrHands["RightHand"]);
     }
 
     // Update is called once per frame
@@ -76,13 +38,9 @@ public class CursorController : MonoBehaviour
         //if not use vr and both a camera and a cursor object has been set
         if (ExperimentController.Instance.UseVR == false && Camera.main && cursor)
         {
-            //Set the position of the mouse
-            rawInput.rawPos = Input.mousePosition;
-
             //update the cursor posiiton 
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            pos.y = clampedY;
             if (cursor)
             {
                 cursor.transform.position = pos;
@@ -90,12 +48,9 @@ public class CursorController : MonoBehaviour
         }
         else if(ExperimentController.Instance.UseVR == true)
         {
-            rawInput.rawPos = vrHands[domHand].transform.position;
-            rawInput.rawRotation = vrHands[domHand].transform.rotation;
-
             if (cursor)
             {
-                cursor.transform.position = vrHands[domHand].transform.position;
+                cursor.transform.position = InputHandler.Instance.GetDominantHand().transform.position;
             }
         }
 
@@ -179,45 +134,5 @@ public class CursorController : MonoBehaviour
             default:
                 throw new System.ArgumentOutOfRangeException("No moveType defined for CursorController");
         }
-    }
-
-    public void ChangeDominantHand(string newDomHand)
-    {
-        domHand = newDomHand;
-    }
-
-    public Vector3 GetHandPosition(string handName)
-    {
-        if (vrHands[handName])
-        {
-            return vrHands[handName].transform.position;
-        }
-
-        return Vector3.zero;
-    }
-
-    public string GetDominantHand()
-    {
-        return domHand;
-    }
-
-    public Vector3 GetHandPosition()
-    {
-        if (vrHands[domHand])
-        {
-            return vrHands[domHand].transform.position;
-        }
-
-        return Vector3.zero;
-    }
-
-    public Vector3 GetRawPos()
-    {
-        return new Vector3(rawInput.rawPos.x, rawInput.rawPos.y, rawInput.rawPos.z);
-    }
-
-    public Quaternion GetRawRotation()
-    {
-        return new Quaternion(rawInput.rawRotation.x, rawInput.rawRotation.y, rawInput.rawRotation.z, rawInput.rawRotation.w);
     }
 }

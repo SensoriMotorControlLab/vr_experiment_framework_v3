@@ -55,9 +55,6 @@ public class Slingshot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //set the clamped height
-        CursorController.Instance.clampedY = transform.position.y;
-
         //the distance of the sling from the home position
         float distanceFromHome = Vector3.Distance(sling.transform.position, homePos);
 

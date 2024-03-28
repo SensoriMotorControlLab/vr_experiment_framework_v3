@@ -114,7 +114,7 @@ public class ReachTask : BaseTask
         target.transform.position = reachPrefab.transform.position;
         target.SetActive(false);
 
-        reachPrefab.transform.position = new Vector3(reachPrefab.transform.position.x,CursorController.Instance.GetHandPosition().y, reachPrefab.transform.position.z);
+        //reachPrefab.transform.position = new Vector3(reachPrefab.transform.position.x,InputHandler.Instance.GetHandPosition().y, reachPrefab.transform.position.z);
     }
 
     public override void TaskBegin()

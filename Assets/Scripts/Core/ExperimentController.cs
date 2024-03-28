@@ -154,7 +154,7 @@ public class ExperimentController : MonoBehaviour
             //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
             Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
             //Debug.Log(Camera.main);
-            CursorController.Instance.FindHandAnchors();
+            InputHandler.Instance.FindHandAnchors();
         }
 
         //define the scene prefabs
