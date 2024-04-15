@@ -146,7 +146,7 @@ public class ExperimentController : MonoBehaviour
         tasks.Capacity = TotalNumOfTrials;
         expGenerator.GenerateTasks();
 
-        // if using VR create the VR controller
+        // if using VR
         if (useVR == true)
         {
             Debug.Log("The experiment is being run in VR");
@@ -155,6 +155,12 @@ public class ExperimentController : MonoBehaviour
             Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
             //Debug.Log(Camera.main);
             InputHandler.Instance.FindHandAnchors();
+        }
+        // if not using VR
+        else
+        {
+            //disable the VR controller
+            vrCtlr.SetActive(false);
         }
 
         //define the scene prefabs
@@ -205,6 +211,8 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void TrialBegin()
     {
+        InputHandler.Instance.FindAllInputDevices();
+
         //if the task hasn't been setup yet
         if (!taskReady)
         {

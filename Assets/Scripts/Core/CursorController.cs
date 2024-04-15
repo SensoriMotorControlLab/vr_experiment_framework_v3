@@ -38,19 +38,30 @@ public class CursorController : MonoBehaviour
         //if not use vr and both a camera and a cursor object has been set
         if (ExperimentController.Instance.UseVR == false && Camera.main && cursor)
         {
+            
             //update the cursor posiiton 
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            if (cursor)
+            if (cursor) 
             {
-                cursor.transform.position = pos;
+                //cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetPosition());
+                cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetRayPosition());
+
+                /*
+                GameObject planeObject = GameObject.Find("Plane");
+                if (planeObject)
+                {
+                    Plane plane = new Plane(Vector3.up, -0.484f);
+                    cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
+                }
+                */
             }
         }
         else if(ExperimentController.Instance.UseVR == true)
         {
             if (cursor)
             {
-                cursor.transform.position = InputHandler.Instance.GetDominantHand().transform.position;
+                cursor.transform.position = InputHandler.Instance.GetPosition();
             }
         }
 

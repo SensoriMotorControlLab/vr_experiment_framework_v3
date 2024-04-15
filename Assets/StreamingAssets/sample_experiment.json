@@ -1,6 +1,6 @@
 {
   "experiment_name": "reach_to_target",
-  "use_vr": true,
+  "use_vr": false,
   "optional_params": {"linkPseudoRandom" : ["per_block_list_target_angle", "per_block_list_test"]},
   "trials_in_block": [
     4,
