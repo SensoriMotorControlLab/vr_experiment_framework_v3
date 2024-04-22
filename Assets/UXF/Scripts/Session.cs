@@ -14,6 +14,7 @@ namespace UXF
     /// The Session represents a single "run" of an experiment, and contains all information about that run. 
     /// </summary>
     [ExecuteInEditMode]
+    [Serializable]
     public class Session : MonoBehaviour, IExperimentUnit, IDataAssociatable
     {
         /// <summary>
@@ -140,7 +141,16 @@ namespace UXF
         /// Name of the experiment. Data is saved in a folder with this name.
         /// </summary>
         public string experimentName;
+        
+        /// <summary>
+        /// Whether to resume the last session from the last trial number saved if it was not ended properly.
+        /// </summary>
+        public bool isTrialContinue;
 
+        /// <summary>
+        /// Whether to resume the last session from the last saved block number if it was not ended properly.
+        /// </summary>
+        public bool isBlockContinue;
         /// <summary>
         /// Unique string for this participant (participant ID)
         /// </summary>
@@ -164,7 +174,7 @@ namespace UXF
         /// <summary>
         /// Settings for the experiment. These are provided on initialisation of the session.
         /// </summary>
-        public Settings settings { get; private set; }
+        public Settings settings { get; set; }
 
         /// <summary>
         /// Returns true if current trial is in progress
@@ -199,7 +209,7 @@ namespace UXF
         /// <summary>
         /// Returns the current block object.
         /// </summary>
-        public Block CurrentBlock { get { return GetBlock(); } }
+        public Block CurrentBlock { get { return GetBlock(); }}
 
         /// <summary>
         /// Returns a list of trials for all blocks.  Modifying the order of this list will not affect trial order. Modify block.trials to change order within blocks.
@@ -459,6 +469,7 @@ namespace UXF
         /// <returns></returns>
         Trial GetFirstTrial()
         {   
+            Debug.Log("GetFirstTrial");
             Block firstBlock;
             try
             {

@@ -76,7 +76,7 @@ public class ReachTask : BaseTask
     public override void SetUp()
     {
         currentStep = 0;
-        currentTrial = 0;
+        currentTrial = expController.Session.currentTrialNum - 1;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         maxSteps = 3;
         finished = false;

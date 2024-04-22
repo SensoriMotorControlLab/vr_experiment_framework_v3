@@ -1,0 +1,19 @@
+{
+    "use_vr": false,
+    "test": [
+        110,
+        130,
+        70,
+        50
+    ],
+    "target_angle": [
+        110,
+        130,
+        70,
+        50
+    ],
+    "task": "sling_shot",
+    "rotation": 30,
+    "instruction": null
+}ll
+}

@@ -56,7 +56,7 @@ public class SlingshotTask : BaseTask
     public override void SetUp()
     {
         currentStep = 0;
-        currentTrial = 0;
+        currentTrial = expController.Session.currentTrialNum - 1;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         maxSteps = 3;
         finished = false;
@@ -85,6 +85,9 @@ public class SlingshotTask : BaseTask
         {
             slingshotCamera.gameObject.SetActive(false);
         }
+
+        // Debug.Log("current trial: " + currentTrial);
+        // Debug.Log("current block: " + expController.Session.CurrentBlock.number);
     }
 
     public override void TaskBegin()
@@ -98,7 +101,7 @@ public class SlingshotTask : BaseTask
         {
             targetAngles = expController.Session.CurrentBlock.settings.GetFloatList("target_angle");
         }
-
+        Debug.Log("target angle: " + targetAngles[currentTrial]);
         target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
         target.transform.Translate(new Vector3(0.0f, 0.0f, 5.0f));
     }
