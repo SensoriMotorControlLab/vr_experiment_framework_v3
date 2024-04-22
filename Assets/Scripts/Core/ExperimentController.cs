@@ -206,6 +206,8 @@ public class ExperimentController : MonoBehaviour
             isRunning = false;
             session.End();
         }
+        PlayerPrefs.SetInt("currentTrial", session.currentTrialNum);
+        PlayerPrefs.SetInt("currentBlock", session.CurrentBlock.number);
     }
     /// <summary>
     /// UXF TrialBegin method

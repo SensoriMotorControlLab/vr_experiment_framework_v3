@@ -19,12 +19,20 @@ namespace UXF
         /// <summary>
         /// Returns non-zero indexed trial number. This is generated based on its position in the block, and the ordering of the blocks within the session.
         /// </summary>
-        public int number { get { return session.Trials.ToList().IndexOf(this) + 1; } }
+        public int number 
+        { 
+            get { return session.Trials.ToList().IndexOf(this) + 1; } 
+            set { }
+        }
 
         /// <summary>
         /// Returns non-zero indexed trial number for the current block.
         /// </summary>
-        public int numberInBlock { get { return block.trials.IndexOf(this) + 1; } }
+        public int numberInBlock 
+        { 
+            get { return block.trials.IndexOf(this) + 1; } 
+            set { }    
+        }
 
         /// <summary>
         /// Status of the trial (enum)
@@ -92,8 +100,9 @@ namespace UXF
                 throw new InvalidOperationException("Cannot begin trial, session is is not ready! Session has not been started yet with session.Begin() (or via the UI), or session has already ended.");
             }
             if (session.InTrial) session.CurrentTrial.End();
-
+            Debug.Log("Beginning trial " + number);
             session.currentTrialNum = number;
+            Debug.Log("Beginning block " + block.number);
             session.currentBlockNum = block.number;
 
             status = TrialStatus.InProgress;

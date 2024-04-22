@@ -23,6 +23,12 @@ public class ExperimentGenerator : MonoBehaviour
     {
         var keys = session.settings.Keys;
 
+        if(keys.First() == "session_1")
+        {
+            keys = session.settings.GetDict("session_" + session.number).Keys;
+            session.settings = new Settings(session.settings.GetDict("session_" + session.number));
+        }
+
         //set if using VR
         ExperimentController.Instance.UseVR = session.settings.GetBool("use_vr");
         //list of the number of trials per block
@@ -157,6 +163,30 @@ public class ExperimentGenerator : MonoBehaviour
                     //session.settings.SetValue(key, session.settings.GetObject(key));
                 }
             }
+        }
+
+        if(session.isTrialContinue || session.isBlockContinue)
+        {
+            for(int i = 0; i < session.blocks.Count; i++)
+            {
+                session.blocks[i].settings.baseDict = Serializer.Load<Dictionary<string, object>>("block_" + i);
+            }
+            session.currentTrialNum = PlayerPrefs.GetInt("currentTrial");
+            session.NextTrial.block = session.blocks[PlayerPrefs.GetInt("currentBlock")];
+        }
+
+        else if(session.isBlockContinue)
+        {
+            for(int i = 0; i < session.blocks.Count; i++)
+            {
+                session.blocks[i].settings.baseDict = Serializer.Load<Dictionary<string, object>>("block_" + i);
+            }
+            session.NextTrial.block = session.blocks[2];
+        }
+
+        for(int i = 0; i < session.blocks.Count; i++)
+        {
+            Serializer.Save("block_" + i, session.blocks[i].settings.baseDict);
         }
     }
     ///<summary>

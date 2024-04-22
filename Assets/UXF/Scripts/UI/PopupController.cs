@@ -12,12 +12,16 @@ namespace UXF.UI
 		public Text popupMessage;
 
 		Action nextAction;
+		Action nextTrialContinue;
+		Action nextBlockContinue;
 
 		public void DisplayPopup(Popup popup)
 		{
 			popupTitle.text = popup.messageType.ToString();
 			popupMessage.text = popup.message;
 			nextAction = popup.onOK;
+			nextTrialContinue = popup.onTrialContinue;
+			nextBlockContinue = popup.onBlockContinue;
 			gameObject.SetActive(true);
 			transform.SetAsLastSibling();
 		}
@@ -31,6 +35,20 @@ namespace UXF.UI
 		public void CancelPress()
 		{
 			gameObject.SetActive(false);
+		}
+
+		public void TrialContinue()
+		{
+			nextAction = nextTrialContinue;
+			gameObject.SetActive(false);
+			nextAction.Invoke();
+		}
+
+		public void BlockContinue()
+		{
+			nextAction = nextBlockContinue;
+			gameObject.SetActive(false);
+			nextAction.Invoke();
 		}
 
 		[ContextMenu("Test popup")]
@@ -50,6 +68,8 @@ namespace UXF.UI
 		public MessageType messageType;
 		public string message;
 		public Action onOK;
+		public Action onTrialContinue;
+		public Action onBlockContinue;
 	}
 
 	public enum MessageType
