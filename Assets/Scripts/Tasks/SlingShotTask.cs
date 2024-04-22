@@ -55,7 +55,7 @@ public class SlingshotTask : BaseTask
     public override void SetUp()
     {
         currentStep = 0;
-        currentTrial = expController.Session.currentTrialNum - 1;
+        currentTrial = 0;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         maxSteps = 3;
         finished = false;
@@ -75,9 +75,13 @@ public class SlingshotTask : BaseTask
         CursorController.Instance.cursorOffset = new Vector3(0.0f, -slingshot.transform.position.y, 0.0f);
 
         if (target)
+        {
             targetScript = target.GetComponent<Target>();
+        }
         else
+        {
             Debug.LogWarning("NO TARGET FOUND");
+        }
 
         if (ExperimentController.Instance.UseVR == false)
         {
@@ -111,6 +115,7 @@ public class SlingshotTask : BaseTask
 
     public override void TaskEnd()
     {
+        slingshotPrefab.SetActive(false);
         Destroy(slingshotPrefab);
     }
 

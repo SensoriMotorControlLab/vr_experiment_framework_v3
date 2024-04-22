@@ -502,7 +502,7 @@ GameObject:
   - component: {fileID: 4020957727528856745}
   - component: {fileID: 7196725233240384847}
   m_Layer: 0
-  m_Name: ReachSurface
+  m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

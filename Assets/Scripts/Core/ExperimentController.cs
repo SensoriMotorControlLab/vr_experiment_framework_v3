@@ -55,9 +55,16 @@ public class ExperimentController : MonoBehaviour
     void Start()
     {
         if (!instance)
+        {
             instance = this;
 
-        expGenerator = new ExperimentGenerator();
+            expGenerator = new ExperimentGenerator();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
     }
 
     // Update is called once per frame
@@ -77,6 +84,11 @@ public class ExperimentController : MonoBehaviour
             if (Input.GetKey(KeyCode.J))
             {
                 CenterOVRPlayerController();
+            }
+
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                Session.EndCurrentTrial();
             }
         }
     }

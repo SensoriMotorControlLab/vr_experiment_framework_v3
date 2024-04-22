@@ -8,7 +8,7 @@ using UXF;
 public class ReachTask : BaseTask
 {
     List<float> targetAngles = new List<float>();
-    GameObject reachPrefab, reachSurface;
+    GameObject reachPrefab;
     Camera reachCamera;
     GameObject cursor;
 
@@ -55,7 +55,6 @@ public class ReachTask : BaseTask
                 {
                     target.SetActive(false);
                     IncrementStep();
-                    //expController.Session.EndCurrentTrial();
                 }
                 break;
         }
@@ -75,7 +74,7 @@ public class ReachTask : BaseTask
     public override void SetUp()
     {
         currentStep = 0;
-        currentTrial = expController.Session.currentTrialNum - 1;
+        currentTrial = 0;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         maxSteps = 3;
         finished = false;
@@ -94,11 +93,13 @@ public class ReachTask : BaseTask
         {
             reachCamera.gameObject.SetActive(false);
         }
-        reachSurface = GameObject.Find("ReachSurface");
+
         cursor = GameObject.Find("Cursor");
         CursorController.Instance.Cursor = cursor;
         home = GameObject.Find("Home");
         dock = GameObject.Find("Dock");
+        plane = GameObject.Find("Plane");
+        CursorController.Instance.cursorOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
         target = GameObject.Find("Target");
 
         //set up dock position and hide it
@@ -135,6 +136,7 @@ public class ReachTask : BaseTask
 
     public override void TaskEnd()
     {
+        reachPrefab.SetActive(false);
         Destroy(reachPrefab);
     }
 

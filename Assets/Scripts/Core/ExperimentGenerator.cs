@@ -221,15 +221,17 @@ public class ExperimentGenerator : MonoBehaviour
                     break;
 
                 default:
-                    Debug.LogError("THE TASK HAS NO BEEN DEFINED IN: ExperimentGenerator.GenerateTasks()");
+                    Debug.LogError(theBlock.settings.GetString("task") + " task has not been defined in: ExperimentGenerator.GenerateTasks()");
                     break;
             }
         }
 
         //add a end screen to the end
+        /*
         EndSessionTask endTask = ExperimentController.Instance.gameObject.AddComponent<EndSessionTask>();
         endTask.enabled = false;
         ExperimentController.Instance.Tasks.Add(endTask);
+        */
     }
     /// <summary>
     /// Pseudo randomize a list

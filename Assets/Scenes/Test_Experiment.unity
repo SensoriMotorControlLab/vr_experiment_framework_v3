@@ -350,8 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0195d69fdb2131743997f411acf658c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  home: {fileID: 0}
-  target: {fileID: 0}
+  cursorOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &396769931
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,7 +485,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 396769931}
   m_CullTransparentMesh: 0
-  cursorOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &473592654
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1355,7 +1353,7 @@ MonoBehaviour:
   - {fileID: 2517357246821121372, guid: fb3d1d9783bb98644baf7af411ce681f, type: 3}
   - {fileID: 3246888207011332581, guid: 332bc3430d45a2545b09ab1cb5938e3f, type: 3}
   vrCtlr: {fileID: 695780446}
-  vrPrefab: {fileID: 5843497292548984443, guid: c116b7497ab8ca34c9188965d4295e27,
+  vrPrefab: {fileID: 6578057208008651646, guid: 5899de6eee158cd4cbc3e43193b50e3f,
     type: 3}
 --- !u!4 &1486654464
 Transform:
