@@ -2,6 +2,7 @@
     "use_vr": false,
     "test": [
         125,
+<<<<<<< HEAD
         90,
         45,
         100
@@ -11,6 +12,17 @@
         90,
         45,
         100
+=======
+        100,
+        90,
+        45
+    ],
+    "target_angle": [
+        125,
+        100,
+        90,
+        45
+>>>>>>> ResumeTrial_final
     ],
     "task": "sling_shot",
     "rotation": 30,

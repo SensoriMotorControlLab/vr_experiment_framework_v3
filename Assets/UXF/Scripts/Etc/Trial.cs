@@ -100,9 +100,7 @@ namespace UXF
                 throw new InvalidOperationException("Cannot begin trial, session is is not ready! Session has not been started yet with session.Begin() (or via the UI), or session has already ended.");
             }
             if (session.InTrial) session.CurrentTrial.End();
-            Debug.Log("Beginning trial " + number);
             session.currentTrialNum = number;
-            Debug.Log("Beginning block " + block.number);
             session.currentBlockNum = block.number;
 
             status = TrialStatus.InProgress;

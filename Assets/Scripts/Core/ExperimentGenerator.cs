@@ -165,7 +165,7 @@ public class ExperimentGenerator : MonoBehaviour
             }
         }
 
-        if(session.isTrialContinue || session.isBlockContinue)
+        if(session.isTrialContinue)
         {
             for(int i = 0; i < session.blocks.Count; i++)
             {
@@ -173,6 +173,7 @@ public class ExperimentGenerator : MonoBehaviour
             }
             session.currentTrialNum = PlayerPrefs.GetInt("currentTrial");
             session.NextTrial.block = session.blocks[PlayerPrefs.GetInt("currentBlock")];
+            session.NextTrial.numberInBlock = PlayerPrefs.GetInt("trialInBlock");
         }
 
         else if(session.isBlockContinue)
@@ -181,7 +182,8 @@ public class ExperimentGenerator : MonoBehaviour
             {
                 session.blocks[i].settings.baseDict = Serializer.Load<Dictionary<string, object>>("block_" + i);
             }
-            session.NextTrial.block = session.blocks[2];
+            session.currentTrialNum = 0;
+            session.NextTrial.block = session.blocks[PlayerPrefs.GetInt("currentBlock")];
         }
 
         for(int i = 0; i < session.blocks.Count; i++)

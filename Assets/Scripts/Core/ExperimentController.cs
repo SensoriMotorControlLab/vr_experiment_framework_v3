@@ -218,8 +218,9 @@ public class ExperimentController : MonoBehaviour
             isRunning = false;
             session.End();
         }
-        PlayerPrefs.SetInt("currentTrial", session.currentTrialNum);
-        PlayerPrefs.SetInt("currentBlock", session.CurrentBlock.number);
+        PlayerPrefs.SetInt("currentTrial", session.currentTrialNum - 1);
+        PlayerPrefs.SetInt("currentBlock", session.CurrentBlock.number - 1);
+        PlayerPrefs.SetInt("trialInBlock", session.CurrentTrial.numberInBlock - 1);
     }
     /// <summary>
     /// UXF TrialBegin method
@@ -243,7 +244,6 @@ public class ExperimentController : MonoBehaviour
     public void TrialEnd()
     {
         //TODO Log Parameters
-
         //if this is the last trial of the block
         if (session.CurrentTrial == session.CurrentBlock.lastTrial)
         {
@@ -259,8 +259,10 @@ public class ExperimentController : MonoBehaviour
                 taskReady = false;
             }
         }
-
-        BeginNextTrial();
+        if(session.isApplicationQuitting == false)
+        {
+            BeginNextTrial();
+        }
     }
     /// <summary>
     /// UXF OnSessionEnd method
@@ -270,8 +272,7 @@ public class ExperimentController : MonoBehaviour
         //Application.Quit();
         //Display end screen
         currentTask.enabled = true;
-        currentTask.SetUp();
-        currentTask.TaskBegin();
+        // TODO: end screen
     }
 
 }

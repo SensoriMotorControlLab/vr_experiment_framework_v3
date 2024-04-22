@@ -17,6 +17,7 @@ namespace UXF
     [Serializable]
     public class Session : MonoBehaviour, IExperimentUnit, IDataAssociatable
     {
+        public bool isApplicationQuitting { get; private set; } = false;
         /// <summary>
         /// Enable to automatically safely end the session when the application is quitting.
         /// </summary>
@@ -469,7 +470,6 @@ namespace UXF
         /// <returns></returns>
         Trial GetFirstTrial()
         {   
-            Debug.Log("GetFirstTrial");
             Block firstBlock;
             try
             {
@@ -726,6 +726,7 @@ namespace UXF
         {
             if (endOnQuit)
             {
+                isApplicationQuitting = true;
                 End();
             }
         }
