@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Transactions;
 using UnityEngine;
+using UXF;
 
 public class SlingshotTask : BaseTask
 {
@@ -55,12 +57,12 @@ public class SlingshotTask : BaseTask
     public override void SetUp()
     {
         currentStep = 0;
-        currentTrial = expController.Session.currentTrialNum - 1;
+        currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         maxSteps = 3;
         finished = false;
 
-        slingshotPrefab = Instantiate(ExperimentController.Instance.Prefabs["SlingshotPrefab"]);
+        slingshotPrefab = Instantiate(ExperimentController.Instance.Prefabs["SlingShotPrefab"]);
         slingshotPrefab.transform.position = Vector3.zero;
 
         slingshotCamera = GameObject.Find("SlingshotCamera").GetComponent<Camera>();
@@ -87,13 +89,12 @@ public class SlingshotTask : BaseTask
         {
             slingshotCamera.gameObject.SetActive(false);
         }
-
-        // Debug.Log("current trial: " + currentTrial);
-        // Debug.Log("current block: " + expController.Session.CurrentBlock.number);
     }
 
     public override void TaskBegin()
     {
+        Debug.Log("Current trial in block: " + expController.Session.CurrentTrial.numberInBlock);
+        Debug.Log("current block number: " + expController.Session.CurrentBlock.number);
         currentStep = 0;
         finished = false;
         targetScript.ResetTarget();

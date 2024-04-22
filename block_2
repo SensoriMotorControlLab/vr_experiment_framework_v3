@@ -1,15 +1,15 @@
 {
     "use_vr": false,
     "test": [
+        70,
         110,
         130,
-        70,
         50
     ],
     "target_angle": [
+        70,
         110,
         130,
-        70,
         50
     ],
     "task": "sling_shot",
