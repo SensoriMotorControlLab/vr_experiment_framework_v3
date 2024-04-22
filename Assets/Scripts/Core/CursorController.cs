@@ -7,8 +7,7 @@ using UnityEngine;
 public class CursorController : MonoBehaviour
 {
     private static CursorController instance = null;
-    public GameObject home;
-    public GameObject target;
+    public Vector3 cursorOffset = Vector3.zero;
     GameObject cursor;
     MovementType moveType;
     
@@ -26,7 +25,13 @@ public class CursorController : MonoBehaviour
     void Start()
     {
         if (!instance)
+        {
             instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
 
         moveType = MovementType.aligned;
         //FindHandAnchors();
@@ -38,23 +43,12 @@ public class CursorController : MonoBehaviour
         //if not use vr and both a camera and a cursor object has been set
         if (ExperimentController.Instance.UseVR == false && Camera.main && cursor)
         {
-            
-            //update the cursor posiiton 
-            //Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
             if (cursor) 
             {
                 //cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetPosition());
                 cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetRayPosition());
-
-                /*
-                GameObject planeObject = GameObject.Find("Plane");
-                if (planeObject)
-                {
-                    Plane plane = new Plane(Vector3.up, -0.484f);
-                    cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
-                }
-                */
+                Plane plane = new Plane(ExperimentController.Instance.CurrentTask.Plane.transform.up, cursorOffset.y);
+                cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
             }
         }
         else if(ExperimentController.Instance.UseVR == true)
@@ -113,16 +107,15 @@ public class CursorController : MonoBehaviour
 
     public Vector3 ConvertCursorPosition()
     {
-        ExperimentController expCtrl = ExperimentController.Instance;
-        Vector3 targetPos = target != null ? target.transform.position : Vector3.zero;
-        Vector3 homePos = home != null ? home.transform.position : Vector3.zero;
+        Vector3 targetPos = ExperimentController.Instance.CurrentTask.Target != null ? ExperimentController.Instance.CurrentTask.Target.transform.position : Vector3.zero;
+        Vector3 homePos = ExperimentController.Instance.CurrentTask.Home != null ? ExperimentController.Instance.CurrentTask.Home.transform.position : Vector3.zero;
 
         switch (moveType)
         {
             case MovementType.aligned:
                 return cursor.transform.position;
             case MovementType.rotated:
-                float rotation = expCtrl.Session.CurrentBlock.settings.GetFloat("rotation");
+                float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
                 cursor.transform.position = Quaternion.Euler(0, -rotation, 0) * (cursor.transform.position - homePos) + homePos;
                 return cursor.transform.position;
             case MovementType.clamped:

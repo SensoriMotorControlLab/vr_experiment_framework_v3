@@ -39,6 +39,7 @@ public class ExperimentController : MonoBehaviour
     /// The active task
     /// </summary>
     BaseTask currentTask;
+    public BaseTask CurrentTask { get { return currentTask; } }
     //The total number of trials for the experiment
     int totalNumOfTrials = 0;
     //The totla number of blocks

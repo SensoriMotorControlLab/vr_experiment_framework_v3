@@ -318,6 +318,24 @@ public class InputHandler : MonoBehaviour
     }
 
     /// <summary>
+    /// Is the ray casting onto the plane
+    /// </summary>
+    /// <param name="plane">Plane to check collision for</param>
+    /// <returns>True if collision, false if not</returns>
+    public bool IsRaycastColliding(Plane plane)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(GetRayPosition());
+        float enter;
+
+        if (plane.Raycast(ray, out enter))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Get the hit position of a ray onto a plane
     /// </summary>
     /// <param name="plane">Plane to cast the ray onto</param>

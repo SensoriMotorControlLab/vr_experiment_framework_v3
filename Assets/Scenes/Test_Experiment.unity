@@ -258,8 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0195d69fdb2131743997f411acf658c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  home: {fileID: 0}
-  target: {fileID: 0}
+  cursorOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &473592654
 PrefabInstance:
   m_ObjectHideFlags: 0

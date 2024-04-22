@@ -33,6 +33,12 @@ public abstract class BaseTask : MonoBehaviour
     protected GameObject dock;
     public GameObject Dock { get { return dock; } set { dock = value; } }
 
+    protected GameObject plane;
+    public GameObject Plane { get { return plane; } set { plane = value; } }
+
+    protected GameObject target;
+    public GameObject Target { get { return target; } set { target = value; } }
+
     //the current trial num
     protected int currentTrial;
     //the total trials

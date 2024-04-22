@@ -10,7 +10,6 @@ public class ReachTask : BaseTask
     List<float> targetAngles = new List<float>();
     GameObject reachPrefab, reachSurface;
     Camera reachCamera;
-    GameObject target;
     GameObject cursor;
 
     const float DOCK_DIST = 0.025f;

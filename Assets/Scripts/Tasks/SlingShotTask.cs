@@ -9,7 +9,6 @@ public class SlingshotTask : BaseTask
     GameObject cursor;
     GameObject slingshotGameObject;
     Slingshot slingshot;
-    GameObject target;
     Target targetScript;
     Camera slingshotCamera;
 
@@ -67,10 +66,13 @@ public class SlingshotTask : BaseTask
         slingshotCamera = GameObject.Find("SlingshotCamera").GetComponent<Camera>();
         dock = GameObject.Find("Dock");
         cursor = GameObject.Find("Cursor");
+        plane = GameObject.Find("Plane");
         CursorController.Instance.Cursor = cursor;
         slingshotGameObject = GameObject.Find("Slingshot");
         slingshot = slingshotGameObject.GetComponent<Slingshot>();
         target = GameObject.Find("Bullseye");
+
+        CursorController.Instance.cursorOffset = new Vector3(0.0f, -slingshot.transform.position.y, 0.0f);
 
         if (target)
             targetScript = target.GetComponent<Target>();
