@@ -8,11 +8,11 @@ public class InputHandler : MonoBehaviour
 {
     private static InputHandler instance;
     private Dictionary<string, GameObject> vrHands = new Dictionary<string, GameObject>();
-    //private Dictionary<string, RawInput> inputDevices = new Dictionary<string, RawInput>();
+    //private Dictionary<string, InputDeviceProperties> inputDevices = new Dictionary<string, InputDeviceProperties>();
     /// <summary>
     /// SortedDictionary of all inputDevices, sorted by lowest priority to highest
     /// </summary>
-    private SortedDictionary<int,RawInput> inputDevices = new SortedDictionary<int, RawInput>();
+    private SortedDictionary<int, InputDeviceProperties> inputDevices = new SortedDictionary<int, InputDeviceProperties>();
 
     /// <summary>
     /// Highest priority for the InputHandler (usually VR touch controllers)
@@ -46,7 +46,7 @@ public class InputHandler : MonoBehaviour
         RAY
     }
 
-    public struct RawInput
+    public struct InputDeviceProperties
     {
         public Vector3 position;
         public Quaternion rotation;
@@ -56,7 +56,7 @@ public class InputHandler : MonoBehaviour
         InputPositionUpdate inputPosUp;
         InputRotationUpdate inputRotUp;
 
-        public RawInput(Vector3 position, Quaternion rotation, InputType inputType, InputDevice inputDevice, InputPositionUpdate inputPosUp, InputRotationUpdate inputRotUp)
+        public InputDeviceProperties(Vector3 position, Quaternion rotation, InputType inputType, InputDevice inputDevice, InputPositionUpdate inputPosUp, InputRotationUpdate inputRotUp)
         {
             this.position = position;
             this.rotation = rotation;
@@ -117,14 +117,14 @@ public class InputHandler : MonoBehaviour
     {
         foreach (var e in inputDevices.ToList())
         {
-            RawInput r = inputDevices[e.Key];
+            InputDeviceProperties r = inputDevices[e.Key];
             r.Update();
             inputDevices[e.Key] = r;
             //Debug.Log(inputDevices[k].position);
         }
     }
 
-    public SortedDictionary<int, RawInput> GetInputDevices()
+    public SortedDictionary<int, InputDeviceProperties> GetInputDevices()
     {
         return inputDevices;
     }
@@ -165,18 +165,18 @@ public class InputHandler : MonoBehaviour
 
             switch (deviceName)
             {
-                case (HEADSET_DEVICE_NAME): 
-                    inputDevices[HIGHEST_PRIORITY - 1] = new RawInput(Vector3.zero, Quaternion.identity, InputType.RAY, d, null, null);
+                case (HEADSET_DEVICE_NAME):
+                    inputDevices[HIGHEST_PRIORITY - 1] = new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, d, null, null);
                     break;
                 case (TOUCH_CONTROLLER_NAME):
-                    inputDevices[HIGHEST_PRIORITY] = new RawInput(Vector3.zero, Quaternion.identity, InputType.SPATIAL, d, GetHandPosition, GetHandRotation);
+                    inputDevices[HIGHEST_PRIORITY] = new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.SPATIAL, d, GetHandPosition, GetHandRotation);
                     break;
                 case (MOUSE_NAME):
-                    inputDevices[counter] = new RawInput(Vector3.zero, Quaternion.identity, InputType.RAY, d, delegate { return Input.mousePosition; }, null);
+                    inputDevices[counter] = new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, d, delegate { return Input.mousePosition; }, null);
                     counter++;
                     break;
                 default:
-                    inputDevices[counter] = new RawInput(Vector3.zero, Quaternion.identity, InputType.NONE, d, null, null);
+                    inputDevices[counter] = new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.NONE, d, null, null);
                     counter++;
                     break;
             }
@@ -297,7 +297,7 @@ public class InputHandler : MonoBehaviour
         return inputDevices[highestPriority].rotation;
     }
 
-    
+
     /// <summary>
     /// Get the highest priority device of RAY inputType and returns said devices position
     /// </summary>
@@ -306,9 +306,9 @@ public class InputHandler : MonoBehaviour
     {
         var sortedDict = from entry in inputDevices orderby entry.Key descending select entry;
 
-        foreach(KeyValuePair<int,RawInput> e in sortedDict)
+        foreach (KeyValuePair<int, InputDeviceProperties> e in sortedDict)
         {
-            if(e.Value.inputType == InputType.RAY)
+            if (e.Value.inputType == InputType.RAY)
             {
                 return e.Value.position;
             }
@@ -345,7 +345,7 @@ public class InputHandler : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(GetRayPosition());
         float enter;
 
-        if(plane.Raycast(ray, out enter))
+        if (plane.Raycast(ray, out enter))
         {
             Vector3 hitPoint = ray.GetPoint(enter);
 
@@ -354,7 +354,7 @@ public class InputHandler : MonoBehaviour
 
         return ray.origin;
     }
-    
+
     /// <summary>
     /// Get the highest priority device of SPATIAL inputType and returns said devices position
     /// </summary>
@@ -363,7 +363,7 @@ public class InputHandler : MonoBehaviour
     {
         var sortedDict = from entry in inputDevices orderby entry.Key descending select entry;
 
-        foreach (KeyValuePair<int, RawInput> e in sortedDict)
+        foreach (KeyValuePair<int, InputDeviceProperties> e in sortedDict)
         {
             if (e.Value.inputType == InputType.SPATIAL)
             {
@@ -382,7 +382,7 @@ public class InputHandler : MonoBehaviour
     {
         var sortedDict = from entry in inputDevices orderby entry.Key descending select entry;
 
-        foreach (KeyValuePair<int, RawInput> e in sortedDict)
+        foreach (KeyValuePair<int, InputDeviceProperties> e in sortedDict)
         {
             if (e.Value.inputType == InputType.SPATIAL)
             {
@@ -397,8 +397,51 @@ public class InputHandler : MonoBehaviour
     /// Get the dictionary of devices
     /// </summary>
     /// <returns>Dictionary of devices</returns>
-    public SortedDictionary<int, RawInput> GetDevices()
+    public SortedDictionary<int, InputDeviceProperties> GetDevices()
     {
         return inputDevices;
+    }
+
+    public void SetDevicePriority(string deviceName, int newPriority)
+    {
+        foreach (var e in inputDevices.ToList())
+        {
+            InputDeviceProperties r = inputDevices[e.Key];
+            int oldKey = e.Key;
+
+            if (r.inputDevice.name == deviceName)
+            {
+                inputDevices[newPriority] = r;
+                inputDevices.Remove(oldKey);
+                break;
+            }
+        }
+    }
+
+    public void SetDevicePriority(InputDevice inputDevice, int newPriority)
+    {
+        foreach (var e in inputDevices.ToList())
+        {
+            InputDeviceProperties r = inputDevices[e.Key];
+            int oldKey = e.Key;
+
+            if (r.inputDevice == inputDevice)
+            {
+                inputDevices[newPriority] = r;
+                inputDevices.Remove(oldKey);
+                break;
+            }
+        }
+    }
+
+    public void AddInputDevice(int priority, Vector3 pos, Quaternion rot, InputType inputType, InputDevice inputDevice, InputPositionUpdate posUpdate, InputRotationUpdate rotUpdate)
+    {
+        //Vector3 position, Quaternion rotation, InputType inputType, InputDevice inputDevice, InputPositionUpdate inputPosUp, InputRotationUpdate inputRotUp
+        InputDeviceProperties newDeviceProperty = new InputDeviceProperties(pos, rot, inputType, inputDevice, posUpdate, rotUpdate);
+
+        if(inputDevices.ContainsValue(newDeviceProperty) == false)
+        {
+            inputDevices[priority] = newDeviceProperty;
+        }
     }
 }

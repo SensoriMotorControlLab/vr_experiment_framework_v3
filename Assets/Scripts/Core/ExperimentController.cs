@@ -227,7 +227,12 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void TrialBegin()
     {
-        InputHandler.Instance.FindAllInputDevices();
+        //At the start of a block
+        if (Session.CurrentTrial == Session.CurrentBlock.firstTrial)
+        {
+            //Find input devices
+            InputHandler.Instance.FindAllInputDevices();
+        }
 
         //if the task hasn't been setup yet
         if (!taskReady)
