@@ -38,11 +38,9 @@ public class EndSessionTask : BaseTask
 
     public override void SetUp()
     {
-        currentStep = 0;
-        totalTrials = expController.Session.CurrentBlock.trials.Count;
         maxSteps = 1;
 
-        instructionPrefab = Instantiate(expController.Prefabs["InstructionPrefab"], expController.transform);
+        instructionPrefab = Instantiate(ExperimentController.Instance.Prefabs["InstructionPrefab"]);
 
         endCamera = GameObject.Find("InstructionCamera").GetComponent<Camera>();
         if (ExperimentController.Instance.UseVR == false)

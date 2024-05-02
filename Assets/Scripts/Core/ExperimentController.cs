@@ -12,7 +12,7 @@ public class ExperimentController : MonoBehaviour
     private Session session;
 
     /// <summary>
-    ///Dictionary of the lists for the experiment
+    ///Dictionary of the lists for the experiment defined in ExperimentGenerator
     /// </summary>
     Dictionary<string, List<object>> expLists = new Dictionary<string, List<object>>();
     /// <summary>
@@ -28,7 +28,7 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
     /// <summary>
-    /// The VR controller
+    /// The VR controller GameObject
     /// </summary>
     public GameObject vrCtlr;
     /// <summary>
@@ -38,15 +38,15 @@ public class ExperimentController : MonoBehaviour
     /// <summary>
     /// The active task
     /// </summary>
-    BaseTask currentTask;
+    private BaseTask currentTask;
     public BaseTask CurrentTask { get { return currentTask; } }
     //The total number of trials for the experiment
     int totalNumOfTrials = 0;
-    //The totla number of blocks
+    //The total number of blocks
     int totalNumOfBlocks = 0;
     //Is the experiment using VR
     bool useVR = false;
-    //Has the task been setup yet
+    //Has the task been setup yet (Called Setup())
     bool taskReady = false;
     //Is the experiment running
     bool isRunning = false;
@@ -163,7 +163,12 @@ public class ExperimentController : MonoBehaviour
         if (useVR == true)
         {
             Debug.Log("The experiment is being run in VR");
-            //vrCtlr = Instantiate(vrPrefab);
+
+            if (!vrCtlr)
+            {
+                vrCtlr = Instantiate(vrPrefab);
+            }
+
             //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
             Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
             //Debug.Log(Camera.main);
@@ -274,9 +279,7 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void OnSessionEnd()
     {
-        //Application.Quit();
-        //Display end screen
-        currentTask.enabled = true;
+        Application.Quit();
         // TODO: end screen
     }
 

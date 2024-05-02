@@ -6,16 +6,16 @@ using UXF;
 
 public class SlingshotTask : BaseTask
 {
-    List<float> targetAngles = new List<float>();
-    GameObject slingshotPrefab;
-    GameObject cursor;
-    GameObject slingshotGameObject;
     Slingshot slingshot;
     Target targetScript;
-    Camera slingshotCamera;
 
     //velocity mag to consider the shot ball has stopped
     const float BALL_LOW_VEL_THRES = 0.1f;
+
+    public SlingshotTask()
+    {
+        taskType = "slingshot";
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -56,23 +56,10 @@ public class SlingshotTask : BaseTask
 
     public override void SetUp()
     {
-        currentStep = 0;
-        currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
-        totalTrials = expController.Session.CurrentBlock.trials.Count;
+        base.SetUp();
+
         maxSteps = 3;
-        finished = false;
-
-        slingshotPrefab = Instantiate(ExperimentController.Instance.Prefabs["SlingshotPrefab"]);
-        slingshotPrefab.transform.position = Vector3.zero;
-
-        slingshotCamera = GameObject.Find("SlingshotCamera").GetComponent<Camera>();
-        dock = GameObject.Find("Dock");
-        cursor = GameObject.Find("Cursor");
-        plane = GameObject.Find("Plane");
-        CursorController.Instance.Cursor = cursor;
-        slingshotGameObject = GameObject.Find("Slingshot");
-        slingshot = slingshotGameObject.GetComponent<Slingshot>();
-        target = GameObject.Find("Bullseye");
+        slingshot = GameObject.Find("Slingshot").GetComponent<Slingshot>();
 
         CursorController.Instance.cursorOffset = new Vector3(0.0f, -slingshot.transform.position.y, 0.0f);
 
@@ -84,40 +71,30 @@ public class SlingshotTask : BaseTask
         {
             Debug.LogWarning("NO TARGET FOUND");
         }
-
-        if (ExperimentController.Instance.UseVR == false)
-        {
-            Camera.SetupCurrent(slingshotCamera);
-        }
-        else
-        {
-            slingshotCamera.gameObject.SetActive(false);
-        }
     }
 
     public override void TaskBegin()
     {
-        Debug.Log("Current trial in block: " + expController.Session.CurrentTrial.numberInBlock);
-        Debug.Log("current block number: " + expController.Session.CurrentBlock.number);
-        currentStep = 0;
-        finished = false;
+        base.TaskBegin();
+
         targetScript.ResetTarget();
 
         //if the target angles have not been set yet
         if (targetAngles.Count == 0)
         {
-            targetAngles = expController.Session.CurrentBlock.settings.GetFloatList("target_angle");
+            targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
         }
+
         Debug.Log("target angle: " + targetAngles[currentTrial]);
+
         target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
-        target.transform.Translate(new Vector3(0.0f, 0.0f, 5.0f));
+        target.transform.Translate(new Vector3(0.0f, 0.0f, 3.0f));
     }
 
 
     public override void TaskEnd()
     {
-        slingshotPrefab.SetActive(false);
-        Destroy(slingshotPrefab);
+        base.TaskEnd();
     }
 
     public override void LogParameters()

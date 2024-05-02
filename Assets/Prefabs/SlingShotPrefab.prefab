@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4114897330121218082}
   - component: {fileID: 7556394517949581562}
   m_Layer: 0
-  m_Name: SlingshotCamera
+  m_Name: PrefabCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1321,7 +1321,7 @@ PrefabInstance:
     - target: {fileID: 3981461323465143736, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
         type: 3}
       propertyPath: m_Name
-      value: Bullseye
+      value: Target
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

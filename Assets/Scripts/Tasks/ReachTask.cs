@@ -7,10 +7,6 @@ using UXF;
 /// </summary>
 public class ReachTask : BaseTask
 {
-    List<float> targetAngles = new List<float>();
-    GameObject reachPrefab;
-    Camera reachCamera;
-    GameObject cursor;
 
     const float DOCK_DIST = 0.025f;
 
@@ -62,7 +58,7 @@ public class ReachTask : BaseTask
 
     public override void LogParameters()
     {
-        Session session = expController.Session;
+        Session session = ExperimentController.Instance.Session;
 
         session.CurrentTrial.result["type"] = session.CurrentBlock.settings.GetString("task");
         session.CurrentTrial.result["home_pos"] = home.transform.position;
@@ -73,61 +69,38 @@ public class ReachTask : BaseTask
 
     public override void SetUp()
     {
-        currentStep = 0;
-        currentTrial = 0;
-        totalTrials = expController.Session.CurrentBlock.trials.Count;
+        base.SetUp();
+
         maxSteps = 3;
-        finished = false;
 
-        //create prefab and zero it
-        reachPrefab = Instantiate(expController.Prefabs["ReachPrefab"],expController.transform);
-        reachPrefab.transform.position = Vector3.zero;
-
-        reachCamera = GameObject.Find("ReachCamera").GetComponent<Camera>();
-
-        if (ExperimentController.Instance.UseVR == false)
-        {
-            Camera.SetupCurrent(reachCamera);
-        }
-        else
-        {
-            reachCamera.gameObject.SetActive(false);
-        }
-
-        cursor = GameObject.Find("Cursor");
-        CursorController.Instance.Cursor = cursor;
-        home = GameObject.Find("Home");
-        dock = GameObject.Find("Dock");
-        plane = GameObject.Find("Plane");
         CursorController.Instance.cursorOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
-        target = GameObject.Find("Target");
 
         //set up dock position and hide it
-        dock.transform.position = reachPrefab.transform.position - expController.transform.forward * DOCK_DIST;
+        dock.transform.position = taskPrefab.transform.position - ExperimentController.Instance.transform.forward * DOCK_DIST;
         dock.SetActive(false);
 
         //set up home position and hide it
-        home.transform.position = reachPrefab.transform.position;
+        home.transform.position = taskPrefab.transform.position;
         home.SetActive(false);
 
         //set up target position and hide it
-        target.transform.position = reachPrefab.transform.position;
+        target.transform.position = taskPrefab.transform.position;
         target.SetActive(false);
-
-        //reachPrefab.transform.position = new Vector3(reachPrefab.transform.position.x,InputHandler.Instance.GetHandPosition().y, reachPrefab.transform.position.z);
     }
 
     public override void TaskBegin()
     {
-        currentStep = 0;
-        finished = false;
-        target.transform.position = Vector3.zero;
+        base.TaskBegin();
 
         //if the target angles have not been set yet
-        if(targetAngles.Count == 0)
+        if (targetAngles.Count == 0)
         {
-            targetAngles = expController.Session.CurrentBlock.settings.GetFloatList("target_angle");
+            targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
         }
+
+        Debug.Log("target angle: " + targetAngles[currentTrial]);
+
+        target.transform.position = Vector3.zero;
 
         target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
         target.transform.Translate(new Vector3(0.0f, 0.0f, 0.075f));
@@ -136,8 +109,7 @@ public class ReachTask : BaseTask
 
     public override void TaskEnd()
     {
-        reachPrefab.SetActive(false);
-        Destroy(reachPrefab);
+        base.TaskEnd();
     }
 
     

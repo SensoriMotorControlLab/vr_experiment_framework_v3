@@ -38,10 +38,10 @@ public class InstructionTask : BaseTask
     public override void SetUp()
     {
         currentStep = 0;
-        totalTrials = expController.Session.CurrentBlock.trials.Count;
+        totalTrials = ExperimentController.Instance.Session.CurrentBlock.trials.Count;
         maxSteps = 1;
 
-        instructionPrefab = Instantiate(expController.Prefabs["InstructionPrefab"], expController.transform);
+        instructionPrefab = Instantiate(ExperimentController.Instance.Prefabs["InstructionPrefab"]);
 
         instructionCam = GameObject.Find("InstructionCamera").GetComponent<Camera>();
         if (ExperimentController.Instance.UseVR == false)
@@ -49,8 +49,8 @@ public class InstructionTask : BaseTask
 
         instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
         //in the JSON the per_block is just the key to the text key-value
-        string insKey = expController.Session.CurrentBlock.settings.GetString("instruction");
-        string insString = expController.Session.settings.GetString(insKey);
+        string insKey = ExperimentController.Instance.Session.CurrentBlock.settings.GetString("instruction");
+        string insString = ExperimentController.Instance.Session.settings.GetString(insKey);
         instructionText.text = insString;
     }
 

@@ -607,7 +607,7 @@ GameObject:
   - component: {fileID: 3589949665665710019}
   - component: {fileID: 3520603349588773718}
   m_Layer: 0
-  m_Name: ReachCamera
+  m_Name: PrefabCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

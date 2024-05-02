@@ -6,22 +6,6 @@ using UnityEngine;
 /// </summary>
 public abstract class BaseTask : MonoBehaviour
 {
-    // The experiment controller
-    protected ExperimentController expController;
-    // The type of task
-    protected string taskType;
-    // Current step of the task
-    protected int currentStep;
-    // Number of steps this task has
-    protected int maxSteps;
-    /// <summary>
-    /// Have we reached the final step
-    /// </summary>
-    protected bool finished;
-    /// <summary>
-    /// Has the task been setup by calling SetUp()
-    /// </summary>
-    protected bool ready;
     /// <summary>
     /// The home for the experiment
     /// </summary>
@@ -32,28 +16,71 @@ public abstract class BaseTask : MonoBehaviour
     /// </summary>
     protected GameObject dock;
     public GameObject Dock { get { return dock; } set { dock = value; } }
-
+    /// <summary>
+    /// Scenes plane object
+    /// </summary>
     protected GameObject plane;
     public GameObject Plane { get { return plane; } set { plane = value; } }
-
+    /// <summary>
+    /// Experiment target object
+    /// </summary>
     protected GameObject target;
     public GameObject Target { get { return target; } set { target = value; } }
+    protected GameObject cursor;
+    public GameObject Cursor { get { return cursor; } set { cursor = value; } }
 
-    //the current trial num
-    protected int currentTrial;
-    //the total trials
-    protected int totalTrials;
+    /// <summary>
+    /// The camera for the prefab when not using VR
+    /// </summary>
+    protected Camera prefabCamera;
+    /// <summary>
+    /// Prefab for the task
+    /// </summary>
+    protected GameObject taskPrefab;
 
-    public BaseTask()
-    {
-        expController = ExperimentController.Instance;
-    }
+    protected string prefabName;
+
+    /// <summary>
+    /// Type of task, usually for logging
+    /// </summary>
+    protected string taskType;
+
+    /// <summary>
+    /// Angles for the target GameObject
+    /// </summary>
+    protected List<float> targetAngles = new List<float>();
+
+    /// <summary>
+    /// Current trial number for the task
+    /// </summary>
+    protected int currentTrial = 0;
+    /// <summary>
+    /// Total number of trials for the task
+    /// </summary>
+    protected int totalTrials = 0;
+
+    /// <summary>
+    /// Current step for the task
+    /// </summary>
+    protected int currentStep = 0;
+    /// <summary>
+    /// Number of steps for the task to be finished
+    /// </summary>
+    protected int maxSteps;
+
+    /// <summary>
+    /// Have we reached the final step
+    /// </summary>
+    protected bool finished = false;
+    /// <summary>
+    /// Has the task been setup by calling SetUp()
+    /// </summary>
+    protected bool ready = false;
 
     // Start is called before the first frame update
     void Start()
     {
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -64,7 +91,6 @@ public abstract class BaseTask : MonoBehaviour
     /// </summary>
     public virtual bool IncrementStep()
     {
-
         currentStep++;
 
         //TODO add time
@@ -102,20 +128,68 @@ public abstract class BaseTask : MonoBehaviour
         set { taskType = value; }
     }
 
+    public string PrefabName
+    {
+        get { return prefabName; }
+        set { prefabName = value; }
+    }
+
     /// <summary>
     /// Set up the task and related assets
     /// </summary>
-    public abstract void SetUp();
+    public virtual void SetUp()
+    {
+        ready = true;
+
+        totalTrials = ExperimentController.Instance.Session.CurrentBlock.trials.Count;
+
+        taskPrefab = Instantiate(ExperimentController.Instance.Prefabs[prefabName]);
+        taskPrefab.name = prefabName;
+        taskPrefab.transform.position = Vector3.zero;
+
+        prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
+
+        //Not necessary for every task but just in case
+        dock = GameObject.Find("Dock");
+        cursor = GameObject.Find("Cursor");
+        home = GameObject.Find("Home");
+        plane = GameObject.Find("Plane");
+        target = GameObject.Find("Target");
+
+        CursorController.Instance.Cursor = cursor;
+        //=============================================
+
+        if (ExperimentController.Instance.UseVR == false)
+        {
+            Camera.SetupCurrent(prefabCamera);
+        }
+        else
+        {
+            prefabCamera.gameObject.SetActive(false);
+        }
+    }
 
     /// <summary>
     /// Begin the task
     /// </summary>
-    public abstract void TaskBegin();
+    public virtual void TaskBegin()
+    {
+        Debug.Log("Current trial in block: " + ExperimentController.Instance.Session.CurrentTrial.numberInBlock);
+        Debug.Log("Current block number: " + ExperimentController.Instance.Session.CurrentBlock.number);
+
+        currentStep = 0;
+        finished = false;
+    }
 
     /// <summary>
     /// End the task
     /// </summary>
-    public abstract void TaskEnd();
+    public virtual void TaskEnd()
+    {
+        taskPrefab.SetActive(false);
+        Destroy(taskPrefab);
+        LogParameters();
+    }
 
     /// <summary>
     /// Log parameters when a trial ends

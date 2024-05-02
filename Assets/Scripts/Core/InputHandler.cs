@@ -19,20 +19,20 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     private const int HIGHEST_PRIORITY = 100;
     /// <summary>
-    /// Name Unity InputDevice associates with the headset device when using OpenXR
+    /// Name Unity InputDevice associated with the headset device when using OpenXR
     /// </summary>
-    private const string HEADSET_DEVICE_NAME = "HeadTrackingOpenXR";
+    public const string HEADSET_DEVICE_NAME = "HeadTrackingOpenXR";
     /// <summary>
-    /// Name Unity InputDevice associates with the mouse
+    /// Name Unity InputDevice associated with the mouse
     /// </summary>
-    private const string MOUSE_NAME = "Mouse";
+    public const string MOUSE_NAME = "Mouse";
     /// <summary>
-    /// Name Unity InputDevice associates with the VR controllers when using OpenXR
+    /// Name Unity InputDevice associated with the VR controllers when using OpenXR
     /// </summary>
-    private const string TOUCH_CONTROLLER_NAME = "OculusTouchControllerOpenXR";
+    public const string TOUCH_CONTROLLER_NAME = "OculusTouchControllerOpenXR";
 
     /// <summary>
-    /// Dominant hand
+    /// Dominant hand to track
     /// </summary>
     private string domHand = "RightHand";
 
@@ -89,6 +89,30 @@ public class InputHandler : MonoBehaviour
                 rotation = inputRotUp();
             }
         }
+
+        /*
+        public override bool Equals(object obj)
+        {
+            InputDeviceProperties inputObj = (InputDeviceProperties)obj;
+
+            return Equals(inputObj);
+        }
+
+        public bool Equals(InputDeviceProperties other)
+        {
+            return inputDevice == other.inputDevice && inputType == other.inputType;
+        }
+
+        public static bool operator ==(InputDeviceProperties lhs, InputDeviceProperties rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(InputDeviceProperties lhs, InputDeviceProperties rhs)
+        {
+            return !lhs.Equals(rhs);
+        }
+        */
     }
 
     public static InputHandler Instance
@@ -107,6 +131,10 @@ public class InputHandler : MonoBehaviour
         if (!instance)
         {
             instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
         }
 
         //FindAllInputDevices();
@@ -407,10 +435,10 @@ public class InputHandler : MonoBehaviour
         foreach (var e in inputDevices.ToList())
         {
             InputDeviceProperties r = inputDevices[e.Key];
-            int oldKey = e.Key;
 
             if (r.inputDevice.name == deviceName)
             {
+                int oldKey = e.Key;
                 inputDevices[newPriority] = r;
                 inputDevices.Remove(oldKey);
                 break;
@@ -423,10 +451,10 @@ public class InputHandler : MonoBehaviour
         foreach (var e in inputDevices.ToList())
         {
             InputDeviceProperties r = inputDevices[e.Key];
-            int oldKey = e.Key;
 
             if (r.inputDevice == inputDevice)
             {
+                int oldKey = e.Key;
                 inputDevices[newPriority] = r;
                 inputDevices.Remove(oldKey);
                 break;
@@ -434,14 +462,49 @@ public class InputHandler : MonoBehaviour
         }
     }
 
+    public void ChangePriority(int oldPriority, int newPriority)
+    {
+        if (inputDevices.ContainsKey(oldPriority))
+        {
+            InputDeviceProperties theDevice = inputDevices[oldPriority];
+            inputDevices[newPriority] = theDevice;
+            inputDevices.Remove(oldPriority);
+        }
+    }
+
     public void AddInputDevice(int priority, Vector3 pos, Quaternion rot, InputType inputType, InputDevice inputDevice, InputPositionUpdate posUpdate, InputRotationUpdate rotUpdate)
     {
-        //Vector3 position, Quaternion rotation, InputType inputType, InputDevice inputDevice, InputPositionUpdate inputPosUp, InputRotationUpdate inputRotUp
         InputDeviceProperties newDeviceProperty = new InputDeviceProperties(pos, rot, inputType, inputDevice, posUpdate, rotUpdate);
 
-        if(inputDevices.ContainsValue(newDeviceProperty) == false)
+        if(!inputDevices.ContainsValue(newDeviceProperty))
         {
             inputDevices[priority] = newDeviceProperty;
+
+            if (inputDevices.ContainsKey(priority))
+            {
+                Debug.Log("InputDevices replaced " + inputDevices[priority].inputDevice.name + " with " + newDeviceProperty.inputDevice.name + " with priority " + priority + " because of same priority");
+            }
+        }
+    }
+
+    public void AddInputDevice(int priority, InputDeviceProperties inputDeviceProperties)
+    {
+        if (!inputDevices.ContainsValue(inputDeviceProperties))
+        {
+            inputDevices[priority] = inputDeviceProperties;
+
+            if (inputDevices.ContainsKey(priority))
+            {
+                Debug.Log("InputDevices replaced " + inputDevices[priority].inputDevice.name + " with " + inputDeviceProperties.inputDevice.name + " with priority " + priority + " because of same priority");
+            }
+        }
+    }
+
+    public void RemoveInputDevice(int priority)
+    {
+        if (inputDevices.ContainsKey(priority))
+        {
+            inputDevices.Remove(priority);
         }
     }
 }
