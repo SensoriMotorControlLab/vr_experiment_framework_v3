@@ -134,6 +134,11 @@ public abstract class BaseTask : MonoBehaviour
         set { prefabName = value; }
     }
 
+    public bool IsReady
+    {
+        get { return ready; }
+    }
+
     /// <summary>
     /// Set up the task and related assets
     /// </summary>

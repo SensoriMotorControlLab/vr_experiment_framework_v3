@@ -43,23 +43,18 @@ public class CursorController : MonoBehaviour
         //if not use vr and both a camera and a cursor object has been set
         if (ExperimentController.Instance.UseVR == false && Camera.main && cursor)
         {
-            if (cursor)
+            //cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetPosition());
+            cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetRayPosition());
+            if (ExperimentController.Instance.CurrentTask.Plane)
             {
-                //cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetPosition());
-                cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetRayPosition());
-                if (ExperimentController.Instance.CurrentTask.Plane)
-                {
-                    Plane plane = new Plane(ExperimentController.Instance.CurrentTask.Plane.transform.up, cursorOffset.y);
-                    cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
-                }
+                Plane plane = new Plane(ExperimentController.Instance.CurrentTask.Plane.transform.up, cursorOffset.y);
+                cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
             }
         }
-        else if(ExperimentController.Instance.UseVR == true)
+        else if(ExperimentController.Instance.UseVR == true && Camera.main && cursor)
         {
-            if (cursor)
-            {
-                cursor.transform.position = InputHandler.Instance.GetPosition();
-            }
+            cursor.transform.position = InputHandler.Instance.GetSpatialPosition();
+            cursor.transform.rotation = InputHandler.Instance.GetSpatialRotation();
         }
 
         if (cursor)
@@ -108,10 +103,32 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    public Quaternion CursorRot
+    {
+        get
+        {
+            if (cursor)
+            {
+                return cursor.transform.rotation;
+            }
+
+            return Quaternion.identity;
+        }
+
+        set
+        {
+            if (cursor)
+                cursor.transform.rotation = value;
+        }
+    }
+
     public Vector3 ConvertCursorPosition()
     {
-        Vector3 targetPos = ExperimentController.Instance.CurrentTask.Target != null ? ExperimentController.Instance.CurrentTask.Target.transform.position : Vector3.zero;
-        Vector3 homePos = ExperimentController.Instance.CurrentTask.Home != null ? ExperimentController.Instance.CurrentTask.Home.transform.position : Vector3.zero;
+        GameObject target = ExperimentController.Instance.CurrentTask.Target;
+        GameObject home = ExperimentController.Instance.CurrentTask.Home;
+
+        Vector3 targetPos = target != null ? target.transform.position : Vector3.zero;
+        Vector3 homePos = home != null ? home.transform.position : Vector3.zero;
 
         switch (moveType)
         {

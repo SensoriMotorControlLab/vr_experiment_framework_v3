@@ -1,23 +1,22 @@
 {
     "use_vr": false,
     "test": [
-        45,
-        100,
         90,
-        125
+        125,
+        45,
+        100
     ],
     "target_angle": [
-        45,
-        100,
         90,
-        125
+        125,
+        45,
+        100
     ],
+    "input_name": "mouse",
     "task": "sling_shot",
     "rotation": 30,
     "instruction": null
-}angle": [
-        125,
-        100,
+}     100,
         90,
         45
 >>>>>>> ResumeTrial_final

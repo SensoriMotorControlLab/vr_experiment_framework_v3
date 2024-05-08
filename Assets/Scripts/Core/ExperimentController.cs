@@ -46,8 +46,6 @@ public class ExperimentController : MonoBehaviour
     int totalNumOfBlocks = 0;
     //Is the experiment using VR
     bool useVR = false;
-    //Has the task been setup yet (Called Setup())
-    bool taskReady = false;
     //Is the experiment running
     bool isRunning = false;
 
@@ -167,6 +165,7 @@ public class ExperimentController : MonoBehaviour
             if (!vrCtlr)
             {
                 vrCtlr = Instantiate(vrPrefab);
+                vrCtlr.transform.position = Vector3.zero;
             }
 
             //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
@@ -180,6 +179,9 @@ public class ExperimentController : MonoBehaviour
             //disable the VR controller
             vrCtlr.SetActive(false);
         }
+
+        //find input devices
+        InputHandler.Instance.FindDevices();
 
         //define the scene prefabs
         foreach (GameObject g in scenePrefabs)
@@ -213,19 +215,24 @@ public class ExperimentController : MonoBehaviour
         {
             session.FirstTrial.Begin();
         }
-        //every other trial
+        //every other trial that is not the first or last
         else if (session.currentTrialNum < totalNumOfTrials)
         {
             session.BeginNextTrialSafe();
         }
+        //final trial
         else if (session.currentTrialNum == totalNumOfTrials) 
         {
             isRunning = false;
             session.End();
         }
-        PlayerPrefs.SetInt("currentTrial", session.currentTrialNum - 1);
-        PlayerPrefs.SetInt("currentBlock", session.CurrentBlock.number - 1);
-        PlayerPrefs.SetInt("trialInBlock", session.CurrentTrial.numberInBlock - 1);
+
+        if (isRunning)
+        {
+            PlayerPrefs.SetInt("currentTrial", session.currentTrialNum - 1);
+            PlayerPrefs.SetInt("currentBlock", session.CurrentBlock.number - 1);
+            PlayerPrefs.SetInt("trialInBlock", session.CurrentTrial.numberInBlock - 1);
+        }
     }
     /// <summary>
     /// UXF TrialBegin method
@@ -235,16 +242,17 @@ public class ExperimentController : MonoBehaviour
         //At the start of a block
         if (Session.CurrentTrial == Session.CurrentBlock.firstTrial)
         {
-            //Find input devices
-            InputHandler.Instance.FindAllInputDevices();
+            //Set the input device to use
+            string deviceName = (string)expLists["input_name"][session.currentBlockNum - 1];
+            Debug.Log("Device name =" + deviceName);
+            InputHandler.Instance.UseThisDevice(deviceName);
         }
 
         //if the task hasn't been setup yet
-        if (!taskReady)
+        if (!currentTask.IsReady)
         {
             currentTask.enabled = true;
             currentTask.SetUp();
-            taskReady = true;
         }
         currentTask.TaskBegin();
     }
@@ -266,7 +274,6 @@ public class ExperimentController : MonoBehaviour
             {
                 //move on to the next task and prepare it
                 currentTask = tasks[session.CurrentBlock.number];
-                taskReady = false;
             }
         }
         if(session.isApplicationQuitting == false)
