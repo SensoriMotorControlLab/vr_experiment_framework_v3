@@ -2,15 +2,15 @@
     "use_vr": false,
     "test": [
         45,
-        125,
+        100,
         90,
-        100
+        125
     ],
     "target_angle": [
         45,
-        125,
+        100,
         90,
-        100
+        125
     ],
     "input_name": "mouse",
     "task": "sling_shot",

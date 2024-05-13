@@ -151,7 +151,6 @@ public abstract class BaseTask : MonoBehaviour
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
 
-        CursorController.Instance.Cursor = cursor;
     }
 
     /// <summary>

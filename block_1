@@ -1,15 +1,15 @@
 {
     "use_vr": false,
     "test": [
-        90,
-        100,
         45,
+        100,
+        90,
         125
     ],
     "target_angle": [
-        90,
-        100,
         45,
+        100,
+        90,
         125
     ],
     "input_name": null,

@@ -60,7 +60,7 @@ public class SlingshotTask : BaseTask
 
         maxSteps = 3;
         taskPrefab = Instantiate(expController.Prefabs["SlingShotPrefab"]);
-        taskPrefab.name = prefabName;
+        //taskPrefab.name = prefabName;
         taskPrefab.transform.position = Vector3.zero;
 
         prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
@@ -73,6 +73,7 @@ public class SlingshotTask : BaseTask
         target = GameObject.Find("Target");
         slingshot = GameObject.Find("Slingshot").GetComponent<Slingshot>();
 
+        CursorController.Instance.Cursor = cursor;
         CursorController.Instance.cursorOffset = new Vector3(0.0f, -slingshot.transform.position.y, 0.0f);
 
         if (target)

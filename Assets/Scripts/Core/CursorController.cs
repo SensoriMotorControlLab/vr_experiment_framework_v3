@@ -57,6 +57,7 @@ public class CursorController : MonoBehaviour
             cursor.transform.rotation = InputHandler.Instance.GetSpatialRotation();
         }
 
+
         if (cursor)
         {
             ConvertCursorPosition();

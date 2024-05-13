@@ -244,7 +244,7 @@ public class ExperimentController : MonoBehaviour
         {
             //Set the input device to use
             string deviceName = (string)expLists["input_name"][session.currentBlockNum - 1];
-            Debug.Log("Device name =" + deviceName);
+            Debug.Log("Input device set as " + deviceName);
             InputHandler.Instance.UseThisDevice(deviceName);
         }
 
