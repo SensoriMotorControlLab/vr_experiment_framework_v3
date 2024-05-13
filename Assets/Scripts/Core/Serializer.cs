@@ -4,7 +4,7 @@ using UnityEngine;
 using System.IO;
 using System;
 
-public class Serializer : MonoBehaviour
+public class JsonSerializer : MonoBehaviour
 {
 	/// <summary>
 	/// Loads a file from the given filename and returns it as a generic type
@@ -22,7 +22,7 @@ public class Serializer : MonoBehaviour
 				{
                     Dictionary<string, object> data = (Dictionary<string, object>)MiniJSON.Json.Deserialize(File.ReadAllText(filename));
                     string json = MiniJSON.Json.Serialize(data);
-                    Debug.Log(json);
+                    // Debug.Log(json);
                     return data as T;
 				}
 			}
@@ -33,6 +33,29 @@ public class Serializer : MonoBehaviour
 		}
 		return default(T);
 	}
+
+	public static T LoadList<T>(string filename) where T: class
+    {
+        if (File.Exists(filename))
+        {
+            try
+            {
+                using (Stream stream = File.OpenRead(filename))
+                {
+                    List<object> data = (List<object>)MiniJSON.Json.Deserialize(File.ReadAllText(filename));
+                    string json = MiniJSON.Json.Serialize(data);
+                    // Debug.Log(json);
+                    return data as T;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+            }
+        }
+        return default(T);
+    }
+
 	/// <summary>
 	/// Saves the given data to the given filename
 	/// </summary>

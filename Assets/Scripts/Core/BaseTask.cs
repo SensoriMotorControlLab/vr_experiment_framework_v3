@@ -65,7 +65,6 @@ public abstract class BaseTask : MonoBehaviour
     /// </summary>
     public virtual bool IncrementStep()
     {
-
         currentStep++;
 
         //TODO add time
@@ -106,7 +105,11 @@ public abstract class BaseTask : MonoBehaviour
     /// <summary>
     /// Set up the task and related assets
     /// </summary>
-    public abstract void SetUp();
+    public virtual void SetUp()
+    {
+        currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
+        totalTrials = expController.Session.CurrentBlock.trials.Count;
+    }
 
     /// <summary>
     /// Begin the task

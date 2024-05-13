@@ -9,6 +9,9 @@ using UXF;
 /// </summary>
 public class ExperimentGenerator : MonoBehaviour
 {
+    /// <summary>
+    /// List of the order of the pseudo randomization
+    /// </summary>
     private List<int> pseudoRandomOrder = new List<int>();
 
     public List<int> PseudoRandomOrder
@@ -169,26 +172,33 @@ public class ExperimentGenerator : MonoBehaviour
         {
             for(int i = 0; i < session.blocks.Count; i++)
             {
-                session.blocks[i].settings.baseDict = Serializer.Load<Dictionary<string, object>>("block_" + i);
+                session.blocks[i].settings.baseDict = JsonSerializer.Load<Dictionary<string, object>>("block_" + i);
             }
             session.currentTrialNum = PlayerPrefs.GetInt("currentTrial");
             session.NextTrial.block = session.blocks[PlayerPrefs.GetInt("currentBlock")];
             session.NextTrial.numberInBlock = PlayerPrefs.GetInt("trialInBlock");
+            session.resumeTrialCountCache = PlayerPrefs.GetInt("currentTrial");
         }
 
         else if(session.isBlockContinue)
         {
             for(int i = 0; i < session.blocks.Count; i++)
             {
-                session.blocks[i].settings.baseDict = Serializer.Load<Dictionary<string, object>>("block_" + i);
+                session.blocks[i].settings.baseDict = JsonSerializer.Load<Dictionary<string, object>>("block_" + i);
             }
-            session.currentTrialNum = 0;
+            session.resumeTrialCountCache = 0;
             session.NextTrial.block = session.blocks[PlayerPrefs.GetInt("currentBlock")];
+
+            for(int i = 0; i < PlayerPrefs.GetInt("currentBlock"); i++)
+            {
+                session.resumeTrialCountCache += session.blocks[i].trials.Count;
+            }
+            session.currentTrialNum = session.resumeTrialCountCache;
         }
 
         for(int i = 0; i < session.blocks.Count; i++)
         {
-            Serializer.Save("block_" + i, session.blocks[i].settings.baseDict);
+            JsonSerializer.Save("block_" + i, session.blocks[i].settings.baseDict);
         }
     }
     ///<summary>
@@ -219,8 +229,12 @@ public class ExperimentGenerator : MonoBehaviour
         */
     }
     /// <summary>
-    /// Pseudo randomize a list
+    /// Pseudo randomizes the list of objects
     /// </summary>
+    /// <param name="key"> the key of the list</param>
+    /// <param name="theBlock"></param>
+    /// <returns></returns>
+    /// <exception cref="NullReferenceException"></exception>
     public object PseudoRandom(string key, Block theBlock)
     {
         List<object> list = Session.instance.settings.GetObjectList(key);
@@ -271,7 +285,12 @@ public class ExperimentGenerator : MonoBehaviour
 
         return randomList;
     }
-
+    /// <summary>
+    /// Generates a list of integers from min to max
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     List<int> GenerateIntegerList(int min, int max)
     {
         List<int> list = new List<int>();
@@ -281,7 +300,11 @@ public class ExperimentGenerator : MonoBehaviour
         }
         return list;
     }
-
+    /// <summary>
+    /// Shuffles the list of integers
+    /// </summary>
+    /// <param name="list"></param>
+    /// <returns></returns>
     List<int> ShuffleList(List<int> list)
     {
         for (int i = 0; i < list.Count; i++)

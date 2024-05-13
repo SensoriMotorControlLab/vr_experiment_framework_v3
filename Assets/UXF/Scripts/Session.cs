@@ -7,6 +7,8 @@ using UnityEngine;
 using System.Collections.Specialized;
 using UnityEngine.Events;
 using SubjectNerd.Utilities;
+using Unity.VisualScripting.YamlDotNet.Serialization;
+using Palmmedia.ReportGenerator.Core.Common;
 
 namespace UXF
 {
@@ -152,6 +154,8 @@ namespace UXF
         /// Whether to resume the last session from the last saved block number if it was not ended properly.
         /// </summary>
         public bool isBlockContinue;
+
+        public int resumeTrialCountCache;
         /// <summary>
         /// Unique string for this participant (participant ID)
         /// </summary>
@@ -690,15 +694,56 @@ namespace UXF
 
         void SaveResults()
         {
+            HashSet<string> resultsHeaders = new HashSet<string>();
+            
+            if(isTrialContinue || isBlockContinue)
+            {
+                List<object> savedHeaders = LoadList<List<object>>("results_header");
+
+                if (savedHeaders == null)
+                {
+                    Debug.LogWarning("No saved headers found.");
+                }
+                foreach (string h in savedHeaders)
+                {
+                    resultsHeaders.Add(h);
+                }
+            }
             // generate list of all headers possible
             // hashset keeps unique set of keys
-            HashSet<string> resultsHeaders = new HashSet<string>();
             foreach (Trial t in Trials)
                 if (t.result != null && t.saveData)
                     foreach (string key in t.result.Keys)
                         resultsHeaders.Add(key);
 
+            
+            List<string> save = resultsHeaders.ToList();
+            Save("results_header", save);
+
             UXFDataTable table = new UXFDataTable(Trials.Count(), resultsHeaders.ToArray());
+            List<Dictionary<string, object>> results = new List<Dictionary<string, object>>();
+
+            if(isTrialContinue || isBlockContinue)
+            {
+                for(int i = 0; i < resumeTrialCountCache; i++)
+                {
+                    results.Add(LoadDict<Dictionary<string, object>>("trial_" + i));
+                    UXFDataRow row = new UXFDataRow();
+                    foreach (string h in resultsHeaders)
+                    {
+                        if (results[i].ContainsKey(h) && results[i][h] != null)
+                        {
+                            row.Add(( h, results[i][h] ));
+                        }
+                        else
+                        {
+                            row.Add(( h, string.Empty ));
+                        }
+                    }
+                    table.AddCompleteRow(row);
+                }
+            }
+                       
             foreach (Trial t in Trials)
             {
                 if (t.result != null && t.saveData)
@@ -715,11 +760,73 @@ namespace UXF
                             row.Add(( h, string.Empty ));
                         }
                     }
+                    results.Add(t.result.AsDictionary());
                     table.AddCompleteRow(row);
                 }
             }
-
+            
+            PlayerPrefs.SetInt("past_trials_count", results.Count - 1);
+            for(int i = 0; i < results.Count; i++)
+            {
+                Save("trial_" + i, results[i]);
+            }
+                        
             SaveDataTable(table, "trial_results", dataType: UXFDataType.TrialResults);            
+        }
+
+        public static void Save<T>(string filename, T data) where T: class
+        {
+            using (Stream stream = File.OpenWrite(filename))
+            {	
+                string json = MiniJSON.Json.Serialize(data);
+                // Debug.Log(json);
+                byte[] jsonBytes = System.Text.Encoding.ASCII.GetBytes(json);
+                stream.Write(jsonBytes, 0, jsonBytes.Length);
+            }
+        }
+
+        public static T LoadDict<T>(string filename) where T: class
+	    {
+		if (File.Exists(filename))
+		{
+			try
+			{
+				using (Stream stream = File.OpenRead(filename))
+				{
+                    Dictionary<string, object> data = (Dictionary<string, object>)MiniJSON.Json.Deserialize(File.ReadAllText(filename));
+                    string json = MiniJSON.Json.Serialize(data);
+                    // Debug.Log(json);
+                    return data as T;
+				}
+			}
+			catch (Exception e)
+			{
+				Debug.Log(e.Message);
+			}
+		}
+		return default(T);
+	    }
+
+        public static T LoadList<T>(string filename) where T: class
+        {
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    using (Stream stream = File.OpenRead(filename))
+                    {
+                        List<object> data = (List<object>)MiniJSON.Json.Deserialize(File.ReadAllText(filename));
+                        string json = MiniJSON.Json.Serialize(data);
+                        // Debug.Log(json);
+                        return data as T;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                }
+            }
+            return default(T);
         }
 
         void OnApplicationQuit()
