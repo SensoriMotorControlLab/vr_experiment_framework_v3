@@ -77,6 +77,8 @@ public abstract class BaseTask : MonoBehaviour
     /// </summary>
     protected bool ready = false;
 
+    protected ExperimentController expController;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -145,33 +147,11 @@ public abstract class BaseTask : MonoBehaviour
     public virtual void SetUp()
     {
         ready = true;
-
-        totalTrials = ExperimentController.Instance.Session.CurrentBlock.trials.Count;
-
-        taskPrefab = Instantiate(ExperimentController.Instance.Prefabs[prefabName]);
-        taskPrefab.name = prefabName;
-        taskPrefab.transform.position = Vector3.zero;
-
-        prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
-
-        //Not necessary for every task but just in case
-        dock = GameObject.Find("Dock");
-        cursor = GameObject.Find("Cursor");
-        home = GameObject.Find("Home");
-        plane = GameObject.Find("Plane");
-        target = GameObject.Find("Target");
+        expController = ExperimentController.Instance;
+        totalTrials = expController.Session.CurrentBlock.trials.Count;
+        currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
 
         CursorController.Instance.Cursor = cursor;
-        //=============================================
-
-        if (ExperimentController.Instance.UseVR == false)
-        {
-            Camera.SetupCurrent(prefabCamera);
-        }
-        else
-        {
-            prefabCamera.gameObject.SetActive(false);
-        }
     }
 
     /// <summary>
@@ -182,7 +162,6 @@ public abstract class BaseTask : MonoBehaviour
         Debug.Log("Current trial in block: " + ExperimentController.Instance.Session.CurrentTrial.numberInBlock);
         Debug.Log("Current block number: " + ExperimentController.Instance.Session.CurrentBlock.number);
 
-        currentStep = 0;
         finished = false;
     }
 

@@ -209,19 +209,16 @@ public class ExperimentGenerator : MonoBehaviour
                 case ("reach_to_target"):
                     ReachTask reachTask = ExperimentController.Instance.gameObject.AddComponent<ReachTask>();
                     reachTask.enabled = false;
-                    reachTask.PrefabName = "ReachPrefab";
                     ExperimentController.Instance.Tasks.Add(reachTask);
                     break;
                 case ("sling_shot"):
                     SlingshotTask slingShotTask = ExperimentController.Instance.gameObject.AddComponent<SlingshotTask>();
                     slingShotTask.enabled = false;
-                    slingShotTask.PrefabName = "SlingshotPrefab";
                     ExperimentController.Instance.Tasks.Add(slingShotTask);
                     break;
                 case ("instruction"):
                     InstructionTask instructionTask = ExperimentController.Instance.gameObject.AddComponent<InstructionTask>();
                     instructionTask.enabled = false;
-                    instructionTask.PrefabName = "InstructionPrefab";
                     ExperimentController.Instance.Tasks.Add(instructionTask);
                     break;
 
