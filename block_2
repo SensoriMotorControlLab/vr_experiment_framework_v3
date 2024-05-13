@@ -1,7 +1,6 @@
 {
     "use_vr": false,
     "test": [
-<<<<<<< HEAD
         50,
         110,
         70,
@@ -12,12 +11,11 @@
         110,
         70,
         130
-=======
-        70,
-        110,
-        130,
-        50
     ],
+    "task": "slingShot",
+    "rotation": 30,
+    "instruction": null
+}}
     "target_angle": [
         70,
         110,

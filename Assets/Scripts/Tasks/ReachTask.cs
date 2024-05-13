@@ -80,7 +80,7 @@ public class ReachTask : BaseTask
         finished = false;
 
         //create prefab and zero it
-        reachPrefab = Instantiate(expController.Prefabs["ReachPrefab"],expController.transform);
+        reachPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);;
         reachPrefab.transform.position = Vector3.zero;
 
         reachCamera = GameObject.Find("ReachCamera").GetComponent<Camera>();

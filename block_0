@@ -1,23 +1,21 @@
 {
     "use_vr": false,
     "test": [
-        125,
-<<<<<<< HEAD
-        90,
         45,
-        100
-    ],
-    "target_angle": [
-        125,
-        90,
-        45,
-        100
-=======
         100,
         90,
-        45
+        125
     ],
     "target_angle": [
+        45,
+        100,
+        90,
+        125
+    ],
+    "task": "slingShot",
+    "rotation": 30,
+    "instruction": null
+}}angle": [
         125,
         100,
         90,

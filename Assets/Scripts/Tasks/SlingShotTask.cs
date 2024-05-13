@@ -62,7 +62,7 @@ public class SlingshotTask : BaseTask
         maxSteps = 3;
         finished = false;
 
-        slingshotPrefab = Instantiate(ExperimentController.Instance.Prefabs["SlingShotPrefab"]);
+        slingshotPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);
         slingshotPrefab.transform.position = Vector3.zero;
 
         slingshotCamera = GameObject.Find("SlingshotCamera").GetComponent<Camera>();

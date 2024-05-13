@@ -43,6 +43,7 @@ public abstract class BaseTask : MonoBehaviour
     protected int currentTrial;
     //the total trials
     protected int totalTrials;
+    public string prefabName;
 
     public BaseTask()
     {

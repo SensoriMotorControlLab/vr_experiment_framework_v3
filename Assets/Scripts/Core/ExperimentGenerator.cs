@@ -202,30 +202,13 @@ public class ExperimentGenerator : MonoBehaviour
         //for every block there is a corresponding task object
         foreach (Block theBlock in s.blocks)
         {
-            //based on task type create a Task object as a script component
-            //disable the script and add it to the task list
-            switch (theBlock.settings.GetString("task"))
-            {
-                case ("reach_to_target"):
-                    ReachTask reachTask = ExperimentController.Instance.gameObject.AddComponent<ReachTask>();
-                    reachTask.enabled = false;
-                    ExperimentController.Instance.Tasks.Add(reachTask);
-                    break;
-                case ("sling_shot"):
-                    SlingshotTask slingShotTask = ExperimentController.Instance.gameObject.AddComponent<SlingshotTask>();
-                    slingShotTask.enabled = false;
-                    ExperimentController.Instance.Tasks.Add(slingShotTask);
-                    break;
-                case ("instruction"):
-                    InstructionTask instructionTask = ExperimentController.Instance.gameObject.AddComponent<InstructionTask>();
-                    instructionTask.enabled = false;
-                    ExperimentController.Instance.Tasks.Add(instructionTask);
-                    break;
-
-                default:
-                    Debug.LogError(theBlock.settings.GetString("task") + " task has not been defined in: ExperimentGenerator.GenerateTasks()");
-                    break;
-            }
+            ExperimentController experimentController = ExperimentController.Instance; 
+            Type tt = experimentController.taskDict[theBlock.settings.GetString("task")].GetType(); 
+            BaseTask task = experimentController.gameObject.AddComponent(tt) as BaseTask; 
+            task.enabled = false; 
+            task.prefabName = Char.ToUpper(theBlock.settings.GetString("task")[0]) + theBlock.settings.GetString("task").Substring(1) + "Prefab"; 
+            Debug.Log("Task: " + task.prefabName); 
+            experimentController.Tasks.Add(task); 
         }
 
         //add a end screen to the end

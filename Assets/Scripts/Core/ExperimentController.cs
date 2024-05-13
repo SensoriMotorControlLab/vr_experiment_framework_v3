@@ -19,14 +19,7 @@ public class ExperimentController : MonoBehaviour
     /// List of the task objects that run the trials
     /// </summary>
     List<BaseTask> tasks = new List<BaseTask>();
-    /// <summary>
-    /// The prefabs for the scene to be instanced
-    /// </summary>
-    public GameObject[] scenePrefabs;
-    /// <summary>
-    /// Dictionary of scene prefabs, key is prefab name defined in scenePrefabs
-    /// </summary>
-    Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
+    public Dictionary<string, BaseTask> taskDict = new Dictionary<string, BaseTask>();
     /// <summary>
     /// The VR controller
     /// </summary>
@@ -65,6 +58,9 @@ public class ExperimentController : MonoBehaviour
             Destroy(gameObject);
         }
 
+        taskDict["slingShot"] = new SlingshotTask();
+        taskDict["reachToTarget"] = new ReachTask();
+        taskDict["instruction"] = new InstructionTask();
     }
 
     // Update is called once per frame
@@ -143,11 +139,6 @@ public class ExperimentController : MonoBehaviour
         get { return useVR; }
         set { useVR = value; }
     }
-
-    public Dictionary<string,GameObject> Prefabs
-    {
-        get { return prefabs; }
-    }
     /// <summary>
     /// UXF SessionBegin method
     /// </summary>
@@ -174,12 +165,6 @@ public class ExperimentController : MonoBehaviour
         {
             //disable the VR controller
             vrCtlr.SetActive(false);
-        }
-
-        //define the scene prefabs
-        foreach (GameObject g in scenePrefabs)
-        {
-            prefabs[g.name] = g;
         }
 
         currentTask = tasks[0];
