@@ -41,7 +41,7 @@ public class InstructionTask : BaseTask
         totalTrials = ExperimentController.Instance.Session.CurrentBlock.trials.Count;
         maxSteps = 1;
 
-        instructionPrefab = Instantiate(ExperimentController.Instance.Prefabs["InstructionPrefab"]);
+        instructionPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);;
 
         instructionCam = GameObject.Find("InstructionCamera").GetComponent<Camera>();
         if (ExperimentController.Instance.UseVR == false)

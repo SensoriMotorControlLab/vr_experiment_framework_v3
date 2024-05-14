@@ -73,6 +73,26 @@ public class ReachTask : BaseTask
 
         maxSteps = 3;
 
+        //create prefab and zero it
+        reachPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);;
+        reachPrefab.transform.position = Vector3.zero;
+
+        reachCamera = GameObject.Find("ReachCamera").GetComponent<Camera>();
+
+        if (ExperimentController.Instance.UseVR == false)
+        {
+            Camera.SetupCurrent(reachCamera);
+        }
+        else
+        {
+            reachCamera.gameObject.SetActive(false);
+        }
+
+        cursor = GameObject.Find("Cursor");
+        CursorController.Instance.Cursor = cursor;
+        home = GameObject.Find("Home");
+        dock = GameObject.Find("Dock");
+        plane = GameObject.Find("Plane");
         CursorController.Instance.cursorOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
 
         //set up dock position and hide it

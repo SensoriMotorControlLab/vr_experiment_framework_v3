@@ -19,9 +19,9 @@
       4
     ],
     "per_block_task": [
-      "sling_shot",
-      "sling_shot",
-      "sling_shot"
+      "slingShot",
+      "slingShot",
+      "slingShot"
     ],
     "per_block_rotation": [
       30,
@@ -41,7 +41,8 @@
     "per_block_list_test": [
       "ta3", 
       "ta3", 
-      "ta4"],
+      "ta4"
+    ],
     "ta1": [90, 45, 125, 100],
     "ta2": [50, 130, 70, 110],
     "ta3": [90, 45, 125, 100],

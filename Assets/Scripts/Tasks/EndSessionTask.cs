@@ -40,7 +40,7 @@ public class EndSessionTask : BaseTask
     {
         maxSteps = 1;
 
-        instructionPrefab = Instantiate(ExperimentController.Instance.Prefabs["InstructionPrefab"]);
+        instructionPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);;
 
         endCamera = GameObject.Find("InstructionCamera").GetComponent<Camera>();
         if (ExperimentController.Instance.UseVR == false)

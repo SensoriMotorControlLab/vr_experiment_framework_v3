@@ -37,6 +37,11 @@ public abstract class BaseTask : MonoBehaviour
     /// Prefab for the task
     /// </summary>
     protected GameObject taskPrefab;
+    //the current trial num
+    protected int currentTrial;
+    //the total trials
+    protected int totalTrials;
+    public string prefabName;
 
     protected string prefabName;
 
@@ -150,7 +155,6 @@ public abstract class BaseTask : MonoBehaviour
         expController = ExperimentController.Instance;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
-
     }
 
     /// <summary>

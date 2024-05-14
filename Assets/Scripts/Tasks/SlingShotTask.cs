@@ -57,13 +57,11 @@ public class SlingshotTask : BaseTask
     public override void SetUp()
     {
         base.SetUp();
-
+        currentStep = 0;
         maxSteps = 3;
-        taskPrefab = Instantiate(expController.Prefabs["SlingShotPrefab"]);
-        //taskPrefab.name = prefabName;
-        taskPrefab.transform.position = Vector3.zero;
 
-        prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
+        slingshotPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);
+        slingshotPrefab.transform.position = Vector3.zero;
 
         //Not necessary for every task but just in case
         dock = GameObject.Find("Dock");
@@ -99,6 +97,10 @@ public class SlingshotTask : BaseTask
     {
         base.TaskBegin();
 
+        // Debug.Log("Current trial in block: " + expController.Session.CurrentTrial.numberInBlock);
+        // Debug.Log("current block number: " + expController.Session.CurrentBlock.number);
+        currentStep = 0;
+        finished = false;
         targetScript.ResetTarget();
 
         //if the target angles have not been set yet
@@ -109,6 +111,7 @@ public class SlingshotTask : BaseTask
 
         Debug.Log("target angle: " + targetAngles[currentTrial]);
 
+        // Debug.Log("target angle: " + targetAngles[currentTrial]);
         target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
         target.transform.Translate(new Vector3(0.0f, 0.0f, 3.0f));
     }
