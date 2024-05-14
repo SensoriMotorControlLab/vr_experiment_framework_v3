@@ -174,12 +174,6 @@ public class ExperimentController : MonoBehaviour
         //find input devices
         InputHandler.Instance.FindDevices();
 
-        //define the scene prefabs
-        foreach (GameObject g in scenePrefabs)
-        {
-            prefabs[g.name] = g;
-        }
-
         currentTask = tasks[0];
         currentTask.enabled = true;
         isRunning = true;

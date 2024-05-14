@@ -60,18 +60,7 @@ public class SlingshotTask : BaseTask
         currentStep = 0;
         maxSteps = 3;
 
-        slingshotPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);
-        slingshotPrefab.transform.position = Vector3.zero;
-
-        //Not necessary for every task but just in case
-        dock = GameObject.Find("Dock");
-        cursor = GameObject.Find("Cursor");
-        home = GameObject.Find("Home");
-        plane = GameObject.Find("Plane");
-        target = GameObject.Find("Target");
         slingshot = GameObject.Find("Slingshot").GetComponent<Slingshot>();
-
-        CursorController.Instance.Cursor = cursor;
         CursorController.Instance.cursorOffset = new Vector3(0.0f, -slingshot.transform.position.y, 0.0f);
 
         if (target)
@@ -81,15 +70,6 @@ public class SlingshotTask : BaseTask
         else
         {
             Debug.LogWarning("NO TARGET FOUND");
-        }
-
-        if (expController.UseVR == false)
-        {
-            Camera.SetupCurrent(prefabCamera);
-        }
-        else
-        {
-            prefabCamera.gameObject.SetActive(false);
         }
     }
 

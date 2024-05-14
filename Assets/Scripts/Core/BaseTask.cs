@@ -43,8 +43,6 @@ public abstract class BaseTask : MonoBehaviour
     protected int totalTrials;
     public string prefabName;
 
-    protected string prefabName;
-
     /// <summary>
     /// Type of task, usually for logging
     /// </summary>
@@ -54,15 +52,6 @@ public abstract class BaseTask : MonoBehaviour
     /// Angles for the target GameObject
     /// </summary>
     protected List<float> targetAngles = new List<float>();
-
-    /// <summary>
-    /// Current trial number for the task
-    /// </summary>
-    protected int currentTrial = 0;
-    /// <summary>
-    /// Total number of trials for the task
-    /// </summary>
-    protected int totalTrials = 0;
 
     /// <summary>
     /// Current step for the task
@@ -155,6 +144,28 @@ public abstract class BaseTask : MonoBehaviour
         expController = ExperimentController.Instance;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
+
+        taskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName), expController.transform);
+        taskPrefab.transform.position = Vector3.zero;
+
+        //Not necessary for every task but just in case
+        dock = GameObject.Find("Dock");
+        cursor = GameObject.Find("Cursor");
+        home = GameObject.Find("Home");
+        plane = GameObject.Find("Plane");
+        target = GameObject.Find("Target");
+        prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
+
+        if (expController.UseVR == false)
+        {
+            Camera.SetupCurrent(prefabCamera);
+        }
+        else
+        {
+            prefabCamera.gameObject.SetActive(false);
+        }
+
+        CursorController.Instance.Cursor = cursor;
     }
 
     /// <summary>

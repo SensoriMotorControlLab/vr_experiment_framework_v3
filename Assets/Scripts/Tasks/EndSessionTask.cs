@@ -5,8 +5,6 @@ using TMPro;
 
 public class EndSessionTask : BaseTask
 {
-    Camera endCamera;
-    GameObject instructionPrefab;
     TMP_Text instructionText;
 
     public EndSessionTask()
@@ -40,12 +38,6 @@ public class EndSessionTask : BaseTask
     {
         maxSteps = 1;
 
-        instructionPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);;
-
-        endCamera = GameObject.Find("InstructionCamera").GetComponent<Camera>();
-        if (ExperimentController.Instance.UseVR == false)
-            Camera.SetupCurrent(endCamera);
-
         instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
         instructionText.text = "You have completed all trials\n[Press anything to finish]";
     }
@@ -57,7 +49,6 @@ public class EndSessionTask : BaseTask
 
     public override void TaskEnd()
     {
-        Destroy(instructionPrefab);
         Application.Quit();
     }
 }
