@@ -10,7 +10,7 @@
     },
 	"per_block_input_name": [
 	"mouse",
-	null,
+	"mouse",
 	"mouse"
 	],
     "trials_in_block": [

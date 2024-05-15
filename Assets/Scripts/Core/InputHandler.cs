@@ -28,6 +28,10 @@ public class InputHandler : MonoBehaviour
     /// Name Unity InputDevice associated with the VR controllers when using OpenXR
     /// </summary>
     public const string TOUCH_CONTROLLER_NAME = "OculusTouchControllerOpenXR";
+    /// <summary>
+    /// JSON string to use VR controllers
+    /// </summary>
+    public const string JSON_VR = "vr_controller";
 
     /// <summary>
     /// Dominant hand to track
@@ -250,6 +254,7 @@ public class InputHandler : MonoBehaviour
                         inputDevices[HIGHEST_PRIORITY - 1] = CreateInputDeviceProperty(d);
                         break;
                     case (TOUCH_CONTROLLER_NAME):
+                        FindHandAnchors();
                         inputDevices[HIGHEST_PRIORITY] = CreateInputDeviceProperty(d);
                         break;
                     case (MOUSE_NAME):
@@ -517,9 +522,22 @@ public class InputHandler : MonoBehaviour
         //If a device name was passed
         if (deviceName != null && deviceName.Length > 0)
         {
-            char[] letters = deviceName.ToCharArray();
-            letters[0] = char.ToUpper(letters[0]);
-            deviceName = letters.ToString();
+            string deviceString;
+
+            //switch case for converting JSON strings into Unity InputDevices string
+            switch (deviceName)
+            {
+                case (JSON_VR):
+                    deviceString = TOUCH_CONTROLLER_NAME;
+                    break;
+                default:
+                    deviceString = deviceName;
+                    break;
+            }
+
+            //Make the first letter upper case just in case
+            //the name is written in camel case
+            deviceString = deviceString.First().ToString().ToUpper() + deviceString.Substring(1);
 
             List<string> deviceNames = new List<string>();
 
@@ -529,14 +547,20 @@ public class InputHandler : MonoBehaviour
             }
 
             //If the device name was not found in input devices
-            if (!deviceNames.Contains(deviceName))
+            if (!deviceNames.Contains(deviceString))
             {
                 //Find all devices again to try and see if the device was connected
                 FindDevices();
+
+                //If for some reason the device still could not be found, throw an exception
+                if (!deviceNames.Contains(deviceString))
+                {
+                    throw new UnassignedReferenceException(deviceString + " could not be found");
+                }
             }
 
-            //Get the key for the device
-            int theKey = inputDevices.FirstOrDefault(x => x.Value.inputDevice.name == deviceName).Key;
+            //Get the key for device
+            int theKey = inputDevices.FirstOrDefault(x => x.Value.inputDevice.name == deviceString).Key;
 
             //If the highest priority key has a value we need to move some things around 
             //before setting the other device to highest priority
@@ -549,15 +573,21 @@ public class InputHandler : MonoBehaviour
                         InputDeviceProperties highestPriorityDevice = inputDevices[HIGHEST_PRIORITY];
                         inputDevices[i] = highestPriorityDevice;
                         inputDevices.Remove(HIGHEST_PRIORITY);
+
+                        inputDevices[HIGHEST_PRIORITY] = inputDevices[theKey];
+                        inputDevices.Remove(theKey);
                         break;
                     }
                     else if (i == 0)
                     {
                         Debug.LogWarning("Could not move devices around, highest priority device is " + inputDevices[HIGHEST_PRIORITY].inputDevice.name +
-                            " and not the desired " + deviceName);
+                            " and not the desired " + deviceString);
                     }
                 }
-
+            }
+            //if no highest priority device exists just set the device to it
+            else if (theKey != HIGHEST_PRIORITY && inputDevices.Keys.Max() != HIGHEST_PRIORITY)
+            {
                 inputDevices[HIGHEST_PRIORITY] = inputDevices[theKey];
                 inputDevices.Remove(theKey);
             }
@@ -567,7 +597,6 @@ public class InputHandler : MonoBehaviour
         {
             FindDevices();
         }
-
         /*
         foreach(var e in inputDevices)
         {

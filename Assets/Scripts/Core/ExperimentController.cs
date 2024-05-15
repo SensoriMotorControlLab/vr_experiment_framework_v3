@@ -162,7 +162,7 @@ public class ExperimentController : MonoBehaviour
             //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
             Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
             //Debug.Log(Camera.main);
-            InputHandler.Instance.FindHandAnchors();
+            //InputHandler.Instance.FindHandAnchors();
         }
         // if not using VR
         else
