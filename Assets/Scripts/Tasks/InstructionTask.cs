@@ -5,6 +5,7 @@ using TMPro;
 
 public class InstructionTask : BaseTask
 {
+    Canvas instructionCanvas;
     TMP_Text instructionText;
 
     public InstructionTask()
@@ -30,27 +31,23 @@ public class InstructionTask : BaseTask
 
     public override void LogParameters()
     {
-        
+
     }
 
     public override void SetUp()
     {
+        base.SetUp();
+
         currentStep = 0;
         maxSteps = 1;
 
         instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
+        instructionCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         //in the JSON the per_block is just the key to the text key-value
         string insKey = ExperimentController.Instance.Session.CurrentBlock.settings.GetString("instruction");
         string insString = ExperimentController.Instance.Session.settings.GetString(insKey);
         instructionText.text = insString;
-    }
 
-    public override void TaskBegin()
-    {
-        
-    }
-
-    public override void TaskEnd()
-    {
+        instructionCanvas.worldCamera = Camera.main;
     }
 }

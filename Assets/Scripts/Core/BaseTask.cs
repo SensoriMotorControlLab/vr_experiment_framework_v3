@@ -141,6 +141,7 @@ public abstract class BaseTask : MonoBehaviour
     public virtual void SetUp()
     {
         ready = true;
+        finished = false;
         expController = ExperimentController.Instance;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
@@ -176,7 +177,6 @@ public abstract class BaseTask : MonoBehaviour
         Debug.Log("Current trial in block: " + ExperimentController.Instance.Session.CurrentTrial.numberInBlock);
         Debug.Log("Current block number: " + ExperimentController.Instance.Session.CurrentBlock.number);
 
-        finished = false;
     }
 
     /// <summary>
