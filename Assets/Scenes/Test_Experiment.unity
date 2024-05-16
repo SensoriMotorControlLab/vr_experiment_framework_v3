@@ -1348,10 +1348,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 254a537aff85bdc4c86405761675b4eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scenePrefabs:
-  - {fileID: 2851246754599150346, guid: e23b3ca63a37c224f8522280745c3f80, type: 3}
-  - {fileID: 2517357246821121372, guid: fb3d1d9783bb98644baf7af411ce681f, type: 3}
-  - {fileID: 3246888207011332581, guid: 332bc3430d45a2545b09ab1cb5938e3f, type: 3}
+  endSessionPrefab: {fileID: 2517357246821121372, guid: af7f624760b75cf4fa67a51e1b6e9ab6,
+    type: 3}
   vrCtlr: {fileID: 695780446}
   vrPrefab: {fileID: 6578057208008651646, guid: 5899de6eee158cd4cbc3e43193b50e3f,
     type: 3}

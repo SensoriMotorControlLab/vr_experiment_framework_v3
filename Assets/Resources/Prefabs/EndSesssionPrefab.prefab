@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 159876857338406159}
   - component: {fileID: 3851076546241493086}
   m_Layer: 5
-  m_Name: InstructionText
+  m_Name: EndText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,7 +66,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Instruction text goes here
+  m_text: 'Experiment is complete
+
+    Press any key to end'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -144,8 +146,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6793688156333856063}
+  - component: {fileID: 3017822996502445447}
   m_Layer: 0
-  m_Name: InstructionPrefab
+  m_Name: EndSesssionPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,6 +171,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3017822996502445447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2517357246821121372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c55ad9f37adc1344bc808997900ffed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: 
 --- !u!1 &5010367163624082920
 GameObject:
   m_ObjectHideFlags: 0

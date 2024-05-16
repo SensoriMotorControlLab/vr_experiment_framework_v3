@@ -11,6 +11,9 @@ public class ExperimentController : MonoBehaviour
     private ExperimentGenerator expGenerator = null;
     private Session session;
 
+    [SerializeField]
+    private GameObject endSessionPrefab;
+
     /// <summary>
     ///Dictionary of the lists for the experiment defined in ExperimentGenerator
     /// </summary>
@@ -271,8 +274,9 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void OnSessionEnd()
     {
-        Application.Quit();
+        //Application.Quit();
         // TODO: end screen
+        Instantiate(endSessionPrefab);
     }
 
 }

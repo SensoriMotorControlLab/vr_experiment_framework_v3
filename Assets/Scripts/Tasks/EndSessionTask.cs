@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using TMPro;
 
 public class EndSessionTask : BaseTask
@@ -12,10 +13,9 @@ public class EndSessionTask : BaseTask
         taskType = "endsessions";
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        
+        SetUp();
     }
 
     // Update is called once per frame
@@ -36,6 +36,7 @@ public class EndSessionTask : BaseTask
 
     public override void SetUp()
     {
+        base.SetUp();
         maxSteps = 1;
 
         instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
@@ -44,11 +45,20 @@ public class EndSessionTask : BaseTask
 
     public override void TaskBegin()
     {
-
+        base.TaskBegin();
     }
 
     public override void TaskEnd()
     {
-        Application.Quit();
+        //base.TaskEnd();
+        if (Application.isEditor)
+        {
+            EditorApplication.ExitPlaymode();
+        }
+        else
+        {
+            Application.Quit();
+
+        }
     }
 }
