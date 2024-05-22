@@ -212,13 +212,14 @@ public class ExperimentGenerator : MonoBehaviour
         //for every block there is a corresponding task object
         foreach (Block theBlock in s.blocks)
         {
-            ExperimentController experimentController = ExperimentController.Instance; 
-            Type tt = experimentController.taskDict[theBlock.settings.GetString("task")].GetType(); 
-            BaseTask task = experimentController.gameObject.AddComponent(tt) as BaseTask; 
-            task.enabled = false; 
-            task.prefabName = Char.ToUpper(theBlock.settings.GetString("task")[0]) + theBlock.settings.GetString("task").Substring(1) + "Prefab"; 
-            Debug.Log("Task: " + task.prefabName); 
-            experimentController.Tasks.Add(task); 
+            ExperimentController experimentController = ExperimentController.Instance;
+            //Type tt = experimentController.taskDict[theBlock.settings.GetString("task")].GetType(); 
+            //BaseTask task = experimentController.gameObject.AddComponent(tt) as BaseTask; 
+            //task.enabled = false; 
+            //task.prefabName = Char.ToUpper(theBlock.settings.GetString("task")[0]) + theBlock.settings.GetString("task").Substring(1) + "Prefab";
+            experimentController.taskPrefabNames.Add(Char.ToUpper(theBlock.settings.GetString("task")[0]) + theBlock.settings.GetString("task").Substring(1) + "Prefab");
+            //Debug.Log("Task: " + task.prefabName); 
+            //experimentController.Tasks.Add(task); 
         }
 
         //add a end screen to the end

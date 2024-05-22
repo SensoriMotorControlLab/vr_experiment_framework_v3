@@ -28,6 +28,7 @@ public abstract class BaseTask : MonoBehaviour
     public GameObject Target { get { return target; } set { target = value; } }
     protected GameObject cursor;
     public GameObject Cursor { get { return cursor; } set { cursor = value; } }
+    public GameObject TaskPrefab { get { return taskPrefab; } set { taskPrefab = value; } }
 
     /// <summary>
     /// The camera for the prefab when not using VR
@@ -41,7 +42,7 @@ public abstract class BaseTask : MonoBehaviour
     protected int currentTrial;
     //the total trials
     protected int totalTrials;
-    public string prefabName;
+    //public string prefabName;
 
     /// <summary>
     /// Type of task, usually for logging
@@ -76,6 +77,7 @@ public abstract class BaseTask : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
     }
     // Update is called once per frame
     void Update()
@@ -89,7 +91,6 @@ public abstract class BaseTask : MonoBehaviour
     {
         currentStep++;
 
-        //TODO add time
         finished = currentStep == maxSteps;
 
         if (finished)
@@ -124,11 +125,13 @@ public abstract class BaseTask : MonoBehaviour
         set { taskType = value; }
     }
 
+    /*
     public string PrefabName
     {
         get { return prefabName; }
         set { prefabName = value; }
     }
+    */
 
     public bool IsReady
     {
@@ -146,8 +149,8 @@ public abstract class BaseTask : MonoBehaviour
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
 
-        taskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName), expController.transform);
-        taskPrefab.transform.position = Vector3.zero;
+        //taskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName), expController.transform);
+        //taskPrefab.transform.position = Vector3.zero;
 
         //Not necessary for every task but just in case
         dock = GameObject.Find("Dock");

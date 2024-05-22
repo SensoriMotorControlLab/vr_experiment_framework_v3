@@ -2,14 +2,14 @@
     "use_vr": false,
     "test": [
         90,
-        45,
         125,
+        45,
         100
     ],
     "target_angle": [
         90,
-        45,
         125,
+        45,
         100
     ],
     "input_name": "mouse",

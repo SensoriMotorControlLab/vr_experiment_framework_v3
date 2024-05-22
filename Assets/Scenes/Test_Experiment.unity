@@ -1350,6 +1350,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endSessionPrefab: {fileID: 2517357246821121372, guid: af7f624760b75cf4fa67a51e1b6e9ab6,
     type: 3}
+  taskPrefabNames: []
   vrCtlr: {fileID: 695780446}
   vrPrefab: {fileID: 6578057208008651646, guid: 5899de6eee158cd4cbc3e43193b50e3f,
     type: 3}

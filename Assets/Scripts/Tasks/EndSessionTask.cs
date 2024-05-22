@@ -6,7 +6,7 @@ using TMPro;
 
 public class EndSessionTask : BaseTask
 {
-    TMP_Text instructionText;
+    TMP_Text endText;
 
     public EndSessionTask()
     {
@@ -39,8 +39,8 @@ public class EndSessionTask : BaseTask
         base.SetUp();
         maxSteps = 1;
 
-        instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
-        instructionText.text = "You have completed all trials\n[Press anything to finish]";
+        endText = GameObject.Find("EndText").GetComponent<TMP_Text>();
+        endText.text = "You have completed all trials\n[Press anything to finish]";
     }
 
     public override void TaskBegin()
