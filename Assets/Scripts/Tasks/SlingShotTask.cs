@@ -61,7 +61,7 @@ public class SlingshotTask : BaseTask
         maxSteps = 3;
 
         slingshot = GameObject.Find("Slingshot").GetComponent<Slingshot>();
-        CursorController.Instance.cursorOffset = new Vector3(0.0f, -slingshot.transform.position.y, 0.0f);
+        CursorController.Instance.planeOffset = new Vector3(0.0f, -slingshot.transform.position.y, 0.0f);
 
         if (target)
         {

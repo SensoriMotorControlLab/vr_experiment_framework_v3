@@ -72,7 +72,7 @@ public class ReachTask : BaseTask
         currentStep = 0;
         maxSteps = 3;
 
-        CursorController.Instance.cursorOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
+        CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
 
         //set up dock position and hide it
         dock.transform.position = taskPrefab.transform.position - ExperimentController.Instance.transform.forward * DOCK_DIST;

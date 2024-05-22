@@ -7,7 +7,7 @@ using UnityEngine;
 public class CursorController : MonoBehaviour
 {
     private static CursorController instance = null;
-    public Vector3 cursorOffset = Vector3.zero;
+    public Vector3 planeOffset = Vector3.zero;
     GameObject cursor;
     MovementType moveType;
     
@@ -47,7 +47,7 @@ public class CursorController : MonoBehaviour
             cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetRayPosition());
             if (ExperimentController.Instance.CurrentTask.Plane)
             {
-                Plane plane = new Plane(ExperimentController.Instance.CurrentTask.Plane.transform.up, cursorOffset.y);
+                Plane plane = new Plane(ExperimentController.Instance.CurrentTask.Plane.transform.up, planeOffset.y);
                 cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
             }
         }
