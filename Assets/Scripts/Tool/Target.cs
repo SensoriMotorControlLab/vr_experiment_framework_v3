@@ -44,7 +44,7 @@ public class Target : MonoBehaviour
     {
         if (collision.gameObject.tag == "Projectile" || collision.gameObject == projectile)
         {
-            Debug.Log("Projectile collided with " + name);
+            //Debug.Log("Projectile collided with " + name);
             targetHit = true;
         }
     }
@@ -53,7 +53,7 @@ public class Target : MonoBehaviour
     {
         if (other.gameObject.tag == "Projectile" || other.gameObject == projectile)
         {
-            Debug.Log("Projectile triggered " + name);
+            //Debug.Log("Projectile triggered " + name);
             targetHit = true;
         }
     }

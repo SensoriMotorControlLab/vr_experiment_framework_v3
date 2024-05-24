@@ -34,7 +34,6 @@ public class CursorController : MonoBehaviour
         }
 
         moveType = MovementType.aligned;
-        //FindHandAnchors();
     }
 
     // Update is called once per frame

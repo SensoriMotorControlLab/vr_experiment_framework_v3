@@ -125,14 +125,6 @@ public abstract class BaseTask : MonoBehaviour
         set { taskType = value; }
     }
 
-    /*
-    public string PrefabName
-    {
-        get { return prefabName; }
-        set { prefabName = value; }
-    }
-    */
-
     public bool IsReady
     {
         get { return ready; }
@@ -148,9 +140,6 @@ public abstract class BaseTask : MonoBehaviour
         expController = ExperimentController.Instance;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
-
-        //taskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName), expController.transform);
-        //taskPrefab.transform.position = Vector3.zero;
 
         //Not necessary for every task but just in case
         dock = GameObject.Find("Dock");

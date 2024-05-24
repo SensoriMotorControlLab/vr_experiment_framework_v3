@@ -85,7 +85,8 @@ public class Tool : MonoBehaviour
         if (other.tag == "Cursor")
         {
             isProximity = false;
-        }    }
+        }
+    }
 
     public bool IsGrabbed
     {

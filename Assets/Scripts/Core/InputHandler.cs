@@ -91,30 +91,6 @@ public class InputHandler : MonoBehaviour
                 rotation = inputRotUpdate();
             }
         }
-
-        /*
-        public override bool Equals(object obj)
-        {
-            InputDeviceProperties inputObj = (InputDeviceProperties)obj;
-
-            return Equals(inputObj);
-        }
-
-        public bool Equals(InputDeviceProperties other)
-        {
-            return inputDevice == other.inputDevice && inputType == other.inputType;
-        }
-
-        public static bool operator ==(InputDeviceProperties lhs, InputDeviceProperties rhs)
-        {
-            return lhs.Equals(rhs);
-        }
-
-        public static bool operator !=(InputDeviceProperties lhs, InputDeviceProperties rhs)
-        {
-            return !lhs.Equals(rhs);
-        }
-        */
     }
 
     public static InputHandler Instance
@@ -178,7 +154,8 @@ public class InputHandler : MonoBehaviour
         //Debug.Log(vrHands["LeftHand"]);
         //Debug.Log(vrHands["RightHand"]);
     }
-
+    
+    /*
     public void FindDevices(Dictionary<int, string> devicePref)
     {
         Dictionary<int, InputDevice> currentDevices = new Dictionary<int, InputDevice>();
@@ -220,6 +197,7 @@ public class InputHandler : MonoBehaviour
             }
         }
     }
+    */
 
     /// <summary>
     /// Default setup for finding devices
@@ -437,12 +415,7 @@ public class InputHandler : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(GetRayPosition());
         float enter;
 
-        if (plane.Raycast(ray, out enter))
-        {
-            return true;
-        }
-
-        return false;
+        return plane.Raycast(ray, out enter);
     }
 
     /// <summary>
@@ -632,85 +605,4 @@ public class InputHandler : MonoBehaviour
             UseThisDevice(inputDevices[priority].inputDevice.name);
         }
     }
-
-    //OLD METHODS FOR ADD AND REMOVE, MAYBE DELETE?
-    /*
-    public void SetDevicePriority(string deviceName, int newPriority)
-    {
-        foreach (var e in inputDevices.ToList())
-        {
-            InputDeviceProperties r = inputDevices[e.Key];
-
-            if (r.inputDevice.name == deviceName)
-            {
-                int oldKey = e.Key;
-                inputDevices[newPriority] = r;
-                inputDevices.Remove(oldKey);
-                break;
-            }
-        }
-    }
-
-    public void SetDevicePriority(InputDevice inputDevice, int newPriority)
-    {
-        foreach (var e in inputDevices.ToList())
-        {
-            InputDeviceProperties r = inputDevices[e.Key];
-
-            if (r.inputDevice == inputDevice)
-            {
-                int oldKey = e.Key;
-                inputDevices[newPriority] = r;
-                inputDevices.Remove(oldKey);
-                break;
-            }
-        }
-    }
-
-    public void ChangePriority(int oldPriority, int newPriority)
-    {
-        if (inputDevices.ContainsKey(oldPriority))
-        {
-            InputDeviceProperties theDevice = inputDevices[oldPriority];
-            inputDevices[newPriority] = theDevice;
-            inputDevices.Remove(oldPriority);
-        }
-    }
-
-    public void AddInputDevice(int priority, Vector3 pos, Quaternion rot, InputType inputType, InputDevice inputDevice, InputPositionUpdate posUpdate, InputRotationUpdate rotUpdate)
-    {
-        InputDeviceProperties newDeviceProperty = new InputDeviceProperties(pos, rot, inputType, inputDevice, posUpdate, rotUpdate);
-
-        if(!inputDevices.ContainsValue(newDeviceProperty))
-        {
-            inputDevices[priority] = newDeviceProperty;
-
-            if (inputDevices.ContainsKey(priority))
-            {
-                Debug.Log("InputDevices replaced " + inputDevices[priority].inputDevice.name + " with " + newDeviceProperty.inputDevice.name + " with priority " + priority + " because of same priority");
-            }
-        }
-    }
-
-    public void AddInputDevice(int priority, InputDeviceProperties inputDeviceProperties)
-    {
-        if (!inputDevices.ContainsValue(inputDeviceProperties))
-        {
-            inputDevices[priority] = inputDeviceProperties;
-
-            if (inputDevices.ContainsKey(priority))
-            {
-                Debug.Log("InputDevices replaced " + inputDevices[priority].inputDevice.name + " with " + inputDeviceProperties.inputDevice.name + " with priority " + priority + " because of same priority");
-            }
-        }
-    }
-
-    public void RemoveInputDevice(int priority)
-    {
-        if (inputDevices.ContainsKey(priority))
-        {
-            inputDevices.Remove(priority);
-        }
-    }
-    */
 }

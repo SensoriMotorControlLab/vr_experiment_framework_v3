@@ -19,10 +19,6 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     Dictionary<string, List<object>> expLists = new Dictionary<string, List<object>>();
     /// <summary>
-    /// List of the task objects that run the trials
-    /// </summary>
-    //List<BaseTask> tasks = new List<BaseTask>();
-    /// <summary>
     /// List of the prefab names in Resources > Prefab to spawn
     /// </summary>
     public List<string> taskPrefabNames = new List<string>();
@@ -61,10 +57,6 @@ public class ExperimentController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        //taskDict["slingShot"] = new SlingshotTask();
-        //taskDict["reachToTarget"] = new ReachTask();
-        //taskDict["instruction"] = new InstructionTask();
     }
 
     // Update is called once per frame
@@ -103,13 +95,6 @@ public class ExperimentController : MonoBehaviour
             return instance; 
         }
     }
-
-    /*
-    public List<BaseTask> Tasks
-    {
-        get { return tasks; }
-    }
-    */
 
     public Session Session
     {
@@ -168,10 +153,8 @@ public class ExperimentController : MonoBehaviour
                 vrCtlr.transform.position = Vector3.zero;
             }
 
-            //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
             Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
             //Debug.Log(Camera.main);
-            //InputHandler.Instance.FindHandAnchors();
         }
         // if not using VR
         else
@@ -258,7 +241,6 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void TrialEnd()
     {
-        //TODO Log Parameters
         //if this is the last trial of the block
         if (session.CurrentTrial == session.CurrentBlock.lastTrial)
         {
@@ -270,7 +252,6 @@ public class ExperimentController : MonoBehaviour
             if (session.CurrentBlock.number < taskPrefabNames.Count)
             {
                 //move on to the next task and prepare it
-                //currentTask = tasks[session.CurrentBlock.number];
                 GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + taskPrefabNames[session.CurrentBlock.number]));
                 currentTaskPrefab.name = taskPrefabNames[session.CurrentBlock.number];
                 currentTaskPrefab.transform.position = Vector3.zero;
