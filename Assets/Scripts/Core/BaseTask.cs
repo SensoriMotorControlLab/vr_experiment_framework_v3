@@ -82,7 +82,7 @@ public abstract class BaseTask : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     /// <summary>
     /// Increment the step and return if we have reached the final step
@@ -169,6 +169,8 @@ public abstract class BaseTask : MonoBehaviour
         Debug.Log("Current trial in block: " + ExperimentController.Instance.Session.CurrentTrial.numberInBlock);
         Debug.Log("Current block number: " + ExperimentController.Instance.Session.CurrentBlock.number);
 
+        currentStep = 0;
+        finished = false;
     }
 
     /// <summary>

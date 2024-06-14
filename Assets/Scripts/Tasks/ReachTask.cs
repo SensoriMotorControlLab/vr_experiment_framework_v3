@@ -23,11 +23,12 @@ public class ReachTask : BaseTask
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("current step: " + currentStep);
         switch (currentStep)
         {
             //reach to dock
             case 0:
-                if (Vector3.Distance(cursor.transform.position,dock.transform.position) <= 0.01f)
+                if (Vector3.Distance(cursor.transform.position, dock.transform.position) <= 0.01f)
                 {
                     dock.SetActive(false);
                     home.SetActive(true);
@@ -61,7 +62,7 @@ public class ReachTask : BaseTask
 
         session.CurrentTrial.result["type"] = session.CurrentBlock.settings.GetString("task");
         session.CurrentTrial.result["home_pos"] = home.transform.position;
-        session.CurrentTrial.result["target_angle"] = session.CurrentBlock.settings.GetFloatList("target_angle")[session.currentTrialNum-1];
+        session.CurrentTrial.result["target_angle"] = session.CurrentBlock.settings.GetFloatList("target_angle")[session.currentTrialNum - 1];
         session.CurrentTrial.result["target_size_m"] = target.transform.localScale.x;
         session.CurrentTrial.result["cursor_pos"] = cursor.transform.position;
     }
@@ -70,7 +71,7 @@ public class ReachTask : BaseTask
     {
         base.SetUp();
         currentStep = 0;
-        maxSteps = 3;
+        maxSteps = 3; // maybe this should be numSteps (since it's 0 indexed)
 
         CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
 
@@ -111,5 +112,5 @@ public class ReachTask : BaseTask
         base.TaskEnd();
     }
 
-    
+
 }

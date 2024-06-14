@@ -10,7 +10,7 @@ public class CursorController : MonoBehaviour
     public Vector3 planeOffset = Vector3.zero;
     GameObject cursor;
     MovementType moveType;
-    
+
     /// <summary>
     /// The behaviour of the cursor
     /// </summary>
@@ -50,7 +50,7 @@ public class CursorController : MonoBehaviour
                 cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
             }
         }
-        else if(ExperimentController.Instance.UseVR == true && Camera.main && cursor)
+        else if (ExperimentController.Instance.UseVR == true && Camera.main && cursor)
         {
             cursor.transform.position = InputHandler.Instance.GetSpatialPosition();
             cursor.transform.rotation = InputHandler.Instance.GetSpatialRotation();
@@ -70,11 +70,11 @@ public class CursorController : MonoBehaviour
 
     public static CursorController Instance
     {
-        get 
+        get
         {
             if (!instance)
-                Debug.LogError("ExperimentController is unitialized"); 
-            return instance; 
+                Debug.LogError("ExperimentController is unitialized");
+            return instance;
         }
     }
 
@@ -122,6 +122,9 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the cursor movement type
+    /// </summary>
     public Vector3 ConvertCursorPosition()
     {
         GameObject target = ExperimentController.Instance.CurrentTask.Target;
