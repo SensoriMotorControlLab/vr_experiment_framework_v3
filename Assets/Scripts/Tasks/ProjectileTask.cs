@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class ProjectileTask : BaseTask
 {
+    [SerializeField]
     Target line;
+    [SerializeField]
     Tool ball;
     Rigidbody ballRB;
     Vector3 collisionPos;
-    const float LAUNCH_FORCE = 100.0f;
+    /// <summary>
+    /// Speed to increment the step
+    /// </summary>
+    const float END_SPEED = 0.1f;
+    const float LAUNCH_FORCE = 500.0f;
     bool hitLine = false;
     
 
@@ -58,6 +64,21 @@ public class ProjectileTask : BaseTask
                 break;
             //Ball hit the line, ball is no longer kinematic, apply force
             case 1:
+                //Ball the hit target
+                if (target.GetComponent<Target>().TargetHit)
+                {
+
+                    ballRB.isKinematic = false;
+                    IncrementStep();
+                }
+                //Ball missed the target
+                /*
+                else if(ballRB.velocity.magnitude <= END_SPEED)
+                {
+                    ballRB.isKinematic = true;
+                    IncrementStep();
+                }
+                */
                 break;
         }
     }
@@ -67,8 +88,11 @@ public class ProjectileTask : BaseTask
         base.SetUp();
         maxSteps = 2;
 
-        line = GameObject.Find("Line").GetComponent<Target>();
-        ball = GameObject.Find("Ball").GetComponent<Tool>();
+        if(!line)
+            line = GameObject.Find("Line").GetComponent<Target>();
+        if(!ball)
+            ball = GameObject.Find("Ball").GetComponent<Tool>();
+
         ballRB = ball.GetComponent<Rigidbody>();
         CursorController.Instance.planeOffset = new Vector3(0.0f, -ball.transform.position.y, 0.0f);
     }
@@ -83,6 +107,8 @@ public class ProjectileTask : BaseTask
         ballRB.useGravity = false;
         ball.transform.position = home.transform.position;
         hitLine = false;
+
+        //Setup target position
     }
 
     public override void TaskEnd()

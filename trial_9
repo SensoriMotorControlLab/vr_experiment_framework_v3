@@ -1,10 +1,10 @@
 {
-    "experiment": "sample_experiment",
+    "experiment": "projectile_experiment ",
     "ppid": "test",
     "session_num": 1,
     "trial_num": 10,
     "block_num": 3,
     "trial_num_in_block": 2,
-    "start_time": 8.6958560943603516,
-    "end_time": 9.131561279296875
-}}
+    "start_time": 5.9708666801452637,
+    "end_time": 6.3400378227233887
+}

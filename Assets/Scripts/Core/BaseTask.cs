@@ -39,6 +39,7 @@ public abstract class BaseTask : MonoBehaviour
     /// <summary>
     /// The camera for the prefab when not using VR
     /// </summary>
+    [SerializeField]
     protected Camera prefabCamera;
     /// <summary>
     /// Prefab for the task
@@ -149,12 +150,18 @@ public abstract class BaseTask : MonoBehaviour
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
 
         //Not necessary for every task but just in case
-        dock = GameObject.Find("Dock");
-        cursor = GameObject.Find("Cursor");
-        home = GameObject.Find("Home");
-        plane = GameObject.Find("Plane");
-        target = GameObject.Find("Target");
-        prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
+        if(!dock)
+            dock = GameObject.Find("Dock");
+        if(!cursor)
+            cursor = GameObject.Find("Cursor");
+        if(!home)
+            home = GameObject.Find("Home");
+        if(!plane)
+            plane = GameObject.Find("Plane");
+        if(!target)
+            target = GameObject.Find("Target");
+        if(!prefabCamera)
+            prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
 
         if (expController.UseVR == false)
         {

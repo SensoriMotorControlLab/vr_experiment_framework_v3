@@ -117,8 +117,11 @@ MonoBehaviour:
   home: {fileID: 1837310699630250158}
   dock: {fileID: 0}
   plane: {fileID: 8110339310989644735}
-  target: {fileID: 0}
+  target: {fileID: 6570406427615215338}
   cursor: {fileID: 3825054604519124607}
+  prefabCamera: {fileID: 3589949665665710019}
+  line: {fileID: 1029211211242652196}
+  ball: {fileID: 2375941286311539042}
 --- !u!1 &3825054604519124607
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,6 +814,12 @@ PrefabInstance:
 --- !u!4 &6447222026181431876 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3825555447175469334, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
+    type: 3}
+  m_PrefabInstance: {fileID: 7813244179054201682}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6570406427615215338 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3981461323465143736, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
     type: 3}
   m_PrefabInstance: {fileID: 7813244179054201682}
   m_PrefabAsset: {fileID: 0}
