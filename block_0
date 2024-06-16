@@ -13,8 +13,8 @@
         100
     ],
     "input_name": "mouse",
-    "task": "slingShot",
+    "task": "projectile",
     "rotation": 30,
     "instruction": null
-} null
+}null
 }

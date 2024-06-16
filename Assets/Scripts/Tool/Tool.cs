@@ -13,7 +13,7 @@ public class Tool : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        colliders = GetComponents<Collider>();
+        colliders = gameObject.GetComponents<Collider>();
 
         if(colliders.Length == 0)
         {

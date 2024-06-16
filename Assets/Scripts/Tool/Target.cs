@@ -7,12 +7,14 @@ public class Target : MonoBehaviour
     /// <summary>
     /// The projectile meant to hit the target
     /// </summary>
+    [SerializeField]
     GameObject projectile;
     /// <summary>
     /// The collider for the target used to check for collision with the target
     /// </summary>
     Collider targetCollider;
     bool targetHit = false;
+    bool colliding = false;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +40,7 @@ public class Target : MonoBehaviour
     {
         transform.position = Vector3.zero;
         targetHit = false;
+        colliding = false;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -46,6 +49,7 @@ public class Target : MonoBehaviour
         {
             //Debug.Log("Projectile collided with " + name);
             targetHit = true;
+            colliding = true;
         }
     }
 
@@ -55,6 +59,33 @@ public class Target : MonoBehaviour
         {
             //Debug.Log("Projectile triggered " + name);
             targetHit = true;
+            colliding = true;
         }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Projectile" || collision.gameObject == projectile)
+        {
+            colliding = false;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Projectile" || other.gameObject == projectile)
+        {
+            colliding = false;
+        }
+    }
+
+    public bool TargetHit
+    {
+        get { return targetHit; }
+    }
+
+    public bool Colliding
+    {
+        get { return colliding; }
     }
 }

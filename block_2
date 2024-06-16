@@ -1,19 +1,19 @@
 {
     "use_vr": false,
     "test": [
-        50,
         110,
         130,
-        70
+        70,
+        50
     ],
     "target_angle": [
-        50,
         110,
         130,
-        70
+        70,
+        50
     ],
     "input_name": "mouse",
-    "task": "slingShot",
+    "task": "projectile",
     "rotation": 30,
     "instruction": null
 }

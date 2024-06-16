@@ -57,7 +57,6 @@ public class SlingshotTask : BaseTask
     public override void SetUp()
     {
         base.SetUp();
-        currentStep = 0;
         maxSteps = 3;
 
         slingshot = GameObject.Find("Slingshot").GetComponent<Slingshot>();
@@ -79,8 +78,6 @@ public class SlingshotTask : BaseTask
 
         // Debug.Log("Current trial in block: " + expController.Session.CurrentTrial.numberInBlock);
         // Debug.Log("current block number: " + expController.Session.CurrentBlock.number);
-        currentStep = 0;
-        finished = false;
         targetScript.ResetTarget();
 
         //if the target angles have not been set yet

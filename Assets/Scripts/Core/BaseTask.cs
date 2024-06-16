@@ -9,23 +9,29 @@ public abstract class BaseTask : MonoBehaviour
     /// <summary>
     /// The home for the experiment
     /// </summary>
+    [SerializeField]
     protected GameObject home;
     public GameObject Home { get { return home; } set { home = value; } }
     /// <summary>
     /// The docking position for the experiment
     /// </summary>
+    [SerializeField]
     protected GameObject dock;
     public GameObject Dock { get { return dock; } set { dock = value; } }
     /// <summary>
     /// Scenes plane object
     /// </summary>
+    [SerializeField]
     protected GameObject plane;
     public GameObject Plane { get { return plane; } set { plane = value; } }
     /// <summary>
     /// Experiment target object
     /// </summary>
+    [SerializeField]
     protected GameObject target;
     public GameObject Target { get { return target; } set { target = value; } }
+
+    [SerializeField]
     protected GameObject cursor;
     public GameObject Cursor { get { return cursor; } set { cursor = value; } }
     public GameObject TaskPrefab { get { return taskPrefab; } set { taskPrefab = value; } }
@@ -137,6 +143,7 @@ public abstract class BaseTask : MonoBehaviour
     {
         ready = true;
         finished = false;
+        currentStep = 0;
         expController = ExperimentController.Instance;
         totalTrials = expController.Session.CurrentBlock.trials.Count;
         currentTrial = expController.Session.CurrentTrial.numberInBlock - 1;
@@ -159,6 +166,11 @@ public abstract class BaseTask : MonoBehaviour
         }
 
         CursorController.Instance.Cursor = cursor;
+
+        if (cursor)
+        {
+            CursorController.Instance.planeOffset = new Vector3(0.0f, -cursor.transform.position.y, 0.0f);
+        }
     }
 
     /// <summary>
@@ -169,6 +181,8 @@ public abstract class BaseTask : MonoBehaviour
         Debug.Log("Current trial in block: " + ExperimentController.Instance.Session.CurrentTrial.numberInBlock);
         Debug.Log("Current block number: " + ExperimentController.Instance.Session.CurrentBlock.number);
 
+        currentStep = 0;
+        finished = false;
     }
 
     /// <summary>

@@ -69,7 +69,6 @@ public class ReachTask : BaseTask
     public override void SetUp()
     {
         base.SetUp();
-        currentStep = 0;
         maxSteps = 3;
 
         CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
