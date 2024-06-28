@@ -5,18 +5,18 @@ using UnityEngine;
 public class ProjectileTask : BaseTask
 {
     [SerializeField]
-    Target line;
-    [SerializeField]
     Tool ball;
     Rigidbody ballRB;
-    Vector3 collisionPos;
+    Vector3 previousPos;
     /// <summary>
     /// Speed to increment the step
     /// </summary>
-    const float END_SPEED = 0.1f;
-    const float LAUNCH_FORCE = 500.0f;
-    bool hitLine = false;
-    
+    const float END_SPEED = 0.06f;
+    const float LAUNCH_FORCE = 100.0f;
+    const float LAUNCH_DIST = 0.2f;
+    const float PRE_LAUNCH_DIST = 0.12f;
+    const float LAUNCH_MAG = LAUNCH_DIST - PRE_LAUNCH_DIST;
+    float launchTime = 0.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -34,51 +34,67 @@ public class ProjectileTask : BaseTask
 
         switch (currentStep)
         {
-            //Moving the ball, ball is kinematic
+            //Participant returns to home
             case 0:
-
-                if (line.TargetHit && !hitLine)
+                if (Vector3.Distance(cursor.transform.position,home.transform.position) <= PRE_LAUNCH_DIST && Input.GetButtonDown("Fire1"))
                 {
-                    collisionPos = ball.transform.position;
-                    hitLine = true;
+                    Debug.Log("At home");
+                    IncrementStep();
+                } 
+
+                break;
+            //Track cursor(hand position) and launch when certain distance from home
+            case 1:
+
+                if (Input.GetButton("Fire1"))
+                {
+                    launchTime += Time.deltaTime;
+                    previousPos = cursor.transform.position;
                 }
 
-                if (!line.Colliding && hitLine)
+
+                if (Vector3.Distance(cursor.transform.position, home.transform.position) >= LAUNCH_DIST || !Input.GetButton("Fire1"))
                 {
-                    Vector3 launchVec = Cursor.transform.position - collisionPos;
-                    launchVec.Normalize();
+                    Vector3 launchVec = cursor.transform.position - home.transform.position;
+                    
+                    float cursorDist = Vector3.Distance(cursor.transform.position, home.transform.position);
+                    Debug.Log("Cursor dist " + cursorDist);
+                    Debug.Log("Launch time " + launchTime);
 
                     Debug.Log("Launch vector "  + launchVec);
                     ballRB.isKinematic = false;
                     ballRB.useGravity = true;
-                    ballRB.AddForce(launchVec * LAUNCH_FORCE);
-                    Debug.Log("Launch force " + launchVec * LAUNCH_FORCE);
+                    ballRB.AddForce(launchVec.normalized * LAUNCH_FORCE);
+                    Debug.Log("Launch force " + launchVec.normalized * LAUNCH_FORCE);
+                    //Debug.Log("Launch force " + launchVec * LAUNCH_FORCE);
                     cursor.SetActive(false);
                     IncrementStep();
                 }
-                else
-                {
-                    ball.transform.position = cursor.transform.position;
-                }
 
                 break;
-            //Ball hit the line, ball is no longer kinematic, apply force
-            case 1:
+            //Ball is launched, tracking for colliding with target, missing target, or slowing down
+            case 2:
+                Vector3 toTarget = target.transform.position - home.transform.position;
+                Vector3 toBall = target.transform.position - ball.transform.position;
+                float dot = Vector3.Dot(toTarget, toBall);
+
                 //Ball the hit target
                 if (target.GetComponent<Target>().TargetHit)
                 {
-
+                    Debug.Log("Target hit");
                     ballRB.isKinematic = false;
                     IncrementStep();
                 }
-                //Ball missed the target
-                /*
+                else if(dot <= 0.0f)
+                {
+                    IncrementStep();
+                }
+                //Ball slowed down
                 else if(ballRB.velocity.magnitude <= END_SPEED)
                 {
                     ballRB.isKinematic = true;
                     IncrementStep();
                 }
-                */
                 break;
         }
     }
@@ -86,10 +102,8 @@ public class ProjectileTask : BaseTask
     public override void SetUp()
     {
         base.SetUp();
-        maxSteps = 2;
+        maxSteps = 3;
 
-        if(!line)
-            line = GameObject.Find("Line").GetComponent<Target>();
         if(!ball)
             ball = GameObject.Find("Ball").GetComponent<Tool>();
 
@@ -101,14 +115,14 @@ public class ProjectileTask : BaseTask
     {
         base.TaskBegin();
 
-        line.ResetTarget();
         cursor.SetActive(true);
         ballRB.isKinematic = true;
         ballRB.useGravity = false;
         ball.transform.position = home.transform.position;
-        hitLine = false;
+        launchTime = 0.0f;
 
         //Setup target position
+        target.GetComponent<Target>().ResetTarget();
     }
 
     public override void TaskEnd()

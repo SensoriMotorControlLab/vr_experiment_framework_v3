@@ -1,6 +1,6 @@
 {
   "session_1": {
-    "experiment_name": "reach_to_target",
+    "experiment_name": "projectile",
     "use_vr": false,
     "optional_params": {
       "linkPseudoRandom": [
@@ -50,7 +50,7 @@
     "ins1": "Toss the ball to the target."
   },
   "session_2": {
-    "experiment_name": "reach_to_target",
+    "experiment_name": "projectile",
     "use_vr": false,
     "optional_params": {
       "linkPseudoRandom": [
