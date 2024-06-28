@@ -213,11 +213,10 @@ public class ExperimentGenerator : MonoBehaviour
         foreach (Block theBlock in s.blocks)
         {
             ExperimentController experimentController = ExperimentController.Instance; 
-            Type tt = experimentController.taskDict[theBlock.settings.GetString("task")].GetType(); 
-            BaseTask task = experimentController.gameObject.AddComponent(tt) as BaseTask; 
+            Type taskType = experimentController.taskDict[theBlock.settings.GetString("task")].GetType(); 
+            BaseTask task = experimentController.gameObject.AddComponent(taskType) as BaseTask; 
             task.enabled = false; 
             task.prefabName = Char.ToUpper(theBlock.settings.GetString("task")[0]) + theBlock.settings.GetString("task").Substring(1) + "Prefab"; 
-            Debug.Log("Task: " + task.prefabName); 
             experimentController.Tasks.Add(task); 
         }
 

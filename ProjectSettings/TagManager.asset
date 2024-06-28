@@ -7,6 +7,7 @@ TagManager:
   - Tool
   - Projectile
   - Cursor
+  - Debris
   layers:
   - Default
   - TransparentFX
