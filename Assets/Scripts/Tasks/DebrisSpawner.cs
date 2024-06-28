@@ -15,8 +15,10 @@ public class DebrisSpawner : MonoBehaviour
     public float spawnAreaWidth = 10f; // Width of the spawn area
     public float spawnAreaHeight = 5f; // Height of the spawn area
 
+    private GameObject despawner;
     void Start()
     {
+        despawner = GameObject.FindWithTag("Despawner");
         InvokeRepeating("SpawnDebris", 0.0f, spawnRate);
     }
 
@@ -41,7 +43,7 @@ public class DebrisSpawner : MonoBehaviour
             DebrisMovement debrisMovement = debris.GetComponent<DebrisMovement>();
             if (debrisMovement != null)
             {
-                debrisMovement.SetDirection(Vector3.forward);
+                debrisMovement.SetDirection(despawner.transform.localPosition.normalized);
                 debrisMovement.SetSpeed(speed);
             }
         }
