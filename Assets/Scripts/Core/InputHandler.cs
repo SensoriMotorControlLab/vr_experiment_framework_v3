@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.InputSystem;
+//To fix conflict with UnityEngine.XR
+using InputDevice = UnityEngine.InputSystem.InputDevice;
 
 public class InputHandler : MonoBehaviour
 {
@@ -127,9 +130,10 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    public SortedDictionary<int, InputDeviceProperties> GetInputDevices()
+    public InputDevice GetInputDevice()
     {
-        return inputDevices;
+        int highestPriority = inputDevices.Keys.Max(key => key);
+        return inputDevices[highestPriority].inputDevice;
     }
 
     public Dictionary<string, GameObject> GetVRHands()
@@ -298,10 +302,53 @@ public class InputHandler : MonoBehaviour
         domHand = newDomHand;
     }
 
-    public GameObject GetDominantHand()
+    public GameObject GetDominantHandGameObject()
     {
         return vrHands[domHand];
     }
+
+    /// <summary>
+    /// Get dominant hand in respect to XR InputDevice
+    /// </summary>
+    /// <returns>The dominant hand XR InputDevice</returns>
+    public UnityEngine.XR.InputDevice GetDominantHand()
+    {
+        if(domHand == "LeftHand")
+        {
+            return InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        }
+        else
+        {
+            return InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        }
+    }
+
+    /// <summary>
+    /// Get velocity of hand
+    /// </summary>
+    /// <param name="hand">String name for hand to get velocity (either "LeftHand" or "RightHand")</param>
+    /// <returns>Velocity of hand, default is dominant hand if no hand is specified</returns>
+    public Vector3 GetHandVelocity(string hand = "")
+    {
+        string handToGet = hand.Length > 0 ? hand : domHand;
+
+        UnityEngine.XR.InputDevice vrHand;
+
+        if (handToGet == "LeftHand")
+        {
+            vrHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        }
+        else
+        {
+            vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        }
+
+        Vector3 velocity = Vector3.zero;
+        vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceVelocity, out velocity);
+
+        return velocity;
+    }
+
 
     public string GetDominantHandString()
     {

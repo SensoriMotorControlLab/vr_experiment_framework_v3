@@ -38,7 +38,7 @@ public class Target : MonoBehaviour
 
     public void ResetTarget()
     {
-        transform.position = Vector3.zero;
+        //transform.position = Vector3.zero;
         targetHit = false;
         colliding = false;
     }
