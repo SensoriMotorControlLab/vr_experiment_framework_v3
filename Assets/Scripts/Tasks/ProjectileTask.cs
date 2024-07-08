@@ -14,13 +14,32 @@ public class ProjectileTask : BaseTask
     Vector3 startPos;
     Vector3 endPos;
     /// <summary>
-    /// Speed to increment the step
+    /// Speed to determine the ball came to a stop
     /// </summary>
     const float END_SPEED = 0.06f;
+    /// <summary>
+    /// Force to launch the ball
+    /// </summary>
     const float LAUNCH_FORCE = 15.0f;
+    /// <summary>
+    /// Magnitude to cap the launch force
+    /// </summary>
     const float LAUNCH_MAG = 0.25f;
-
+    /// <summary>
+    /// Distance to determine the participant is flicking the ball
+    /// </summary>
+    const float FLICK_DIST = 0.1f;
+    /// <summary>
+    /// Time in seconds to display a prompt
+    /// </summary>
+    const float DISPLAY_TIME = 1.5f;
+    /// <summary>
+    /// Time the button is pressed
+    /// </summary>
     float launchStartTime = 0.0f;
+    /// <summary>
+    /// Time the button was released or distance was greater than a certain amount
+    /// </summary>
     float launchEndTime = 0.0f;
 
     // Start is called before the first frame update
@@ -31,8 +50,6 @@ public class ProjectileTask : BaseTask
     // Update is called once per frame
     void Update()
     {
-        Vector3 mouse = GetCursorScreenPercentage();
-
         if (Input.GetKeyDown(KeyCode.R))
         {
             //SetUp();
@@ -46,6 +63,7 @@ public class ProjectileTask : BaseTask
                 if (/*Vector3.Distance(cursor.transform.position,home.transform.position) <= PRE_LAUNCH_DIST && */Input.GetButtonDown("Fire1"))
                 {
                     Debug.Log("Button held");
+                    Vector3 mouse = GetCursorScreenPercentage();
                     //If we are using VR use the VR hand position else get the
                     //converted mouse position
                     startPos = ExperimentController.Instance.UseVR == true ?
@@ -59,6 +77,8 @@ public class ProjectileTask : BaseTask
             //Track cursor(hand position) and launch when certain distance from home
             case 1:
                 {
+                    Vector3 mouse = GetCursorScreenPercentage();
+
                     //If button is pressed
                     if (Input.GetButton("Fire1"))
                     {
@@ -106,7 +126,7 @@ public class ProjectileTask : BaseTask
                     else if (ExperimentController.Instance.UseVR == false)
                     {
                         //Launch the ball (2D)
-                        if (Vector3.Distance(mouse, startPos) > .1f)
+                        if (Vector3.Distance(mouse, startPos) > FLICK_DIST || !Input.GetButton("Fire1"))
                         {
                             Vector3 endPos = mouse;
                             launchEndTime = Time.time;
@@ -162,36 +182,60 @@ public class ProjectileTask : BaseTask
                     //Ball the hit target
                     if (target.GetComponent<Target>().TargetHit)
                     {
-                        Debug.Log("Target hit");
-                        ballRB.isKinematic = false;
+                        ballRB.isKinematic = true;
+                        StartCoroutine(DisplayMessage("Target hit"));
                         IncrementStep();
                     }
                     else if (wrongWayCollider.TargetHit)
                     {
-                        Debug.Log("Ball went the wrong way");
+                        ballRB.isKinematic = true;
+                        StartCoroutine(DisplayMessage("Ball went the wrong way"));
                         IncrementStep();
                     }
                     else if (dot <= 0.0f)
                     {
-                        Debug.Log("Missed target");
+                        ballRB.isKinematic = true;
+                        StartCoroutine(DisplayMessage("Missed target"));
                         IncrementStep();
                     }
                     //Ball slowed down
                     else if (ballRB.velocity.magnitude <= END_SPEED)
                     {
-                        Debug.Log("Ball slowed down");
                         ballRB.isKinematic = true;
+                        StartCoroutine(DisplayMessage("Ball slowed down"));
                         IncrementStep();
                     }
                 }
                 break;
+            //Displaying feedback
+            case 3:
+                break;
         }
+    }
+
+    IEnumerator DisplayMessage(string displayMessage = "")
+    {
+        float delayTime = 0.0f;
+        //Display feedback text here
+        if(displayMessage.Length > 0)
+        {
+            Debug.Log(displayMessage);
+        }
+
+        while(delayTime <= DISPLAY_TIME)
+        {
+            delayTime += Time.deltaTime;
+            yield return null;
+        }
+
+        IncrementStep();
+        yield return new WaitForEndOfFrame();
     }
 
     public override void SetUp()
     {
         base.SetUp();
-        maxSteps = 3;
+        maxSteps = 4;
 
         if(!ball)
             ball = GameObject.Find("Ball").GetComponent<Tool>();

@@ -49,16 +49,14 @@ public class Target : MonoBehaviour
         {
             //Debug.Log("Projectile collided with " + name);
             targetHit = true;
-            colliding = true;
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionStay(Collision collision)
     {
-        if (other.gameObject.tag == "Projectile" || other.gameObject == projectile)
+        if (collision.gameObject.tag == "Projectile" || collision.gameObject == projectile)
         {
-            //Debug.Log("Projectile triggered " + name);
-            targetHit = true;
+            //Debug.Log("Projectile collided with " + name);
             colliding = true;
         }
     }
@@ -70,6 +68,25 @@ public class Target : MonoBehaviour
             colliding = false;
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Projectile" || other.gameObject == projectile)
+        {
+            //Debug.Log("Projectile triggered " + name);
+            targetHit = true;
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Projectile" || other.gameObject == projectile)
+        {
+            //Debug.Log("Projectile collided with " + name);
+            colliding = true;
+        }
+    }
+
 
     private void OnTriggerExit(Collider other)
     {
@@ -84,7 +101,7 @@ public class Target : MonoBehaviour
         get { return targetHit; }
     }
 
-    public bool Colliding
+    public bool IsColliding
     {
         get { return colliding; }
     }

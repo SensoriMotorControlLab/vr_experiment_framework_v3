@@ -1,15 +1,15 @@
 {
     "use_vr": false,
     "test": [
-        100,
-        90,
         125,
+        90,
+        100,
         45
     ],
     "target_angle": [
-        100,
-        90,
         125,
+        90,
+        100,
         45
     ],
     "input_name": "mouse",
