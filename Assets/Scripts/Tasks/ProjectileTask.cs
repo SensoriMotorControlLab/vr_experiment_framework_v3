@@ -1,17 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ProjectileTask : BaseTask
 {
-    //w would be time
+    /// <summary>
+    /// Position of the hand during flick
+    /// </summary>
     List<Vector4> handPos = new List<Vector4>();
+    /// <summary>
+    /// Visible ball travel position
+    /// </summary>
+    List<Vector3> visBallPos = new List<Vector3>();
+    /// <summary>
+    /// Ball/Tool object
+    /// </summary>
     [SerializeField]
-    Tool ball;
+    GameObject ball;
+    /// <summary>
+    /// Rigidboy of the ball
+    /// </summary>
+    Rigidbody ballRB;
+    /// <summary>
+    /// Collider to check if the pariticpant hit the ball backwards
+    /// </summary>
     [SerializeField]
     Target wrongWayCollider;
-    Rigidbody ballRB;
+    /// <summary>
+    /// Feedback text
+    /// </summary>
+    [SerializeField]
+    Text displayText;
+    /// <summary>
+    /// Visible ball travel line
+    /// </summary>
+    LineRenderer visBallTravelPath;
+    /// <summary>
+    /// Color of the line renderer
+    /// </summary>
+    Color lineColor = Color.white;
+    /// <summary>
+    /// Hand start pos
+    /// </summary>
     Vector3 startPos;
+    /// <summary>
+    /// Hand end pos
+    /// </summary>
     Vector3 endPos;
     /// <summary>
     /// Speed to determine the ball came to a stop
@@ -33,6 +68,11 @@ public class ProjectileTask : BaseTask
     /// Time in seconds to display a prompt
     /// </summary>
     const float DISPLAY_TIME = 1.5f;
+    /// <summary>
+    /// Width of the line rendered ball path complete
+    /// </summary>
+    const float LINE_SIZE = 0.025f;
+    const float BALL_MAX_ANGULAR_VEL = 240.0f;
     /// <summary>
     /// Time the button is pressed
     /// </summary>
@@ -96,14 +136,13 @@ public class ProjectileTask : BaseTask
 
                         if (!Input.GetButton("Fire1"))
                         {
-                            Vector3 endPos = InputHandler.Instance.GetHandPosition();
+                            endPos = InputHandler.Instance.GetHandPosition();
                             launchEndTime = Time.time;
                             float totalTime = launchEndTime - launchStartTime;
 
                             Vector3 launchVec = endPos - startPos;
+                            launchVec.y = home.transform.position.y;
                             launchVec.Normalize();
-                            //This is similar to GetCursorScreenPercentage(), converts to 2D? needs testing
-                            //launchVec = new Vector3(launchVec.x / Screen.width, launchVec.y / Screen.height, 0);
                             launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
 
                             Debug.Log("Launch time " + totalTime);
@@ -112,11 +151,12 @@ public class ProjectileTask : BaseTask
                             ballRB.isKinematic = false;
                             ballRB.useGravity = true;
 
-                            Vector3 force = launchVec * handVelocity.magnitude;
+                            Vector3 force = launchVec;
                             force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
-
+                            force *= LAUNCH_FORCE;
                             ballRB.velocity = force;
                             Debug.Log("Launch force " + force);
+                            Debug.Log("Launch mag " + force.magnitude);
                             cursor.SetActive(false);
 
                             IncrementStep();
@@ -128,7 +168,7 @@ public class ProjectileTask : BaseTask
                         //Launch the ball (2D)
                         if (Vector3.Distance(mouse, startPos) > FLICK_DIST || !Input.GetButton("Fire1"))
                         {
-                            Vector3 endPos = mouse;
+                            endPos = mouse;
                             launchEndTime = Time.time;
                             float totalTime = launchEndTime - launchStartTime;
 
@@ -151,11 +191,13 @@ public class ProjectileTask : BaseTask
                             ballRB.isKinematic = false;
                             ballRB.useGravity = true;
 
-                            Vector3 force = launchVec * LAUNCH_FORCE;
+                            Vector3 force = launchVec;
                             force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
+                            force *= LAUNCH_FORCE;
 
                             ballRB.velocity = force;
                             Debug.Log("Launch force " + force);
+                            Debug.Log("Launch mag " + force.magnitude);
                             cursor.SetActive(false);
 
                             IncrementStep();
@@ -178,18 +220,21 @@ public class ProjectileTask : BaseTask
                     Vector3 toTarget = target.transform.position - home.transform.position;
                     Vector3 toBall = target.transform.position - ball.transform.position;
                     float dot = Vector3.Dot(toTarget, toBall);
+                    visBallPos.Add(ball.transform.position);
 
                     //Ball the hit target
                     if (target.GetComponent<Target>().TargetHit)
                     {
                         ballRB.isKinematic = true;
                         StartCoroutine(DisplayMessage("Target hit"));
+                        lineColor = Color.green;
                         IncrementStep();
                     }
                     else if (wrongWayCollider.TargetHit)
                     {
                         ballRB.isKinematic = true;
-                        StartCoroutine(DisplayMessage("Ball went the wrong way"));
+                        lineColor = Color.red;
+                        StartCoroutine(DisplayMessage("Wrong way"));
                         IncrementStep();
                     }
                     else if (dot <= 0.0f)
@@ -202,13 +247,17 @@ public class ProjectileTask : BaseTask
                     else if (ballRB.velocity.magnitude <= END_SPEED)
                     {
                         ballRB.isKinematic = true;
-                        StartCoroutine(DisplayMessage("Ball slowed down"));
+                        lineColor = Color.yellow;
+                        StartCoroutine(DisplayMessage("Ball too slow"));
                         IncrementStep();
                     }
                 }
                 break;
             //Displaying feedback
             case 3:
+                visBallTravelPath.positionCount = visBallPos.Count;
+                visBallTravelPath.SetPositions(visBallPos.ToArray());
+                visBallTravelPath.startColor = visBallTravelPath.endColor = lineColor;
                 break;
         }
     }
@@ -220,6 +269,7 @@ public class ProjectileTask : BaseTask
         if(displayMessage.Length > 0)
         {
             Debug.Log(displayMessage);
+            displayText.text = displayMessage;
         }
 
         while(delayTime <= DISPLAY_TIME)
@@ -238,12 +288,17 @@ public class ProjectileTask : BaseTask
         maxSteps = 4;
 
         if(!ball)
-            ball = GameObject.Find("Ball").GetComponent<Tool>();
+            ball = GameObject.Find("Ball");
         if (!wrongWayCollider)
             wrongWayCollider = GameObject.Find("WrongWayCollider").GetComponent<Target>();
 
         ballRB = ball.GetComponent<Rigidbody>();
+        ballRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
         CursorController.Instance.planeOffset = new Vector3(0.0f, -ball.transform.position.y, 0.0f);
+        visBallTravelPath = GetComponent<LineRenderer>();
+
+        //Set the renderer for pinpall path
+        visBallTravelPath.startWidth = visBallTravelPath.endWidth = LINE_SIZE;
     }
 
     public override void TaskBegin()
@@ -265,9 +320,17 @@ public class ProjectileTask : BaseTask
 
         ball.transform.position = home.transform.position;
 
+        handPos.Clear();
+        visBallPos.Clear();
+        lineColor = Color.white;
+        visBallTravelPath.positionCount = 0;
+        visBallTravelPath.SetPositions(visBallPos.ToArray());
+
         //Setup target position
         target.GetComponent<Target>().ResetTarget();
         wrongWayCollider.ResetTarget();
+
+        displayText.text = "";
     }
 
     private Vector3 GetCursorScreenPercentage()

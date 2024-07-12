@@ -1,16 +1,16 @@
 {
     "use_vr": false,
     "test": [
-        90,
         45,
         125,
-        100
+        100,
+        90
     ],
     "target_angle": [
-        90,
         45,
         125,
-        100
+        100,
+        90
     ],
     "input_name": "mouse",
     "task": "projectile",
