@@ -1187,7 +1187,7 @@ PrefabInstance:
     - target: {fileID: 3825555447175469334, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.03125
+      value: 0.0625
       objectReference: {fileID: 0}
     - target: {fileID: 3825555447175469334, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
         type: 3}
@@ -1197,7 +1197,7 @@ PrefabInstance:
     - target: {fileID: 3825555447175469334, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.03125
+      value: 0.0625
       objectReference: {fileID: 0}
     - target: {fileID: 3825555447175469334, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
         type: 3}
@@ -1256,9 +1256,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6504476550501884370, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6504476550501884370, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
+        type: 3}
       propertyPath: projectile
       value: 
       objectReference: {fileID: 5870561031253084603}
+    - target: {fileID: 6988705124272913320, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

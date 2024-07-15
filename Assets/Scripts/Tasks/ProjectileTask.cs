@@ -64,6 +64,7 @@ public class ProjectileTask : BaseTask
     /// Distance to determine the participant is flicking the ball
     /// </summary>
     const float FLICK_DIST = 0.1f;
+    const float TARGET_DIST = 0.5f;
     /// <summary>
     /// Time in seconds to display a prompt
     /// </summary>
@@ -153,7 +154,7 @@ public class ProjectileTask : BaseTask
 
                             Vector3 force = launchVec;
                             force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
-                            force *= LAUNCH_FORCE;
+                            force *= handVelocity.magnitude;
                             ballRB.velocity = force;
                             Debug.Log("Launch force " + force);
                             Debug.Log("Launch mag " + force.magnitude);
@@ -177,13 +178,22 @@ public class ProjectileTask : BaseTask
                             launchVec.Normalize();
                             launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
 
+                            /*
                             //Alternative way for checking wrong direction using vectors
                             //float dot = Vector3.Dot(toTarget, home.transform.position + launchVec);
 
-                            //If the launch vector was towards the target
-                            //if (dot >= 0.0f)
-                            //{
-                            //Debug.Log("Proper launch vector " + dot);
+                            If the launch vector was towards the target
+                            if (dot >= 0.0f)
+                            {
+                            Debug.Log("Proper launch vector " + dot);
+                            }
+                            If the launch vector was away from the target, launched backwards etc.
+                            else if (dot < 0.0f)
+                            {
+                                Debug.Log("Improper launch vector, try flicking again " + dot);
+                                currentStep--;
+                            }
+                            */
 
                             Debug.Log("Launch time " + totalTime);
                             Debug.Log("Launch vector " + launchVec);
@@ -201,15 +211,6 @@ public class ProjectileTask : BaseTask
                             cursor.SetActive(false);
 
                             IncrementStep();
-                            //}
-                            //If the launch vector was away from the target, launched backwards etc.
-                            /*
-                            else if(dot < 0.0f)
-                            {
-                                Debug.Log("Improper launch vector, try flicking again " + dot);
-                                currentStep--;
-                            }
-                            */
                         }
                     }
                 }
@@ -226,8 +227,8 @@ public class ProjectileTask : BaseTask
                     if (target.GetComponent<Target>().TargetHit)
                     {
                         ballRB.isKinematic = true;
-                        StartCoroutine(DisplayMessage("Target hit"));
                         lineColor = Color.green;
+                        StartCoroutine(DisplayMessage("Target hit"));
                         IncrementStep();
                     }
                     else if (wrongWayCollider.TargetHit)
@@ -240,6 +241,7 @@ public class ProjectileTask : BaseTask
                     else if (dot <= 0.0f)
                     {
                         ballRB.isKinematic = true;
+                        lineColor = Color.white;
                         StartCoroutine(DisplayMessage("Missed target"));
                         IncrementStep();
                     }
@@ -248,16 +250,13 @@ public class ProjectileTask : BaseTask
                     {
                         ballRB.isKinematic = true;
                         lineColor = Color.yellow;
-                        StartCoroutine(DisplayMessage("Ball too slow"));
+                        StartCoroutine(DisplayMessage("Ball came to a stop"));
                         IncrementStep();
                     }
                 }
                 break;
             //Displaying feedback
             case 3:
-                visBallTravelPath.positionCount = visBallPos.Count;
-                visBallTravelPath.SetPositions(visBallPos.ToArray());
-                visBallTravelPath.startColor = visBallTravelPath.endColor = lineColor;
                 break;
         }
     }
@@ -265,8 +264,13 @@ public class ProjectileTask : BaseTask
     IEnumerator DisplayMessage(string displayMessage = "")
     {
         float delayTime = 0.0f;
+
+        visBallTravelPath.positionCount = visBallPos.Count;
+        visBallTravelPath.SetPositions(visBallPos.ToArray());
+        visBallTravelPath.startColor = visBallTravelPath.endColor = lineColor;
+
         //Display feedback text here
-        if(displayMessage.Length > 0)
+        if (displayMessage.Length > 0)
         {
             Debug.Log(displayMessage);
             displayText.text = displayMessage;
@@ -299,6 +303,11 @@ public class ProjectileTask : BaseTask
 
         //Set the renderer for pinpall path
         visBallTravelPath.startWidth = visBallTravelPath.endWidth = LINE_SIZE;
+
+        if (targetAngles.Count == 0)
+        {
+            targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
+        }
     }
 
     public override void TaskBegin()
@@ -331,6 +340,11 @@ public class ProjectileTask : BaseTask
         wrongWayCollider.ResetTarget();
 
         displayText.text = "";
+
+        //Debug.Log("target angle: " + targetAngles[currentTrial]);
+        target.transform.position = Vector3.zero;
+        target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
+        target.transform.Translate(new Vector3(0.0f, 0.0f, TARGET_DIST));
     }
 
     private Vector3 GetCursorScreenPercentage()
