@@ -11,17 +11,19 @@ public class ExperimentController : MonoBehaviour
     private ExperimentGenerator expGenerator = null;
     private Session session;
 
+    [SerializeField]
+    private GameObject endSessionPrefab;
+
     /// <summary>
-    ///Dictionary of the lists for the experiment
+    ///Dictionary of the lists for the experiment defined in ExperimentGenerator
     /// </summary>
     Dictionary<string, List<object>> expLists = new Dictionary<string, List<object>>();
     /// <summary>
-    /// List of the task objects that run the trials
+    /// List of the prefab names in Resources > Prefab to spawn
     /// </summary>
-    List<BaseTask> tasks = new List<BaseTask>();
-    public Dictionary<string, BaseTask> taskDict = new Dictionary<string, BaseTask>();
+    public List<string> taskPrefabNames = new List<string>();
     /// <summary>
-    /// The VR controller
+    /// The VR controller GameObject
     /// </summary>
     public GameObject vrCtlr;
     /// <summary>
@@ -31,16 +33,14 @@ public class ExperimentController : MonoBehaviour
     /// <summary>
     /// The active task
     /// </summary>
-    BaseTask currentTask;
+    private BaseTask currentTask;
     public BaseTask CurrentTask { get { return currentTask; } }
     //The total number of trials for the experiment
     int totalNumOfTrials = 0;
-    //The totla number of blocks
+    //The total number of blocks
     int totalNumOfBlocks = 0;
     //Is the experiment using VR
     bool useVR = false;
-    //Has the task been setup yet
-    bool taskReady = false;
     //Is the experiment running
     bool isRunning = false;
 
@@ -57,10 +57,6 @@ public class ExperimentController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        taskDict["slingShot"] = new SlingshotTask();
-        taskDict["reachToTarget"] = new ReachTask();
-        taskDict["instruction"] = new InstructionTask();
     }
 
     // Update is called once per frame
@@ -98,11 +94,6 @@ public class ExperimentController : MonoBehaviour
             
             return instance; 
         }
-    }
-
-    public List<BaseTask> Tasks
-    {
-        get { return tasks; }
     }
 
     public Session Session
@@ -147,18 +138,23 @@ public class ExperimentController : MonoBehaviour
         this.session = session;
 
         expGenerator.GenerateBlocks(session);
-        tasks.Capacity = TotalNumOfTrials;
+        //tasks.Capacity = TotalNumOfTrials;
+        taskPrefabNames.Capacity = TotalNumOfTrials;
         expGenerator.GenerateTasks();
 
         // if using VR
         if (useVR == true)
         {
             Debug.Log("The experiment is being run in VR");
-            //vrCtlr = Instantiate(vrPrefab);
-            //Camera.SetupCurrent(GameObject.Find("CenterEyeAnchor").GetComponent<Camera>());
+
+            if (!vrCtlr)
+            {
+                vrCtlr = Instantiate(vrPrefab);
+                vrCtlr.transform.position = Vector3.zero;
+            }
+
             Camera.SetupCurrent(GameObject.Find("Main Camera").GetComponent<Camera>());
             //Debug.Log(Camera.main);
-            InputHandler.Instance.FindHandAnchors();
         }
         // if not using VR
         else
@@ -167,10 +163,16 @@ public class ExperimentController : MonoBehaviour
             vrCtlr.SetActive(false);
         }
 
-        currentTask = tasks[0];
-        currentTask.enabled = true;
-        isRunning = true;
+        //find input devices
+        InputHandler.Instance.FindDevices();
+        GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + taskPrefabNames[0]));
+        currentTaskPrefab.name = taskPrefabNames[0];
+        currentTaskPrefab.transform.position = Vector3.zero;
 
+        currentTask = currentTaskPrefab.GetComponent<BaseTask>();
+        currentTask.enabled = true;
+        currentTask.TaskPrefab = currentTaskPrefab;
+        isRunning = true;
 
         BeginNextTrial();
     }
@@ -193,33 +195,44 @@ public class ExperimentController : MonoBehaviour
         {
             session.FirstTrial.Begin();
         }
-        //every other trial
+        //every other trial that is not the first or last
         else if (session.currentTrialNum < totalNumOfTrials)
         {
             session.BeginNextTrialSafe();
         }
+        //final trial
         else if (session.currentTrialNum == totalNumOfTrials) 
         {
             isRunning = false;
             session.End();
         }
-        PlayerPrefs.SetInt("currentTrial", session.currentTrialNum - 1);
-        PlayerPrefs.SetInt("currentBlock", session.CurrentBlock.number - 1);
-        PlayerPrefs.SetInt("trialInBlock", session.CurrentTrial.numberInBlock - 1);
+
+        if (isRunning)
+        {
+            PlayerPrefs.SetInt("currentTrial", session.currentTrialNum - 1);
+            PlayerPrefs.SetInt("currentBlock", session.CurrentBlock.number - 1);
+            PlayerPrefs.SetInt("trialInBlock", session.CurrentTrial.numberInBlock - 1);
+        }
     }
     /// <summary>
     /// UXF TrialBegin method
     /// </summary>
     public void TrialBegin()
     {
-        InputHandler.Instance.FindAllInputDevices();
+        //At the start of a block
+        if (Session.CurrentTrial == Session.CurrentBlock.firstTrial)
+        {
+            //Set the input device to use
+            string deviceName = (string)expLists["input_name"][session.currentBlockNum - 1];
+            Debug.Log("Input device set as " + deviceName);
+            InputHandler.Instance.UseThisDevice(deviceName);
+        }
 
         //if the task hasn't been setup yet
-        if (!taskReady)
+        if (!currentTask.IsReady)
         {
             currentTask.enabled = true;
             currentTask.SetUp();
-            taskReady = true;
         }
         currentTask.TaskBegin();
     }
@@ -228,7 +241,6 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void TrialEnd()
     {
-        //TODO Log Parameters
         //if this is the last trial of the block
         if (session.CurrentTrial == session.CurrentBlock.lastTrial)
         {
@@ -237,11 +249,16 @@ public class ExperimentController : MonoBehaviour
             currentTask.enabled = false;
 
             //if there are more blocks to go through
-            if (session.CurrentBlock.number < tasks.Count)
+            if (session.CurrentBlock.number < taskPrefabNames.Count)
             {
                 //move on to the next task and prepare it
-                currentTask = tasks[session.CurrentBlock.number];
-                taskReady = false;
+                GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + taskPrefabNames[session.CurrentBlock.number]));
+                currentTaskPrefab.name = taskPrefabNames[session.CurrentBlock.number];
+                currentTaskPrefab.transform.position = Vector3.zero;
+
+                currentTask = currentTaskPrefab.GetComponent<BaseTask>();
+                currentTask.enabled = true;
+                currentTask.TaskPrefab = currentTaskPrefab;
             }
         }
         if(session.isApplicationQuitting == false)
@@ -255,9 +272,7 @@ public class ExperimentController : MonoBehaviour
     public void OnSessionEnd()
     {
         //Application.Quit();
-        //Display end screen
-        currentTask.enabled = true;
-        // TODO: end screen
+        Instantiate(endSessionPrefab);
     }
 
 }

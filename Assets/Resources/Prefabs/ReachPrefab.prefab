@@ -145,6 +145,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9092739823578475913}
+  - component: {fileID: 8217714119153915106}
   m_Layer: 0
   m_Name: ReachPrefab
   m_TagString: Untagged
@@ -174,6 +175,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8217714119153915106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2851246754599150346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 737f6b4cb34f11341906b856484844ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: Reach
 --- !u!1 &4050443842255886083
 GameObject:
   m_ObjectHideFlags: 0
@@ -607,7 +621,7 @@ GameObject:
   - component: {fileID: 3589949665665710019}
   - component: {fileID: 3520603349588773718}
   m_Layer: 0
-  m_Name: ReachCamera
+  m_Name: PrefabCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,23 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using TMPro;
 
 public class EndSessionTask : BaseTask
 {
-    Camera endCamera;
-    GameObject instructionPrefab;
-    TMP_Text instructionText;
+    TMP_Text endText;
 
     public EndSessionTask()
     {
         taskType = "endsessions";
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        
+        SetUp();
     }
 
     // Update is called once per frame
@@ -38,28 +36,29 @@ public class EndSessionTask : BaseTask
 
     public override void SetUp()
     {
-        currentStep = 0;
-        totalTrials = expController.Session.CurrentBlock.trials.Count;
+        base.SetUp();
         maxSteps = 1;
 
-        instructionPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);;
-
-        endCamera = GameObject.Find("InstructionCamera").GetComponent<Camera>();
-        if (ExperimentController.Instance.UseVR == false)
-            Camera.SetupCurrent(endCamera);
-
-        instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
-        instructionText.text = "You have completed all trials\n[Press anything to finish]";
+        endText = GameObject.Find("EndText").GetComponent<TMP_Text>();
+        endText.text = "You have completed all trials\n[Press anything to finish]";
     }
 
     public override void TaskBegin()
     {
-
+        base.TaskBegin();
     }
 
     public override void TaskEnd()
     {
-        Destroy(instructionPrefab);
-        Application.Quit();
+        //base.TaskEnd();
+        if (Application.isEditor)
+        {
+            EditorApplication.ExitPlaymode();
+        }
+        else
+        {
+            Application.Quit();
+
+        }
     }
 }

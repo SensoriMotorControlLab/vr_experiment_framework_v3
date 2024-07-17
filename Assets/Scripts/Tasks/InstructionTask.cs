@@ -5,8 +5,7 @@ using TMPro;
 
 public class InstructionTask : BaseTask
 {
-    GameObject instructionPrefab;
-    Camera instructionCam;
+    Canvas instructionCanvas;
     TMP_Text instructionText;
 
     public InstructionTask()
@@ -32,35 +31,23 @@ public class InstructionTask : BaseTask
 
     public override void LogParameters()
     {
-        
+
     }
 
     public override void SetUp()
     {
+        base.SetUp();
+
         currentStep = 0;
-        totalTrials = expController.Session.CurrentBlock.trials.Count;
         maxSteps = 1;
 
-        instructionPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" +prefabName), expController.transform);;
-
-        instructionCam = GameObject.Find("InstructionCamera").GetComponent<Camera>();
-        if (ExperimentController.Instance.UseVR == false)
-            Camera.SetupCurrent(instructionCam);
-
         instructionText = GameObject.Find("InstructionText").GetComponent<TMP_Text>();
+        instructionCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         //in the JSON the per_block is just the key to the text key-value
-        string insKey = expController.Session.CurrentBlock.settings.GetString("instruction");
-        string insString = expController.Session.settings.GetString(insKey);
+        string insKey = ExperimentController.Instance.Session.CurrentBlock.settings.GetString("instruction");
+        string insString = ExperimentController.Instance.Session.settings.GetString(insKey);
         instructionText.text = insString;
-    }
 
-    public override void TaskBegin()
-    {
-        
-    }
-
-    public override void TaskEnd()
-    {
-        Destroy(instructionPrefab);
+        instructionCanvas.worldCamera = Camera.main;
     }
 }

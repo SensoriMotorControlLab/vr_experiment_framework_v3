@@ -1,0 +1,19 @@
+{
+    "use_vr": false,
+    "test": [
+        110,
+        50,
+        70,
+        130
+    ],
+    "target_angle": [
+        110,
+        50,
+        70,
+        130
+    ],
+    "input_name": "mouse",
+    "task": "projectile",
+    "rotation": 30,
+    "instruction": null
+}

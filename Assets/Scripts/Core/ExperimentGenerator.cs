@@ -163,7 +163,6 @@ public class ExperimentGenerator : MonoBehaviour
                     {
                         session.settings.GetObject(key)
                     };
-                    //session.settings.SetValue(key, session.settings.GetObject(key));
                 }
             }
         }
@@ -212,20 +211,9 @@ public class ExperimentGenerator : MonoBehaviour
         //for every block there is a corresponding task object
         foreach (Block theBlock in s.blocks)
         {
-            ExperimentController experimentController = ExperimentController.Instance; 
-            Type taskType = experimentController.taskDict[theBlock.settings.GetString("task")].GetType(); 
-            BaseTask task = experimentController.gameObject.AddComponent(taskType) as BaseTask; 
-            task.enabled = false; 
-            task.prefabName = Char.ToUpper(theBlock.settings.GetString("task")[0]) + theBlock.settings.GetString("task").Substring(1) + "Prefab"; 
-            experimentController.Tasks.Add(task); 
+            ExperimentController experimentController = ExperimentController.Instance;
+            experimentController.taskPrefabNames.Add(Char.ToUpper(theBlock.settings.GetString("task")[0]) + theBlock.settings.GetString("task").Substring(1) + "Prefab");
         }
-
-        //add a end screen to the end
-        /*
-        EndSessionTask endTask = ExperimentController.Instance.gameObject.AddComponent<EndSessionTask>();
-        endTask.enabled = false;
-        ExperimentController.Instance.Tasks.Add(endTask);
-        */
     }
     /// <summary>
     /// Pseudo randomizes the list of objects

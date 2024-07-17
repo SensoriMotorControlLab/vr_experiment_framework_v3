@@ -8,6 +8,11 @@
         "per_block_list_test"
       ]
     },
+	"per_block_input_name": [
+	"mouse",
+	"mouse",
+	"mouse"
+	],
     "trials_in_block": [
       4,
       4,

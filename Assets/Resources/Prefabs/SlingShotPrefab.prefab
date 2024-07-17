@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4114897330121218082}
   - component: {fileID: 7556394517949581562}
   m_Layer: 0
-  m_Name: SlingshotCamera
+  m_Name: PrefabCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -420,8 +420,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 225506775015093886}
+  - component: {fileID: 8542109522925571587}
   m_Layer: 0
-  m_Name: SlingshotPrefab
+  m_Name: SlingShotPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -448,6 +449,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8542109522925571587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3246888207011332581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 110d1719da5b8b94989dcf6427669d13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: SlingShot
 --- !u!1 &4137998692784497850
 GameObject:
   m_ObjectHideFlags: 0
@@ -1321,7 +1335,7 @@ PrefabInstance:
     - target: {fileID: 3981461323465143736, guid: ae2cbbee166d5dd4dbd3e3e434454b8c,
         type: 3}
       propertyPath: m_Name
-      value: Bullseye
+      value: Target
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

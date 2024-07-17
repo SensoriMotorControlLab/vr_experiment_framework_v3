@@ -2,37 +2,42 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.InputSystem;
+//To fix conflict with UnityEngine.XR
+using InputDevice = UnityEngine.InputSystem.InputDevice;
 
 public class InputHandler : MonoBehaviour
 {
     private static InputHandler instance;
     private Dictionary<string, GameObject> vrHands = new Dictionary<string, GameObject>();
-    //private Dictionary<string, RawInput> inputDevices = new Dictionary<string, RawInput>();
     /// <summary>
     /// SortedDictionary of all inputDevices, sorted by lowest priority to highest
     /// </summary>
-    private SortedDictionary<int,RawInput> inputDevices = new SortedDictionary<int, RawInput>();
-
+    private SortedDictionary<int, InputDeviceProperties> inputDevices = new SortedDictionary<int, InputDeviceProperties>();
     /// <summary>
     /// Highest priority for the InputHandler (usually VR touch controllers)
     /// </summary>
     private const int HIGHEST_PRIORITY = 100;
     /// <summary>
-    /// Name Unity InputDevice associates with the headset device when using OpenXR
+    /// Name Unity InputDevice associated with the headset device when using OpenXR
     /// </summary>
-    private const string HEADSET_DEVICE_NAME = "HeadTrackingOpenXR";
+    public const string HEADSET_DEVICE_NAME = "HeadTrackingOpenXR";
     /// <summary>
-    /// Name Unity InputDevice associates with the mouse
+    /// Name Unity InputDevice associated with the mouse
     /// </summary>
-    private const string MOUSE_NAME = "Mouse";
+    public const string MOUSE_NAME = "Mouse";
     /// <summary>
-    /// Name Unity InputDevice associates with the VR controllers when using OpenXR
+    /// Name Unity InputDevice associated with the VR controllers when using OpenXR
     /// </summary>
-    private const string TOUCH_CONTROLLER_NAME = "OculusTouchControllerOpenXR";
+    public const string TOUCH_CONTROLLER_NAME = "OculusTouchControllerOpenXR";
+    /// <summary>
+    /// JSON string to use VR controllers
+    /// </summary>
+    public const string JSON_VR = "vr_controller";
 
     /// <summary>
-    /// Dominant hand
+    /// Dominant hand to track
     /// </summary>
     private string domHand = "RightHand";
 
@@ -46,24 +51,24 @@ public class InputHandler : MonoBehaviour
         RAY
     }
 
-    public struct RawInput
+    public struct InputDeviceProperties
     {
         public Vector3 position;
         public Quaternion rotation;
         public InputDevice inputDevice;
         public InputType inputType;
 
-        InputPositionUpdate inputPosUp;
-        InputRotationUpdate inputRotUp;
+        InputPositionUpdate inputPosUpdate;
+        InputRotationUpdate inputRotUpdate;
 
-        public RawInput(Vector3 position, Quaternion rotation, InputType inputType, InputDevice inputDevice, InputPositionUpdate inputPosUp, InputRotationUpdate inputRotUp)
+        public InputDeviceProperties(Vector3 position, Quaternion rotation, InputType inputType, InputDevice inputDevice, InputPositionUpdate inputPosUpdate, InputRotationUpdate inputRotUpdate)
         {
             this.position = position;
             this.rotation = rotation;
             this.inputType = inputType;
             this.inputDevice = inputDevice;
-            this.inputPosUp = inputPosUp;
-            this.inputRotUp = inputRotUp;
+            this.inputPosUpdate = inputPosUpdate;
+            this.inputRotUpdate = inputRotUpdate;
         }
 
         public void Update()
@@ -76,17 +81,17 @@ public class InputHandler : MonoBehaviour
 
         public void UpdatePosition()
         {
-            if (inputPosUp != null)
+            if (inputPosUpdate != null)
             {
-                position = inputPosUp();
+                position = inputPosUpdate();
             }
         }
 
         public void UpdateRotation()
         {
-            if (inputRotUp != null)
+            if (inputRotUpdate != null)
             {
-                rotation = inputRotUp();
+                rotation = inputRotUpdate();
             }
         }
     }
@@ -108,8 +113,10 @@ public class InputHandler : MonoBehaviour
         {
             instance = this;
         }
-
-        //FindAllInputDevices();
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -117,16 +124,16 @@ public class InputHandler : MonoBehaviour
     {
         foreach (var e in inputDevices.ToList())
         {
-            RawInput r = inputDevices[e.Key];
+            InputDeviceProperties r = inputDevices[e.Key];
             r.Update();
             inputDevices[e.Key] = r;
-            //Debug.Log(inputDevices[k].position);
         }
     }
 
-    public SortedDictionary<int, RawInput> GetInputDevices()
+    public InputDevice GetInputDevice()
     {
-        return inputDevices;
+        int highestPriority = inputDevices.Keys.Max(key => key);
+        return inputDevices[highestPriority].inputDevice;
     }
 
     public Dictionary<string, GameObject> GetVRHands()
@@ -151,11 +158,66 @@ public class InputHandler : MonoBehaviour
         //Debug.Log(vrHands["LeftHand"]);
         //Debug.Log(vrHands["RightHand"]);
     }
-
-    public void FindAllInputDevices()
+    
+    /*
+    public void FindDevices(Dictionary<int, string> devicePref)
     {
-        //TODO: remove this and do a better check of adding new devices and keeping already found ones
-        inputDevices.Clear();
+        Dictionary<int, InputDevice> currentDevices = new Dictionary<int, InputDevice>();
+
+        //Get all the current devices
+        if (inputDevices.Count > 0)
+        {
+            foreach (var e in inputDevices)
+            {
+                currentDevices[e.Key] = e.Value.inputDevice;
+            }
+        }
+
+        foreach (InputDevice d in InputSystem.devices)
+        {
+            string deviceName = d.name;
+
+            //The device is not in the dictionary and is a device in devicePref
+            if (!currentDevices.Values.Contains(d) && devicePref.ContainsValue(deviceName))
+            {
+                //set the key to the counter by default
+                int keyVal = devicePref.FirstOrDefault(x => x.Value == deviceName).Key;
+                //Add the new device
+                inputDevices[keyVal] = CreateInputDeviceProperty(d);
+            }
+            //The device is already in the dictionary
+            else
+            {
+                //If the device is in the device preferences, change the priority
+                if (devicePref.Values.Contains(d.name))
+                {
+                    int theKey = devicePref.FirstOrDefault(x => x.Value == deviceName).Key;
+                    //InputDevices should have the device so get the key and then change the key
+                    int oldKey = currentDevices.FirstOrDefault(x => x.Value.name == deviceName).Key;
+                    InputDeviceProperties iDevicePropery = inputDevices[oldKey];
+                    inputDevices[theKey] = iDevicePropery;
+                    inputDevices.Remove(oldKey);
+                }
+            }
+        }
+    }
+    */
+
+    /// <summary>
+    /// Default setup for finding devices
+    /// </summary>
+    public void FindDevices()
+    {
+        Dictionary<int, InputDevice> currentDevices = new Dictionary<int, InputDevice>();
+
+        //Get all the currnet input devices
+        if(inputDevices.Count > 0)
+        {
+            foreach(var e in inputDevices)
+            {
+                currentDevices[e.Key] = e.Value.inputDevice;
+            }
+        }
 
         int counter = 0;
 
@@ -163,26 +225,57 @@ public class InputHandler : MonoBehaviour
         {
             string deviceName = d.name;
 
-            switch (deviceName)
+            if (!currentDevices.Values.Contains(d))
             {
-                case (HEADSET_DEVICE_NAME): 
-                    inputDevices[HIGHEST_PRIORITY - 1] = new RawInput(Vector3.zero, Quaternion.identity, InputType.RAY, d, null, null);
-                    break;
-                case (TOUCH_CONTROLLER_NAME):
-                    inputDevices[HIGHEST_PRIORITY] = new RawInput(Vector3.zero, Quaternion.identity, InputType.SPATIAL, d, GetHandPosition, GetHandRotation);
-                    break;
-                case (MOUSE_NAME):
-                    inputDevices[counter] = new RawInput(Vector3.zero, Quaternion.identity, InputType.RAY, d, delegate { return Input.mousePosition; }, null);
-                    counter++;
-                    break;
-                default:
-                    inputDevices[counter] = new RawInput(Vector3.zero, Quaternion.identity, InputType.NONE, d, null, null);
-                    counter++;
-                    break;
+                //Set the priority based on the device
+                //For new devices new cases can be added or just have the default
+                //Commenting out the default case will add the keyboard which is almost never used
+                switch (deviceName)
+                {
+                    case (HEADSET_DEVICE_NAME):
+                        inputDevices[HIGHEST_PRIORITY - 1] = CreateInputDeviceProperty(d);
+                        break;
+                    case (TOUCH_CONTROLLER_NAME):
+                        FindHandAnchors();
+                        inputDevices[HIGHEST_PRIORITY] = CreateInputDeviceProperty(d);
+                        break;
+                    case (MOUSE_NAME):
+                    //default:
+                        inputDevices[counter] = CreateInputDeviceProperty(d);
+                        counter++;
+                        break;
+                }
             }
-
+            else
+            {
+                if(d.name != HEADSET_DEVICE_NAME || d.name != TOUCH_CONTROLLER_NAME)
+                {
+                    counter++;
+                }
+            }
         }
     }
+    /// <summary>
+    /// Returns InputDeviceProperty based on the passed InputDevice.
+    /// Define specific device names and cases for specific devices here.
+    /// </summary>
+    /// <param name="inputDevice">InputDevice to create the InputDeviceProperties from</param>
+    /// <returns>InputDeviceProperties object based on passed param</returns>
+    InputDeviceProperties CreateInputDeviceProperty(InputDevice inputDevice)
+    {
+        switch (inputDevice.name)
+        {
+            case (HEADSET_DEVICE_NAME):
+                return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, inputDevice, null, null);
+            case (TOUCH_CONTROLLER_NAME):
+                return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.SPATIAL, inputDevice, GetHandPosition, GetHandRotation);
+            case (MOUSE_NAME):
+                return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, inputDevice, delegate { return Input.mousePosition; }, null);
+            default:
+                return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.NONE, inputDevice, null, null);
+        }
+    }
+
 
     public Vector3 GetHandPosition(string handName)
     {
@@ -209,10 +302,53 @@ public class InputHandler : MonoBehaviour
         domHand = newDomHand;
     }
 
-    public GameObject GetDominantHand()
+    public GameObject GetDominantHandGameObject()
     {
         return vrHands[domHand];
     }
+
+    /// <summary>
+    /// Get dominant hand in respect to XR InputDevice
+    /// </summary>
+    /// <returns>The dominant hand XR InputDevice</returns>
+    public UnityEngine.XR.InputDevice GetDominantHand()
+    {
+        if(domHand == "LeftHand")
+        {
+            return InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        }
+        else
+        {
+            return InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        }
+    }
+
+    /// <summary>
+    /// Get velocity of hand
+    /// </summary>
+    /// <param name="hand">String name for hand to get velocity (either "LeftHand" or "RightHand")</param>
+    /// <returns>Velocity of hand, default is dominant hand if no hand is specified</returns>
+    public Vector3 GetHandVelocity(string hand = "")
+    {
+        string handToGet = hand.Length > 0 ? hand : domHand;
+
+        UnityEngine.XR.InputDevice vrHand;
+
+        if (handToGet == "LeftHand")
+        {
+            vrHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        }
+        else
+        {
+            vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        }
+
+        Vector3 velocity = Vector3.zero;
+        vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceVelocity, out velocity);
+
+        return velocity;
+    }
+
 
     public string GetDominantHandString()
     {
@@ -297,7 +433,6 @@ public class InputHandler : MonoBehaviour
         return inputDevices[highestPriority].rotation;
     }
 
-    
     /// <summary>
     /// Get the highest priority device of RAY inputType and returns said devices position
     /// </summary>
@@ -306,9 +441,9 @@ public class InputHandler : MonoBehaviour
     {
         var sortedDict = from entry in inputDevices orderby entry.Key descending select entry;
 
-        foreach(KeyValuePair<int,RawInput> e in sortedDict)
+        foreach (KeyValuePair<int, InputDeviceProperties> e in sortedDict)
         {
-            if(e.Value.inputType == InputType.RAY)
+            if (e.Value.inputType == InputType.RAY)
             {
                 return e.Value.position;
             }
@@ -327,12 +462,7 @@ public class InputHandler : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(GetRayPosition());
         float enter;
 
-        if (plane.Raycast(ray, out enter))
-        {
-            return true;
-        }
-
-        return false;
+        return plane.Raycast(ray, out enter);
     }
 
     /// <summary>
@@ -345,7 +475,7 @@ public class InputHandler : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(GetRayPosition());
         float enter;
 
-        if(plane.Raycast(ray, out enter))
+        if (plane.Raycast(ray, out enter))
         {
             Vector3 hitPoint = ray.GetPoint(enter);
 
@@ -354,7 +484,7 @@ public class InputHandler : MonoBehaviour
 
         return ray.origin;
     }
-    
+
     /// <summary>
     /// Get the highest priority device of SPATIAL inputType and returns said devices position
     /// </summary>
@@ -363,7 +493,7 @@ public class InputHandler : MonoBehaviour
     {
         var sortedDict = from entry in inputDevices orderby entry.Key descending select entry;
 
-        foreach (KeyValuePair<int, RawInput> e in sortedDict)
+        foreach (KeyValuePair<int, InputDeviceProperties> e in sortedDict)
         {
             if (e.Value.inputType == InputType.SPATIAL)
             {
@@ -382,7 +512,7 @@ public class InputHandler : MonoBehaviour
     {
         var sortedDict = from entry in inputDevices orderby entry.Key descending select entry;
 
-        foreach (KeyValuePair<int, RawInput> e in sortedDict)
+        foreach (KeyValuePair<int, InputDeviceProperties> e in sortedDict)
         {
             if (e.Value.inputType == InputType.SPATIAL)
             {
@@ -397,8 +527,129 @@ public class InputHandler : MonoBehaviour
     /// Get the dictionary of devices
     /// </summary>
     /// <returns>Dictionary of devices</returns>
-    public SortedDictionary<int, RawInput> GetDevices()
+    public SortedDictionary<int, InputDeviceProperties> GetDevices()
     {
         return inputDevices;
+    }
+
+    //Current way assumes we will never have 100 devices connected at one time
+    /// <summary>
+    /// Set highest priority device to the device with given name
+    /// </summary>
+    /// <param name="deviceName">Device name of connected device within InputDevices. If null or empty string uses FindDevices() default setup.</param>
+    public void UseThisDevice(string deviceName)
+    {
+        //If a device name was passed
+        if (deviceName != null && deviceName.Length > 0)
+        {
+            string deviceString;
+
+            //switch case for converting JSON strings into Unity InputDevices string
+            switch (deviceName)
+            {
+                case (JSON_VR):
+                    deviceString = TOUCH_CONTROLLER_NAME;
+                    break;
+                default:
+                    deviceString = deviceName;
+                    break;
+            }
+
+            //Make the first letter upper case just in case
+            //the name is written in camel case
+            deviceString = deviceString.First().ToString().ToUpper() + deviceString.Substring(1);
+
+            List<string> deviceNames = new List<string>();
+
+            foreach (var e in inputDevices)
+            {
+                deviceNames.Add(e.Value.inputDevice.name);
+            }
+
+            //If the device name was not found in input devices
+            if (!deviceNames.Contains(deviceString))
+            {
+                //Find all devices again to try and see if the device was connected
+                FindDevices();
+
+                //If for some reason the device still could not be found, throw an exception
+                if (!deviceNames.Contains(deviceString))
+                {
+                    throw new UnassignedReferenceException(deviceString + " could not be found");
+                }
+            }
+
+            //Get the key for device
+            int theKey = inputDevices.FirstOrDefault(x => x.Value.inputDevice.name == deviceString).Key;
+
+            //If the highest priority key has a value we need to move some things around 
+            //before setting the other device to highest priority
+            if (theKey != HIGHEST_PRIORITY && inputDevices.Keys.Max() == HIGHEST_PRIORITY)
+            {
+                for (int i = HIGHEST_PRIORITY - 1; i > -1; i--)
+                {
+                    if (!inputDevices.ContainsKey(i))
+                    {
+                        InputDeviceProperties highestPriorityDevice = inputDevices[HIGHEST_PRIORITY];
+                        inputDevices[i] = highestPriorityDevice;
+                        inputDevices.Remove(HIGHEST_PRIORITY);
+
+                        inputDevices[HIGHEST_PRIORITY] = inputDevices[theKey];
+                        inputDevices.Remove(theKey);
+                        break;
+                    }
+                    else if (i == 0)
+                    {
+                        Debug.LogWarning("Could not move devices around, highest priority device is " + inputDevices[HIGHEST_PRIORITY].inputDevice.name +
+                            " and not the desired " + deviceString);
+                    }
+                }
+            }
+            //if no highest priority device exists just set the device to it
+            else if (theKey != HIGHEST_PRIORITY && inputDevices.Keys.Max() != HIGHEST_PRIORITY)
+            {
+                inputDevices[HIGHEST_PRIORITY] = inputDevices[theKey];
+                inputDevices.Remove(theKey);
+            }
+        }
+        //If null or empty string
+        else
+        {
+            FindDevices();
+        }
+        /*
+        foreach(var e in inputDevices)
+        {
+            Debug.Log(e.Key + " " + e.Value.inputDevice.name);
+        }
+        */
+    }
+
+    public void UseThisDevice(InputDevice inputDevice)
+    {
+        foreach(var e in inputDevices)
+        {
+            if(e.Value.inputDevice == inputDevice)
+            {
+                UseThisDevice(e.Value.inputDevice.name);
+                break;
+            }
+        }
+    }
+
+    public void UseThisDevice(InputDeviceProperties inputDeviceProperties)
+    {
+        if (inputDevices.ContainsValue(inputDeviceProperties))
+        {
+            UseThisDevice(inputDeviceProperties.inputDevice.name);
+        }
+    }
+
+    public void UseThisDevice(int priority)
+    {
+        if (inputDevices.ContainsKey(priority))
+        {
+            UseThisDevice(inputDevices[priority].inputDevice.name);
+        }
     }
 }
