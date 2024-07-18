@@ -67,12 +67,12 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Distance: 4.69
+    - _Distance: 0.7
     - _DstBlend: 0
-    - _FoamAmount: 1
-    - _FoamCuttoff: 1
-    - _FoamScale: 133.65
-    - _FoamSpeed: 5
+    - _FoamAmount: 1.49
+    - _FoamCuttoff: 3.89
+    - _FoamScale: 1312.6
+    - _FoamSpeed: 3.5
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -80,7 +80,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Scale: 2.8
+    - _Scale: 16.04
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 0.1

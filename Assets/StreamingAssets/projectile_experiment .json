@@ -1,7 +1,7 @@
 {
   "session_1": {
     "experiment_name": "projectile",
-    "use_vr": false,
+    "use_vr": true,
     "optional_params": {
       "linkPseudoRandom": [
         "per_block_list_target_angle",

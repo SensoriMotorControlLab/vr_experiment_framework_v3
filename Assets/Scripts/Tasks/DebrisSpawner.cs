@@ -36,6 +36,10 @@ public class DebrisSpawner : MonoBehaviour
                 0, // Assuming no vertical offset; adjust if needed
                 Random.Range(-spawnAreaHeight / 2, spawnAreaHeight / 2)
             );
+            
+            //get the child of the selected prefab and rotate it to a random angle at y but keep x and z at the same angle
+            GameObject model = selectedPrefab.transform.GetChild(0).gameObject;
+            model.transform.rotation = Quaternion.Euler(model.transform.eulerAngles.x, Random.Range(0, 360), model.transform.eulerAngles.z);
 
             GameObject debris = Instantiate(selectedPrefab, spawnPosition, spawnPoint.rotation);
 
