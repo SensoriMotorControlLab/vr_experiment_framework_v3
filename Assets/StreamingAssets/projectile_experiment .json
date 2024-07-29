@@ -1,7 +1,7 @@
 {
   "session_1": {
     "experiment_name": "projectile",
-    "use_vr": false,
+    "use_vr": true,
     "optional_params": {
       "linkPseudoRandom": [
         "per_block_list_target_angle",
@@ -9,9 +9,9 @@
       ]
     },
 	"per_block_input_name": [
-	"mouse",
-	"mouse",
-	"mouse"
+	"vr_controller",
+	"vr_controller",
+	"vr_controller"
 	],
     "trials_in_block": [
       4,

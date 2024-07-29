@@ -36,7 +36,7 @@ public class EndSessionTask : BaseTask
 
     public override void SetUp()
     {
-        base.SetUp();
+        //base.SetUp();
         maxSteps = 1;
 
         endText = GameObject.Find("EndText").GetComponent<TMP_Text>();

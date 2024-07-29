@@ -11,6 +11,8 @@ public abstract class BaseTask : MonoBehaviour
     /// </summary>
     [SerializeField]
     protected GameObject home;
+    [SerializeField]
+    protected GameObject vrPos;
     public GameObject Home { get { return home; } set { home = value; } }
     /// <summary>
     /// The docking position for the experiment
@@ -162,6 +164,8 @@ public abstract class BaseTask : MonoBehaviour
             target = GameObject.Find("Target");
         if(!prefabCamera)
             prefabCamera = GameObject.Find("PrefabCamera").GetComponent<Camera>();
+        if (!vrPos)
+            vrPos = GameObject.Find("VR Position");
 
         if (expController.UseVR == false)
         {
@@ -169,7 +173,10 @@ public abstract class BaseTask : MonoBehaviour
         }
         else
         {
+            Debug.Log("Setting VR position");
             prefabCamera.gameObject.SetActive(false);
+            expController.vrCtlr.transform.position = vrPos.transform.position;
+            expController.vrCtlr.transform.rotation = vrPos.transform.rotation;
         }
 
         CursorController.Instance.Cursor = cursor;
