@@ -56,16 +56,16 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 15.0f;
+    const float LAUNCH_FORCE = 50.0f;
     /// <summary>
     /// Magnitude to cap the launch force
     /// </summary>
-    const float LAUNCH_MAG = 0.25f;
+    const float LAUNCH_MAG = 0.5f;
     /// <summary>
     /// Distance to determine the participant is flicking the ball
     /// </summary>
     const float FLICK_DIST = 0.1f;
-    const float TARGET_DIST = 0.5f;
+    const float TARGET_DIST = 1f;
     /// <summary>
     /// Time in seconds to display a prompt
     /// </summary>
@@ -367,9 +367,12 @@ public class ProjectileTask : BaseTask
         displayText.text = "";
 
         //Debug.Log("target angle: " + targetAngles[currentTrial]);
-        target.transform.position = Vector3.zero;
-        target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
-        target.transform.Translate(new Vector3(0.0f, 0.0f, TARGET_DIST));
+        // target.transform.position = Vector3.zero;
+        // target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
+        float z = target.transform.localPosition.z;
+        // calculate x position based on angle
+        float x = Mathf.Tan(targetAngles[currentTrial] * Mathf.Deg2Rad) * z;    
+        target.transform.localPosition = new Vector3(x, target.transform.localPosition.y, z);
     }
 
     private Vector3 GetCursorScreenPercentage()
