@@ -36,11 +36,13 @@ public class EndSessionTask : BaseTask
 
     public override void SetUp()
     {
-        base.SetUp();
+        //base.SetUp();
         maxSteps = 1;
 
         endText = GameObject.Find("EndText").GetComponent<TMP_Text>();
         endText.text = "You have completed all trials\n[Press anything to finish]";
+        Debug.Log("THE EXPERIMENT HAS BEEN COMPLETE");
+        TaskEnd();
     }
 
     public override void TaskBegin()
@@ -58,7 +60,6 @@ public class EndSessionTask : BaseTask
         else
         {
             Application.Quit();
-
         }
     }
 }

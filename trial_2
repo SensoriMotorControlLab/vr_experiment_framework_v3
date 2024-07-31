@@ -5,8 +5,13 @@
     "trial_num": 3,
     "block_num": 1,
     "trial_num_in_block": 3,
+<<<<<<< HEAD
     "start_time": 53.0888786315918,
     "end_time": 56.742992401123047
 }
 }
+=======
+    "start_time": 22.233419418334961,
+    "end_time": 24.579916000366211
+>>>>>>> origin/test
 }

@@ -7,4 +7,9 @@
     "trial_num_in_block",
     "start_time",
     "end_time"
+]    "type",
+    "home_pos",
+    "target_angle",
+    "target_size_m",
+    "cursor_pos"
 ]

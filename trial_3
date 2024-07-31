@@ -5,6 +5,25 @@
     "trial_num": 4,
     "block_num": 1,
     "trial_num_in_block": 4,
+<<<<<<< HEAD
     "start_time": 56.742992401123047,
     "end_time": 66.977546691894531
 }}
+=======
+    "start_time": 24.579916000366211,
+    "end_time": 28.717830657958984
+}    "type": "reach",
+    "home_pos": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    },
+    "target_angle": 100,
+    "target_size_m": 0.0099999997764825821,
+    "cursor_pos": {
+        "x": -0.0085009168833494186,
+        "y": 0,
+        "z": 0.068281404674053192
+    }
+}
+>>>>>>> origin/test
