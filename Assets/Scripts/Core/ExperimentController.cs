@@ -260,6 +260,15 @@ public class ExperimentController : MonoBehaviour
         if (Session.CurrentTrial == Session.FirstTrial)
         {
             CenterOVRPlayerController();
+
+            //Offset the camera if needed
+            if (currentTask.VRStartPos) {
+                GameObject cameraOffset = vrCtlr.transform.GetChild(0).gameObject;
+                GameObject vrCamera = cameraOffset.transform.GetChild(0).gameObject;
+
+                Vector3 offsetVec = currentTask.VRStartPos.transform.position - vrCamera.transform.position;
+                cameraOffset.transform.position += offsetVec;
+            }
         }
     }
     /// <summary>

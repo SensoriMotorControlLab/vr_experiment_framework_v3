@@ -277,7 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   home: {fileID: 1837310699630250158}
-  vrPos: {fileID: 0}
+  vrPos: {fileID: 1972783700640635152}
   dock: {fileID: 0}
   plane: {fileID: 8110339310989644735}
   target: {fileID: 6570406427615215338}
