@@ -19,6 +19,7 @@ public class InputHandler : MonoBehaviour
     /// Highest priority for the InputHandler (usually VR touch controllers)
     /// </summary>
     private const int HIGHEST_PRIORITY = 100;
+    private const float FIND_DEVICE_TIMEOUT = 15.0f;
     /// <summary>
     /// Name Unity InputDevice associated with the headset device when using OpenXR
     /// </summary>
@@ -539,10 +540,21 @@ public class InputHandler : MonoBehaviour
     /// <param name="deviceName">Device name of connected device within InputDevices. If null or empty string uses FindDevices() default setup.</param>
     public void UseThisDevice(string deviceName)
     {
+        StartCoroutine(FindAndSetDevice(deviceName));
+    }
+    
+    /// <summary>
+    /// Find the device and than set it as the highest priority
+    /// </summary>
+    /// <param name="deviceName"></param>
+    /// <returns></returns>
+    IEnumerator FindAndSetDevice(string deviceName)
+    {
         //If a device name was passed
         if (deviceName != null && deviceName.Length > 0)
         {
-            string deviceString;
+            //The actual device string
+            string deviceString = "";
 
             //switch case for converting JSON strings into Unity InputDevices string
             switch (deviceName)
@@ -569,8 +581,19 @@ public class InputHandler : MonoBehaviour
             //If the device name was not found in input devices
             if (!deviceNames.Contains(deviceString))
             {
-                //Find all devices again to try and see if the device was connected
-                FindDevices();
+                float timeout = 0.0f;
+
+                Debug.Log(deviceString + " could not be found trying again");
+                //TODO Maybe have a coroutine here instead?
+                while (!deviceNames.Contains(deviceString) && timeout < FIND_DEVICE_TIMEOUT)
+                {
+                    //Find all devices again to try and see if the device was connected
+                    FindDevices();
+
+                    timeout += Time.deltaTime;
+
+                    yield return null;
+                }
 
                 //If for some reason the device still could not be found, throw an exception
                 if (!deviceNames.Contains(deviceString))
@@ -579,8 +602,26 @@ public class InputHandler : MonoBehaviour
                 }
             }
 
+            SetTheDevice(deviceString);
+        }
+        else
+        {
+            Debug.LogWarning("Device name was null or empty string");
+            FindDevices();
+        }
+
+
+        yield return new WaitForEndOfFrame();
+    }
+
+    /// <summary>
+    /// Set the passed device name as the highest priority
+    /// </summary>
+    /// <param name="deviceName"></param>
+    private void SetTheDevice(string deviceName)
+    {
             //Get the key for device
-            int theKey = inputDevices.FirstOrDefault(x => x.Value.inputDevice.name == deviceString).Key;
+            int theKey = inputDevices.FirstOrDefault(x => x.Value.inputDevice.name == deviceName).Key;
 
             //If the highest priority key has a value we need to move some things around 
             //before setting the other device to highest priority
@@ -601,7 +642,7 @@ public class InputHandler : MonoBehaviour
                     else if (i == 0)
                     {
                         Debug.LogWarning("Could not move devices around, highest priority device is " + inputDevices[HIGHEST_PRIORITY].inputDevice.name +
-                            " and not the desired " + deviceString);
+                            " and not the desired " + deviceName);
                     }
                 }
             }
@@ -611,18 +652,6 @@ public class InputHandler : MonoBehaviour
                 inputDevices[HIGHEST_PRIORITY] = inputDevices[theKey];
                 inputDevices.Remove(theKey);
             }
-        }
-        //If null or empty string
-        else
-        {
-            FindDevices();
-        }
-        /*
-        foreach(var e in inputDevices)
-        {
-            Debug.Log(e.Key + " " + e.Value.inputDevice.name);
-        }
-        */
     }
 
     public void UseThisDevice(InputDevice inputDevice)

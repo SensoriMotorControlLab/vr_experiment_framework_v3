@@ -82,6 +82,17 @@ public class ExperimentController : MonoBehaviour
             {
                 Session.EndCurrentTrial();
             }
+
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                Vector3 vec = vrCtlr.transform.position;
+                vrCtlr.transform.position = new Vector3(vec.x, vec.y - 0.05f, vec.z);
+            }
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                Vector3 vec = vrCtlr.transform.position;
+                vrCtlr.transform.position = new Vector3(vec.x, vec.y + 0.05f, vec.z);
+            }
         }
     }
 
@@ -182,7 +193,16 @@ public class ExperimentController : MonoBehaviour
     /// </summary>
     public void CenterOVRPlayerController()
     {
-        vrCtlr.transform.position = new Vector3(currentTask.Dock.transform.position.x, currentTask.Dock.transform.position.y, currentTask.Dock.transform.position.z);
+        if (currentTask.VRStartPos)
+        {
+            Debug.Log("Setting VR to " + currentTask.VRStartPos.transform.position);
+            vrCtlr.transform.position = new Vector3(currentTask.VRStartPos.transform.position.x, currentTask.VRStartPos.transform.position.y, currentTask.VRStartPos.transform.position.z);
+        }
+        else
+        {
+            Debug.Log("Setting VR to " + InputHandler.Instance.GetSpatialPosition());
+            vrCtlr.transform.position = InputHandler.Instance.GetSpatialPosition();
+        }
     }
 
     /// <summary>
@@ -234,7 +254,13 @@ public class ExperimentController : MonoBehaviour
             currentTask.enabled = true;
             currentTask.SetUp();
         }
+
         currentTask.TaskBegin();
+
+        if (Session.CurrentTrial == Session.FirstTrial)
+        {
+            CenterOVRPlayerController();
+        }
     }
     /// <summary>
     /// UXF TrialEnd method

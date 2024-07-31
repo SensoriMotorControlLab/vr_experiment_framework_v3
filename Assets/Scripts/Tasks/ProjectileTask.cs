@@ -64,7 +64,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Distance to determine the participant is flicking the ball
     /// </summary>
-    const float FLICK_DIST = 0.15f;
+    const float FLICK_DIST = 0.1f;
     const float TARGET_DIST = 0.5f;
     /// <summary>
     /// Time in seconds to display a prompt
@@ -344,7 +344,7 @@ public class ProjectileTask : BaseTask
         startPos = Vector3.zero;
         endPos = Vector3.zero;
 
-        cursor.SetActive(true);
+        //cursor.SetActive(true);
 
         ballRB.velocity = Vector3.zero;
         ballRB.angularVelocity = Vector3.zero;

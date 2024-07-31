@@ -5,7 +5,7 @@
     "optional_params": {
       "linkPseudoRandom": [
         "per_block_list_target_angle",
-        "per_block_list_test"
+        "per_block_list_target_angle_2"
       ]
     },
 	"per_block_input_name": [
@@ -38,7 +38,7 @@
       "ta1",
       "ta2"
     ],
-    "per_block_list_test": [
+    "per_block_list_target_angle_2": [
       "ta3", 
       "ta3", 
       "ta4"

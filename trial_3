@@ -5,9 +5,8 @@
     "trial_num": 4,
     "block_num": 1,
     "trial_num_in_block": 4,
-    "start_time": 16.688644409179688,
-    "end_time": 19.2800235748291
-}
+    "start_time": 24.037683486938477,
+    "end_time": 26.899354934692383
 }    "type": "reach",
     "home_pos": {
         "x": 0,
