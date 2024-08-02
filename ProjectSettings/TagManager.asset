@@ -7,6 +7,8 @@ TagManager:
   - Tool
   - Projectile
   - Cursor
+  - Debris
+  - Despawner
   layers:
   - Default
   - TransparentFX
@@ -16,9 +18,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - OnBank
+  - OnHole
+  - Hole
   - 
   - 
   - 

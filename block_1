@@ -1,5 +1,17 @@
 {
     "use_vr": true,
+<<<<<<< HEAD
+    "test": [
+        90,
+        100,
+        45,
+        125
+    ],
+    "target_angle": [
+        90,
+        100,
+        45,
+=======
     "target_angle_2": [
         90,
         45,
@@ -10,10 +22,15 @@
         90,
         45,
         100,
+>>>>>>> origin/test
         125
     ],
     "input_name": "vr_controller",
     "task": "projectile",
     "rotation": 0,
     "instruction": null
+<<<<<<< HEAD
+}}null
+=======
+>>>>>>> origin/test
 }
