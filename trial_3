@@ -5,9 +5,10 @@
     "trial_num": 4,
     "block_num": 1,
     "trial_num_in_block": 4,
-    "start_time": 24.579916000366211,
-    "end_time": 28.717830657958984
-}    "type": "reach",
+    "start_time": 29.107545852661133,
+    "end_time": 31.856285095214844
+}
+} "type": "reach",
     "home_pos": {
         "x": 0,
         "y": 0,

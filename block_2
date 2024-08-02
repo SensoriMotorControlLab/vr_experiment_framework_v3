@@ -2,15 +2,15 @@
     "use_vr": true,
     "target_angle_2": [
         70,
-        50,
+        110,
         130,
-        110
+        50
     ],
     "target_angle": [
         70,
-        50,
+        110,
         130,
-        110
+        50
     ],
     "input_name": "vr_controller",
     "task": "projectile",
