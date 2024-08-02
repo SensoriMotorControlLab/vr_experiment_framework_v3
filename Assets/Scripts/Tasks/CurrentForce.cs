@@ -18,12 +18,31 @@ public class CurrentForce : MonoBehaviour
         
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Tool"){
-            other.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.forward*forwardForce*1000);
-            other.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.left*sideForce*1000);
+    // void OnTriggerStay(Collider other)
+    // {
+    //     if (other.gameObject.tag == "Tool"){
+    //         other.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.forward*forwardForce*1);
+    //         other.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.left*sideForce*1);
+            
 
+    //     }
+    // }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Tool")
+        {
+            Rigidbody rb = other.gameObject.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                // Set constant forward velocity
+                Vector3 velocity = rb.velocity;
+                velocity.z = forwardForce;
+                rb.velocity = velocity;
+
+                // Apply side force
+                rb.AddForce(Vector3.left * sideForce);
+            }
         }
     }
 }
