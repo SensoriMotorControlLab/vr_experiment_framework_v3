@@ -1,11 +1,10 @@
 {
-    "experiment": "projectile_experiment ",
+    "experiment": "projectile_experiment _2d",
     "ppid": "test",
     "session_num": 1,
     "trial_num": 9,
     "block_num": 3,
     "trial_num_in_block": 1,
-    "start_time": 48.880229949951172,
-    "end_time": 52.9210205078125
-}
+    "start_time": 36.648609161376953,
+    "end_time": 39.442489624023438
 }

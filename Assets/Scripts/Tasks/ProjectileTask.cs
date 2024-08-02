@@ -27,6 +27,7 @@ public class ProjectileTask : BaseTask
     /// </summary>
     [SerializeField]
     Target wrongWayCollider;
+    Plane ballPlane;
     /// <summary>
     /// Feedback text
     /// </summary>
@@ -56,11 +57,15 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 50.0f;
+    const float LAUNCH_FORCE = 25.0f;
     /// <summary>
     /// Magnitude to cap the launch force
     /// </summary>
     const float LAUNCH_MAG = 0.5f;
+    /// <summary>
+    /// Minimum magnitude to be considered a launch
+    /// </summary>
+    const float MIN_MAG = 0.3f;
     /// <summary>
     /// Distance to determine the participant is flicking the ball
     /// </summary>
@@ -103,7 +108,7 @@ public class ProjectileTask : BaseTask
                     //If we are using VR use the VR hand position else get the
                     //converted mouse position
                     startPos = ExperimentController.Instance.UseVR == true ?
-                        InputHandler.Instance.GetHandPosition() : mouse;
+                        GetHandOnBallPlane() : mouse;
 
                     launchStartTime = Time.time;
                     IncrementStep();
@@ -119,7 +124,7 @@ public class ProjectileTask : BaseTask
                     if (Input.GetButton(buttonCheck))
                     {
                         Vector3 pos = ExperimentController.Instance.UseVR == true ?
-                            InputHandler.Instance.GetHandPosition() : mouse;
+                            GetHandOnBallPlane() : mouse;
 
                         handPos.Add(new Vector4(pos.x, pos.y, pos.z, Time.time));
                     }
@@ -130,9 +135,9 @@ public class ProjectileTask : BaseTask
                         //Get velocity of hand
                         Vector3 handVelocity = InputHandler.Instance.GetHandVelocity();
 
-                        if (Vector3.Distance(InputHandler.Instance.GetHandPosition(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
+                        if (Vector3.Distance(GetHandOnBallPlane(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
                         {
-                            endPos = InputHandler.Instance.GetHandPosition();
+                            endPos = GetHandOnBallPlane();
                             launchEndTime = Time.time;
 
                             float totalTime = launchEndTime - launchStartTime;
@@ -151,7 +156,18 @@ public class ProjectileTask : BaseTask
                             force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
                             force *= LAUNCH_FORCE;
 
-                            ballRB.velocity = force;
+                            Vector3 launchForce = force;
+
+                            if(launchForce.magnitude < MIN_MAG)
+                            {
+                                Debug.Log("The launch force was too small, applying a new force");
+                                Debug.Log("New force " + force * 2.0f);
+                                Debug.Log("New force mag " + (force * 2.0f).magnitude);
+
+                                launchForce = force * 2.0f;
+                            }
+
+                            ballRB.velocity = launchForce;
                             Debug.Log("Launch force " + force);
                             Debug.Log("Launch mag " + force.magnitude);
                             cursor.SetActive(false);
@@ -210,7 +226,18 @@ public class ProjectileTask : BaseTask
                             force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
                             force *= LAUNCH_FORCE;
 
-                            ballRB.velocity = force;
+                            Vector3 launchForce = force;
+
+                            if (launchForce.magnitude < MIN_MAG)
+                            {
+                                Debug.Log("The launch force was too small, applying a new force");
+                                Debug.Log("New force " + force * 2.0f);
+                                Debug.Log("New force mag " + (force * 2.0f).magnitude);
+
+                                launchForce = force * 2.0f;
+                            }
+
+                            ballRB.velocity = launchForce;
                             Debug.Log("Launch force " + force);
                             Debug.Log("Launch mag " + force.magnitude);
                             cursor.SetActive(false);
@@ -366,6 +393,8 @@ public class ProjectileTask : BaseTask
 
         displayText.text = "";
 
+        ballPlane = new Plane(ball.transform.up,ball.transform.position.y);
+
         //Debug.Log("target angle: " + targetAngles[currentTrial]);
         // target.transform.position = Vector3.zero;
         // target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
@@ -378,6 +407,11 @@ public class ProjectileTask : BaseTask
     private Vector3 GetCursorScreenPercentage()
     {
         return  new Vector3(InputHandler.Instance.GetPosition().x / Screen.width, InputHandler.Instance.GetPosition().y / Screen.height, 0);
+    }
+
+    private Vector3 GetHandOnBallPlane()
+    {
+        return Vector3.ProjectOnPlane(InputHandler.Instance.GetHandPosition(), ballPlane.normal);
     }
 
     public override void TaskEnd()
