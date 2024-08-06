@@ -1,22 +1,21 @@
 {
-    "use_vr": false,
+    "use_vr": true,
     "target_angle_2": [
-        10,
         -10,
-        25,
-        -25
+        10,
+        -25,
+        25
     ],
     "target_angle": [
-        10,
         -10,
-        25,
-        -25
+        10,
+        -25,
+        25
     ],
-    "input_name": "mouse",
+    "input_name": "vr_controller",
     "task": "projectile",
     "rotation": 0,
     "instruction": null
-}null
 }90,
         45,
         100,

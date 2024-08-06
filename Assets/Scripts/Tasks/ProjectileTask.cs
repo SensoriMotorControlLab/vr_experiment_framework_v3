@@ -152,7 +152,7 @@ public class ProjectileTask : BaseTask
                             ballRB.useGravity = true;
 
                             Vector3 force = launchVec;
-                            force.y = home.transform.position.y;
+                            //force.y = home.transform.position.y;
                             force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
                             force *= LAUNCH_FORCE;
 
@@ -411,7 +411,7 @@ public class ProjectileTask : BaseTask
 
     private Vector3 GetHandOnBallPlane()
     {
-        return Vector3.ProjectOnPlane(InputHandler.Instance.GetHandPosition(), ballPlane.normal);
+        return Vector3.ProjectOnPlane(InputHandler.Instance.GetHandPosition(), ballPlane.normal) + Vector3.Dot(InputHandler.Instance.GetHandPosition(),ballPlane.normal) * ballPlane.normal;
     }
 
     public override void TaskEnd()
