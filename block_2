@@ -1,15 +1,15 @@
 {
     "use_vr": true,
     "target_angle_2": [
-        45,
         -45,
         -35,
+        45,
         35
     ],
     "target_angle": [
-        45,
         -45,
         -35,
+        45,
         35
     ],
     "input_name": "vr_controller",
