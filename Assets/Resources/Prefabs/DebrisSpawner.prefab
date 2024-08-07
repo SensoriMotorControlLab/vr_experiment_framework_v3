@@ -51,9 +51,9 @@ MonoBehaviour:
   - {fileID: 5124104282692214544, guid: f7d8c426299db3b48a292e3d37ec7e20, type: 3}
   - {fileID: 7148933534028422156, guid: 62c4002f3cdb71a449f4bc478a645cec, type: 3}
   spawnPoint: {fileID: 5718992107118093465}
-  spawnRate: 2
-  minSpawnDebris: 1
-  maxSpawnDebris: 3
+  spawnRate: 0
+  minSpawnDebris: 0
+  maxSpawnDebris: 0
   minSpeed: 1
   maxSpeed: 5
   percentChance: 50

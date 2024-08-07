@@ -1,25 +1,26 @@
 {
     "use_vr": true,
     "target_angle_2": [
-        25,
         -25,
         -10,
-        10
+        10,
+        25,
+        5,
+        0
     ],
     "target_angle": [
-        25,
-        -25,
         -10,
+        -5,
+        5,
+        0,
+        25,
         10
     ],
     "input_name": "vr_controller",
     "task": "projectile",
     "rotation": 0,
     "instruction": null
-}90,
-        45,
-        100,
->>>>>>> origin/test
+}test
         125
     ],
     "input_name": "vr_controller",

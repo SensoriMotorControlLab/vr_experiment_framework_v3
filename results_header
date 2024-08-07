@@ -6,10 +6,13 @@
     "block_num",
     "trial_num_in_block",
     "start_time",
-    "end_time"
-]    "type",
-    "home_pos",
+    "end_time",
+    "hand",
+    "target_hit",
+    "type",
+    "target_position",
     "target_angle",
-    "target_size_m",
-    "cursor_pos"
+    "launch_direction",
+    "launch_angle",
+    "launch_angle_error"
 ]

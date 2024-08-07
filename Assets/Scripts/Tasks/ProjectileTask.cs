@@ -90,7 +90,6 @@ public class ProjectileTask : BaseTask
     /// Time the button was released or distance was greater than a certain amount
     /// </summary>
     float launchEndTime = 0.0f;
-    bool aimingBall = false;
     Vector3 launchVec;
     float currentAngle = 0.0f;
     string currentType = "";
@@ -128,8 +127,6 @@ public class ProjectileTask : BaseTask
                         Vector3 pos = GetMousePos();
 
                         handPos.Add(new Vector4(pos.x, pos.y, pos.z, Time.time));
-
-                        aimingBall = true;
                     }
 
                     if (Vector3.Distance(GetMousePos(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
@@ -137,19 +134,10 @@ public class ProjectileTask : BaseTask
                         endPos = GetMousePos();
                         launchEndTime = Time.time;
 
-                        Vector3 handVelocity = Vector3.zero;
-
-                        if (ExperimentController.Instance.UseVR)
-                        {
-                            handVelocity = InputHandler.Instance.GetHandVelocity();
-                        }
-
                         float totalTime = launchEndTime - launchStartTime;
                         launchVec = endPos - startPos;
                         launchVec.Normalize();
-                        launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
-
-                        aimingBall = false;
+                        //launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
 
                         Debug.Log("Launch time " + totalTime);
                         Debug.Log("Launch vector " + launchVec);
@@ -187,7 +175,7 @@ public class ProjectileTask : BaseTask
                 {
                     float dist = Vector3.Distance(startPos, endPos);
                     Vector3 dir = endPos - startPos;
-                    Debug.DrawRay(startPos, dir.normalized * dist, Color.red);
+                    Debug.DrawRay(home.transform.position, dir.normalized * 1000.0f, Color.red);
 
                     Vector3 toTarget = target.transform.position - home.transform.position;
                     Vector3 toBall = target.transform.position - ball.transform.position;
@@ -232,6 +220,11 @@ public class ProjectileTask : BaseTask
                 break;
             //Displaying feedback
             case 3:
+                {
+                    float dist = Vector3.Distance(startPos, endPos);
+                    Vector3 dir = endPos - startPos;
+                    Debug.DrawRay(home.transform.position, dir.normalized * 1000.0f, Color.red);
+                }
                 break;
         }
     }
@@ -338,12 +331,12 @@ public class ProjectileTask : BaseTask
         float x = Mathf.Tan(targetAngles[currentTrial] * Mathf.Deg2Rad) * z;    
         target.transform.localPosition = new Vector3(x, target.transform.localPosition.y, z);
         currentAngle = targetAngles[currentTrial];
-        currentType = ExperimentController.Instance.Session.CurrentTrial.settings.GetStringList("per_block_task")[currentTrial];
+        currentType = ExperimentController.Instance.Session.CurrentTrial.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
     }
 
     private Vector3 GetMousePos()
     {
-        return ExperimentController.Instance.UseVR ? GetHandOnBallPlane() : GetCursorScreenPercentage();
+        return ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandPosition() : GetCursorScreenPercentage();
     }
 
     private Vector3 GetCursorScreenPercentage()
@@ -354,11 +347,6 @@ public class ProjectileTask : BaseTask
     private Vector3 GetHandOnBallPlane()
     {
         return Vector3.ProjectOnPlane(InputHandler.Instance.GetHandPosition(), ballPlane.normal) + Vector3.Dot(InputHandler.Instance.GetHandPosition(),ballPlane.normal) * ballPlane.normal;
-    }
-
-    private Vector3 GetHandVector()
-    {
-        return new Vector3(InputHandler.Instance.GetHandPosition().x, 0.0f, InputHandler.Instance.GetHandPosition().z);
     }
 
     public override void TaskEnd()

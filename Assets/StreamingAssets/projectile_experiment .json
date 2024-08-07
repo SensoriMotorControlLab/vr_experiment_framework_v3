@@ -14,9 +14,9 @@
 	"vr_controller"
 	],
     "trials_in_block": [
-      4,
-      4,
-      4
+      6,
+      6,
+      6
     ],
     "per_block_task": [
       "projectile",
@@ -24,9 +24,9 @@
       "projectile"
     ],
     "per_block_rotation": [
-      30,
       0,
-      30
+      0,
+      0
     ],
     "per_block_instruction": [
       null,
@@ -43,10 +43,10 @@
       "ta3", 
       "ta4"
     ],
-    "ta1": [25, 10, -10, -25],
-    "ta2": [-35, -45, 45, 35],
-    "ta3": [25, 10, -10, -25],
-    "ta4": [-35, -45, 45, 35],
+    "ta1": [0, 5, -5, -10, 10, 25],
+    "ta2": [0, 5, -5, -10, -15, 15],
+    "ta3": [25, 10, -10, -25, 0, 5],
+    "ta4": [-35, -45, 45, 35, 5, -5],
     "ins1": "Toss the ball to the target."
   }
 }

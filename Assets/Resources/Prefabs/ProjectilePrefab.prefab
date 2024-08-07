@@ -793,7 +793,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7f287425570efb45a5d8b1e1014e7cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileTask: {fileID: 3048026770633312065}
 --- !u!1 &6003971494822085850
 GameObject:
   m_ObjectHideFlags: 0
