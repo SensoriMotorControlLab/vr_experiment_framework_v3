@@ -35,10 +35,11 @@ public class CurrentForce : MonoBehaviour
             Rigidbody rb = other.gameObject.GetComponent<Rigidbody>();
             if (rb != null)
             {
+                // Debug.Log("current force: " + rb.velocity.x);
                 // Set constant forward velocity
-                Vector3 velocity = rb.velocity;
-                velocity.z = forwardForce;
-                rb.velocity = velocity;
+                // Vector3 velocity = rb.velocity;
+                // velocity.z = forwardForce;
+                // rb.velocity = velocity;
 
                 // Apply side force
                 rb.AddForce(Vector3.left * sideForce);

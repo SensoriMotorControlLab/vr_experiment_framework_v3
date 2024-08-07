@@ -59,7 +59,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 25.0f;
+    const float LAUNCH_FORCE = 20.0f;
     /// <summary>
     /// Magnitude to cap the launch force
     /// </summary>
@@ -371,6 +371,7 @@ public class ProjectileTask : BaseTask
         Session session = ExperimentController.Instance.Session;
 
         session.CurrentTrial.result["hand"] = "r";
+        session.CurrentTrial.result["target_hit"] = target.GetComponent<Target>().TargetHit;
         session.CurrentTrial.result["type"] = currentType;
         session.CurrentTrial.result["target_position"] = target.transform.position;
         session.CurrentTrial.result["target_angle"] = currentAngle;
