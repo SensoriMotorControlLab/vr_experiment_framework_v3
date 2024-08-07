@@ -104,7 +104,10 @@ public abstract class BaseTask : MonoBehaviour
         finished = currentStep == maxSteps;
 
         if (finished)
+        {
             currentTrial++;
+            LogParameters();
+        }
 
         //Debug.Log(name + "step: " + currentStep);
 
@@ -193,8 +196,8 @@ public abstract class BaseTask : MonoBehaviour
     /// </summary>
     public virtual void TaskBegin()
     {
-        Debug.Log("Current trial in block: " + ExperimentController.Instance.Session.CurrentTrial.numberInBlock);
-        Debug.Log("Current block number: " + ExperimentController.Instance.Session.CurrentBlock.number);
+        // Debug.Log("Current trial in block: " + ExperimentController.Instance.Session.CurrentTrial.numberInBlock);
+        // Debug.Log("Current block number: " + ExperimentController.Instance.Session.CurrentBlock.number);
 
         currentStep = 0;
         finished = false;

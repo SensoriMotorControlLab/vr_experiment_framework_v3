@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UXF;
 
 public class ProjectileTask : BaseTask
 {
@@ -89,6 +91,9 @@ public class ProjectileTask : BaseTask
     /// </summary>
     float launchEndTime = 0.0f;
     bool aimingBall = false;
+    Vector3 launchVec;
+    float currentAngle = 0.0f;
+    string currentType = "";
 
     // Start is called before the first frame update
     void Start()
@@ -140,7 +145,7 @@ public class ProjectileTask : BaseTask
                         }
 
                         float totalTime = launchEndTime - launchStartTime;
-                        Vector3 launchVec = endPos - startPos;
+                        launchVec = endPos - startPos;
                         launchVec.Normalize();
                         launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
 
@@ -332,6 +337,8 @@ public class ProjectileTask : BaseTask
         // calculate x position based on angle
         float x = Mathf.Tan(targetAngles[currentTrial] * Mathf.Deg2Rad) * z;    
         target.transform.localPosition = new Vector3(x, target.transform.localPosition.y, z);
+        currentAngle = targetAngles[currentTrial];
+        currentType = ExperimentController.Instance.Session.CurrentTrial.settings.GetStringList("per_block_task")[currentTrial];
     }
 
     private Vector3 GetMousePos()
@@ -361,6 +368,14 @@ public class ProjectileTask : BaseTask
 
     public override void LogParameters()
     {
-        
+        Session session = ExperimentController.Instance.Session;
+
+        session.CurrentTrial.result["hand"] = "r";
+        session.CurrentTrial.result["type"] = currentType;
+        session.CurrentTrial.result["target_position"] = target.transform.position;
+        session.CurrentTrial.result["target_angle"] = currentAngle;
+        session.CurrentTrial.result["launch_direction"] = launchVec;
+        session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.forward, launchVec);
+        session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.forward, launchVec) - Mathf.Abs(currentAngle);
     }
 }
