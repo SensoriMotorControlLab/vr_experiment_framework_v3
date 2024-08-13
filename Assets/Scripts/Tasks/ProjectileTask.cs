@@ -137,6 +137,7 @@ public class ProjectileTask : BaseTask
                         float totalTime = launchEndTime - launchStartTime;
                         launchVec = endPos - startPos;
                         launchVec.Normalize();
+                        launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
                         //launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
 
                         Debug.Log("Launch time " + totalTime);
