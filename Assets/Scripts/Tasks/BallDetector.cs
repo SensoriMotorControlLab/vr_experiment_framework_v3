@@ -9,7 +9,9 @@ public class BallDetector : MonoBehaviour
     {
         if (other.gameObject.tag == "Tool")
         {
-            other.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            Rigidbody rb = other.gameObject.GetComponent<Rigidbody>();
+            rb.isKinematic = true;
+            rb.velocity = Vector3.zero;
         }
     }
 }

@@ -1,0 +1,19 @@
+experiment,ppid,session_num,trial_num,block_num,trial_num_in_block,start_time,end_time,hand,target_hit,type,target_position,target_angle,launch_direction,launch_angle,launch_angle_error
+projectile_experiment ,000,1,1,1,1,3.448828,8.46577,r,False,projectile,(-0.60_ -0.06_ 1.04),-30,(-0.48_ 0.34_ 0.81),36.00689,6.006889
+projectile_experiment ,000,1,2,1,2,8.46577,12.67338,r,False,projectile,(-0.73_ -0.06_ 1.04),-35,(-0.16_ 0.21_ 0.96),15.22374,-19.77626
+projectile_experiment ,000,1,3,1,3,12.67338,15.95288,r,False,projectile,(-0.88_ -0.06_ 1.04),-40,(0.01_ 0.09_ 1.00),5.05381,-34.94619
+projectile_experiment ,000,1,4,1,4,15.95288,21.27326,r,False,projectile,(-0.60_ -0.06_ 1.04),-30,(0.50_ 0.18_ 0.85),32.26123,2.261234
+projectile_experiment ,000,1,5,1,5,21.27326,24.63848,r,False,projectile,(-0.73_ -0.06_ 1.04),-35,(0.25_ 0.08_ 0.97),15.00546,-19.99454
+projectile_experiment ,000,1,6,1,6,24.63848,27.92728,r,False,projectile,(-0.88_ -0.06_ 1.04),-40,(0.49_ 0.17_ 0.86),31.08251,-8.917492
+projectile_experiment ,000,1,7,2,1,27.92728,31.23734,r,False,projectile,(-0.88_ -0.06_ 1.04),-40,(0.57_ 0.03_ 0.82),34.93217,-5.067833
+projectile_experiment ,000,1,8,2,2,31.23734,34.36475,r,False,projectile,(-0.60_ -0.06_ 1.04),-30,(0.64_ -0.01_ 0.77),39.8818,9.881798
+projectile_experiment ,000,1,9,2,3,34.36475,37.78159,r,False,projectile,(-0.73_ -0.06_ 1.04),-35,(0.64_ 0.15_ 0.76),40.94579,5.945786
+projectile_experiment ,000,1,10,2,4,37.78159,41.04601,r,False,projectile,(-0.60_ -0.06_ 1.04),-30,(0.26_ -0.07_ 0.96),15.64715,-14.35285
+projectile_experiment ,000,1,11,2,5,41.04601,43.94075,r,False,projectile,(-0.73_ -0.06_ 1.04),-35,(0.38_ 0.22_ 0.90),25.86642,-9.133575
+projectile_experiment ,000,1,12,2,6,43.94075,47.28807,r,False,projectile,(-0.88_ -0.06_ 1.04),-40,(0.25_ -0.13_ 0.96),16.43844,-23.56156
+projectile_experiment ,000,1,13,3,1,47.28807,51.84328,r,False,projectile,(-0.73_ -0.06_ 1.04),-35,(0.42_ 0.05_ 0.91),24.8182,-10.1818
+projectile_experiment ,000,1,14,3,2,51.84328,55.29747,r,False,projectile,(-0.88_ -0.06_ 1.04),-40,(0.51_ -0.09_ 0.86),30.96572,-9.034279
+projectile_experiment ,000,1,15,3,3,55.29747,58.75481,r,False,projectile,(-0.60_ -0.06_ 1.04),-30,(0.46_ -0.01_ 0.89),27.26058,-2.73942
+projectile_experiment ,000,1,16,3,4,58.75481,62.71211,r,False,projectile,(-0.88_ -0.06_ 1.04),-40,(0.03_ 0.02_ 1.00),2.125688,-37.87431
+projectile_experiment ,000,1,17,3,5,62.71211,68.90752,r,False,projectile,(-0.73_ -0.06_ 1.04),-35,(0.65_ 0.05_ 0.76),40.90913,5.90913
+projectile_experiment ,000,1,18,3,6,68.90752,71.5743,r,False,projectile,(-0.60_ -0.06_ 1.04),-30,(0.65_ 0.05_ 0.76),40.90913,10.90913

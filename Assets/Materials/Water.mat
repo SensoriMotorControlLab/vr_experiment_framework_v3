@@ -71,7 +71,7 @@ Material:
     - _FoamAmount: 12.7
     - _FoamCuttoff: 36.33
     - _FoamScale: 52.65
-    - _FoamSpeed: -2
+    - _FoamSpeed: -1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -88,8 +88,8 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.38364774, g: 0.71246696, b: 1, a: 1}
-    - _DeepColour: {r: 0, g: 0.79691243, b: 1, a: 0.1137255}
+    - _DeepColour: {r: 0, g: 0.79607844, b: 1, a: 0.1137255}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FoamColour: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 0.5019608}
-    - _ShallowColour: {r: 0.3764091, g: 0.81315356, b: 0.9811321, a: 0.3803922}
+    - _FoamColour: {r: 0.6273585, g: 0.71672, b: 1, a: 0.5019608}
+    - _ShallowColour: {r: 0.4481132, g: 0.8459017, b: 1, a: 0.3803922}
   m_BuildTextureStacks: []
