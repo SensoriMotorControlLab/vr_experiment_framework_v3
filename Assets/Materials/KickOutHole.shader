@@ -51,7 +51,7 @@
 
 	SubShader
 	{
-		Tags { "Queue" = "Geometry-2" "RenderType"="Opaque" "PerformanceChecks"="False" }
+		Tags { "Queue" = "Geometry-2" "RenderType"="Transparent" "PerformanceChecks"="False" }
 		LOD 300
 	
 
