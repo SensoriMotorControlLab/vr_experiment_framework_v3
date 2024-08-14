@@ -119,7 +119,6 @@ public class ProjectileTask : BaseTask
                         launchVec = endPos - startPos;
                         launchVec.Normalize();
                         launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
-                        //launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
 
                         Debug.Log("Launch time " + totalTime);
                         Debug.Log("Launch vector " + launchVec);
@@ -172,6 +171,7 @@ public class ProjectileTask : BaseTask
                 } 
 
                 break;
+            #region Launch ball
             //Track cursor(hand position) and launch when certain distance from home
             // case 1:
             //     {
@@ -208,7 +208,7 @@ public class ProjectileTask : BaseTask
             //             Debug.Log("fire force: " + (((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE)));
             //             Debug.Log("target angle: " + targetAngles[currentTrial]);
 
-                        
+
 
             //             Vector3 launchForce = force;
 
@@ -230,16 +230,19 @@ public class ProjectileTask : BaseTask
             //         }
             //     }
             //     break;
+            #endregion
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
                     float dist = Vector3.Distance(startPos, endPos);
                     Vector3 dir = endPos - startPos;
-                    Debug.DrawRay(home.transform.position, dir.normalized * 1000.0f, Color.red);
+                    Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
 
+                    /*
                     Vector3 toTarget = target.transform.position - home.transform.position;
                     Vector3 toBall = target.transform.position - ball.transform.position;
                     float dot = Vector3.Dot(toTarget, toBall);
+                    */
                     ballPos.Add(ball.transform.position);
 
                     //Ball the hit target
@@ -283,7 +286,7 @@ public class ProjectileTask : BaseTask
                 {
                     float dist = Vector3.Distance(startPos, endPos);
                     Vector3 dir = endPos - startPos;
-                    Debug.DrawRay(home.transform.position, dir.normalized * 1000.0f, Color.red);
+                    Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
                 }
                 break;
         }
@@ -340,7 +343,10 @@ public class ProjectileTask : BaseTask
 
         if(ExperimentController.Instance.UseVR == true)
         {
-            buttonCheck = "XRI_Right_TriggerButton";
+            if(InputHandler.Instance.GetDominantHandString() == "Right")
+                buttonCheck = "XRI_Right_TriggerButton";
+            else
+                buttonCheck = "XRI_Left_TriggerButton";
         }
         else
         {
