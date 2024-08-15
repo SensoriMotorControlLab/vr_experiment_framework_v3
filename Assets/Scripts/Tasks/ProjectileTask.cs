@@ -111,44 +111,44 @@ public class ProjectileTask : BaseTask
             }
 
             if (Vector3.Distance(GetMousePos(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
-                {
-                        endPos = GetMousePos();
-                        launchEndTime = Time.time;
+            {
+                    endPos = GetMousePos();
+                    launchEndTime = Time.time;
 
-                        float totalTime = launchEndTime - launchStartTime;
-                        launchVec = endPos - startPos;
-                        launchVec.Normalize();
-                        launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
+                    float totalTime = launchEndTime - launchStartTime;
+                    launchVec = endPos - startPos;
+                    launchVec.Normalize();
+                    launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
 
-                        Debug.Log("Launch time " + totalTime);
-                        Debug.Log("Launch vector " + launchVec);
+                    Debug.Log("Launch time " + totalTime);
+                    Debug.Log("Launch vector " + launchVec);
 
-                        ballRB.isKinematic = false;
-                        ballRB.useGravity = true;
+                    ballRB.isKinematic = false;
+                    ballRB.useGravity = true;
 
-                        Vector3 force = launchVec;
-                        force.y = 0.0f;
-                        force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
-                        force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
+                    Vector3 force = launchVec;
+                    force.y = 0.0f;
+                    force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
+                    force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
 
-                        Vector3 launchForce = force;
+                    Vector3 launchForce = force;
 
-                        if (launchForce.magnitude < MIN_MAG)
-                        {
-                            Debug.Log("The launch force was too small, applying a new force");
-                            Debug.Log("New force " + force * 2.0f);
-                            Debug.Log("New force mag " + (force * 2.0f).magnitude);
+                    if (launchForce.magnitude < MIN_MAG)
+                    {
+                        Debug.Log("The launch force was too small, applying a new force");
+                        Debug.Log("New force " + force * 2.0f);
+                        Debug.Log("New force mag " + (force * 2.0f).magnitude);
 
-                            launchForce = force * 2.0f;
-                        }
+                        launchForce = force * 2.0f;
+                    }
 
-                        ballRB.velocity = launchForce;
-                        Debug.Log("Launch force " + force);
-                        Debug.Log("Launch mag " + force.magnitude);
-                        cursor.SetActive(false);
+                    ballRB.velocity = launchForce;
+                    Debug.Log("Launch force " + force);
+                    Debug.Log("Launch mag " + force.magnitude);
+                    cursor.SetActive(false);
 
-                        IncrementStep();
-                }
+                    IncrementStep();
+            }
         }
     }
 
@@ -343,7 +343,7 @@ public class ProjectileTask : BaseTask
 
         if(ExperimentController.Instance.UseVR == true)
         {
-            if(InputHandler.Instance.GetDominantHandString() == "Right")
+            if(InputHandler.Instance.GetDominantHandString() == "RightHand")
                 buttonCheck = "XRI_Right_TriggerButton";
             else
                 buttonCheck = "XRI_Left_TriggerButton";
