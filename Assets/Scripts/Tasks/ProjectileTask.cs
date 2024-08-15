@@ -118,7 +118,7 @@ public class ProjectileTask : BaseTask
                     float totalTime = launchEndTime - launchStartTime;
                     launchVec = endPos - startPos;
                     launchVec.Normalize();
-                    launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
+                    //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
 
                     Debug.Log("Launch time " + totalTime);
                     Debug.Log("Launch vector " + launchVec);
@@ -402,12 +402,29 @@ public class ProjectileTask : BaseTask
 
     private Vector3 GetMousePos()
     {
-        return ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandPosition() : GetCursorScreenPercentage();
+
+        return ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandPosition() : GetMouseWorldPos();
     }
 
     private Vector3 GetCursorScreenPercentage()
     {
         return  new Vector3(InputHandler.Instance.GetPosition().x / Screen.width, InputHandler.Instance.GetPosition().y / Screen.height, 0);
+    }
+
+    private Vector3 GetMouseWorldPos()
+    {
+        //Vector3 mousePos = Input.mousePosition;
+        //mousePos.z = Camera.main.nearClipPlane;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        float distance;
+        Plane pPlane = new Plane(plane.transform.up, ball.transform.position.y);
+
+        if(pPlane.Raycast(ray, out distance)){
+            return ray.GetPoint(distance);
+        }
+
+        return Vector3.zero;
     }
 
     private Vector3 GetHandOnBallPlane()

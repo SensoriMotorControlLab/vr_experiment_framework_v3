@@ -1,13 +1,13 @@
 {
-    "experiment": "projectile_experiment ",
-    "ppid": "123",
+    "experiment": "projectile_experiment _2d",
+    "ppid": "test",
     "session_num": 1,
     "trial_num": 5,
-    "block_num": 1,
-    "trial_num_in_block": 5,
-    "start_time": 37.300594329833984,
-    "end_time": 39.860195159912109,
-    "hand": "r",
+    "block_num": 2,
+    "trial_num_in_block": 2,
+    "start_time": 24.675712585449219,
+    "end_time": 25.163797378540039
+}"hand": "r",
     "target_hit": true,
     "type": "projectile",
     "target_position": {
