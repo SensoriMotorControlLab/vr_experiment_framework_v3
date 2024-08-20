@@ -94,6 +94,8 @@ public class ProjectileTask : BaseTask
     float currentAngle = 0.0f;
     string currentType = "";
 
+    float currentWaterForce = 0.0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -352,6 +354,14 @@ public class ProjectileTask : BaseTask
         {
             buttonCheck = "Fire1";
         }
+
+        GameObject water = GameObject.Find("Water");
+        CurrentForce currentForce = water.GetComponent<CurrentForce>();
+        currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        currentForce.sideForce = currentWaterForce;
+
+        water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
+
         
     }
 

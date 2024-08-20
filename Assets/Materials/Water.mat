@@ -69,9 +69,9 @@ Material:
     - _Distance: 29.18
     - _DstBlend: 0
     - _FoamAmount: 12.7
-    - _FoamCuttoff: 36.33
-    - _FoamScale: 52.65
-    - _FoamSpeed: -1
+    - _FoamCuttoff: 48.79
+    - _FoamScale: 0
+    - _FoamSpeed: 82.3
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -82,7 +82,7 @@ Material:
     - _Scale: 0.86
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: -0.05
+    - _Speed: -0.2
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1

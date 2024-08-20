@@ -508,7 +508,7 @@ Shader "Custom/KickOutWater"
             float _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float;
             Unity_Multiply_float_float(_Saturate_1ce8aa9cabb84fd7a2bce08ce8b4567c_Out_1_Float, _Property_c657032848054f039358b5a7e8a93bec_Out_0_Float, _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float);
             float _Property_d7fc932a4b8c4b89a3973cfe05fc539a_Out_0_Float = _FoamScale;
-            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _FoamSpeed;
+            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _Speed;
             float2 _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2 = float2(0, _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float);
             float2 _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2;
             Unity_Multiply_float2_float2((IN.TimeParameters.x.xx), _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2, _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2);
@@ -1181,7 +1181,7 @@ Shader "Custom/KickOutWater"
             float _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float;
             Unity_Multiply_float_float(_Saturate_1ce8aa9cabb84fd7a2bce08ce8b4567c_Out_1_Float, _Property_c657032848054f039358b5a7e8a93bec_Out_0_Float, _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float);
             float _Property_d7fc932a4b8c4b89a3973cfe05fc539a_Out_0_Float = _FoamScale;
-            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _FoamSpeed;
+            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _Speed;
             float2 _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2 = float2(0, _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float);
             float2 _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2;
             Unity_Multiply_float2_float2((IN.TimeParameters.x.xx), _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2, _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2);
@@ -1855,7 +1855,7 @@ Shader "Custom/KickOutWater"
             float _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float;
             Unity_Multiply_float_float(_Saturate_1ce8aa9cabb84fd7a2bce08ce8b4567c_Out_1_Float, _Property_c657032848054f039358b5a7e8a93bec_Out_0_Float, _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float);
             float _Property_d7fc932a4b8c4b89a3973cfe05fc539a_Out_0_Float = _FoamScale;
-            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _FoamSpeed;
+            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _Speed;
             float2 _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2 = float2(0, _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float);
             float2 _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2;
             Unity_Multiply_float2_float2((IN.TimeParameters.x.xx), _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2, _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2);
@@ -2831,7 +2831,7 @@ Shader "Custom/KickOutWater"
             float _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float;
             Unity_Multiply_float_float(_Saturate_1ce8aa9cabb84fd7a2bce08ce8b4567c_Out_1_Float, _Property_c657032848054f039358b5a7e8a93bec_Out_0_Float, _Multiply_575a6de849c5451fa96a7a78dcf49396_Out_2_Float);
             float _Property_d7fc932a4b8c4b89a3973cfe05fc539a_Out_0_Float = _FoamScale;
-            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _FoamSpeed;
+            float _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float = _Speed;
             float2 _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2 = float2(0, _Property_b99e7f9b94614827b2261a3cc49cff7d_Out_0_Float);
             float2 _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2;
             Unity_Multiply_float2_float2((IN.TimeParameters.x.xx), _Vector2_fc6d22e324864fa2a6d8c2957d00193d_Out_0_Vector2, _Multiply_4d0d63e6918942bba72175512f067f73_Out_2_Vector2);
