@@ -170,6 +170,8 @@ public class ExperimentController : MonoBehaviour
         // if not using VR
         else
         {
+            Debug.Log("The experiment is not being run in VR");
+
             //disable the VR controller
             vrCtlr.SetActive(false);
         }
@@ -266,7 +268,8 @@ public class ExperimentController : MonoBehaviour
 
         currentTask.TaskBegin();
 
-        if (Session.CurrentTrial == Session.FirstTrial)
+        //If using VR and first trial, setup the VR position and rotation
+        if (UseVR == true && Session.CurrentTrial == Session.FirstTrial)
         {
             CenterOVRPlayerController();
 
