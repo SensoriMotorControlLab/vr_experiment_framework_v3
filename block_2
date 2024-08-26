@@ -1,9 +1,9 @@
 {
     "use_vr": false,
     "target_angle_2": [
-        -35,
         45,
-        -45
+        -45,
+        -35
     ],
     "target_angle": [
         0,
@@ -13,9 +13,9 @@
     "input_name": "mouse",
     "task": "projectile",
     "rotation": 30,
+    "water_force": 100,
     "instruction": null
-}ontroller",
-    "task": "projectile",
+}"projectile",
     "rotation": 0,
     "instruction": null
 }

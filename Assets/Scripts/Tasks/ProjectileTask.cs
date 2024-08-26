@@ -25,10 +25,10 @@ public class ProjectileTask : BaseTask
     /// </summary>
     Rigidbody ballRB;
     /// <summary>
-    /// Collider to check if the pariticpant hit the ball backwards
+    /// Collider to check if the pariticpant hit into the wrong area
     /// </summary>
     [SerializeField]
-    Target wrongWayCollider;
+    List<Target> outOfBoundsCollider;
     Plane ballPlane;
     /// <summary>
     /// Feedback text
@@ -51,6 +51,9 @@ public class ProjectileTask : BaseTask
     /// Hand end pos
     /// </summary>
     Vector3 endPos;
+    /// <summary>
+    /// Which button to look for to check for button held
+    /// </summary>
     string buttonCheck = "";
     /// <summary>
     /// Speed to determine the ball came to a stop
@@ -91,6 +94,7 @@ public class ProjectileTask : BaseTask
     /// </summary>
     float launchEndTime = 0.0f;
     Vector3 launchVec;
+    Vector3 launchForce;
     float currentAngle = 0.0f;
     string currentType = "";
 
@@ -133,7 +137,7 @@ public class ProjectileTask : BaseTask
                     force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
                     force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
 
-                    Vector3 launchForce = force;
+                    launchForce = force;
 
                     if (launchForce.magnitude < MIN_MAG)
                     {
@@ -236,9 +240,7 @@ public class ProjectileTask : BaseTask
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
-                    float dist = Vector3.Distance(startPos, endPos);
-                    Vector3 dir = endPos - startPos;
-                    Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
+                    DebugDrawLaunchVec();
 
                     /*
                     Vector3 toTarget = target.transform.position - home.transform.position;
@@ -247,21 +249,13 @@ public class ProjectileTask : BaseTask
                     */
                     ballPos.Add(ball.transform.position);
 
-                    //Ball the hit target
+                    //Ball hit the target
                     if (target.GetComponent<Target>().TargetHit)
                     {
                         ballRB.isKinematic = true;
 
                         lineColor = Color.green;
                         StartCoroutine(DisplayMessage("Target hit"));
-                        IncrementStep();
-                    }
-                    else if (wrongWayCollider.TargetHit)
-                    {
-                        ballRB.isKinematic = true;
-
-                        lineColor = Color.red;
-                        StartCoroutine(DisplayMessage("Wrong way"));
                         IncrementStep();
                     }
                     // else if (dot <= 0.0f)
@@ -281,14 +275,26 @@ public class ProjectileTask : BaseTask
                         StartCoroutine(DisplayMessage("Ball came to a stop"));
                         IncrementStep();
                     }
+                    else
+                    {
+                        foreach (Target t in outOfBoundsCollider)
+                        {
+                            if (t.TargetHit)
+                            {
+                                ballRB.isKinematic = true;
+
+                                lineColor = Color.red;
+                                StartCoroutine(DisplayMessage("Ball out of bounds"));
+                                IncrementStep();
+                            }
+                        }
+                    }
                 }
                 break;
             //Displaying feedback
             case 3:
                 {
-                    float dist = Vector3.Distance(startPos, endPos);
-                    Vector3 dir = endPos - startPos;
-                    Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
+                    DebugDrawLaunchVec();
                 }
                 break;
         }
@@ -309,7 +315,7 @@ public class ProjectileTask : BaseTask
             displayText.text = displayMessage;
         }
 
-        while(delayTime <= DISPLAY_TIME)
+        while (delayTime <= DISPLAY_TIME)
         {
             delayTime += Time.deltaTime;
             yield return null;
@@ -317,6 +323,13 @@ public class ProjectileTask : BaseTask
 
         IncrementStep();
         yield return new WaitForEndOfFrame();
+    }
+
+    private void DebugDrawLaunchVec()
+    {
+        float dist = Vector3.Distance(startPos, endPos);
+        Vector3 dir = endPos - startPos;
+        Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
     }
 
     public override void SetUp()
@@ -327,8 +340,8 @@ public class ProjectileTask : BaseTask
         if (!ball)
             ball = GameObject.Find("Ball");
 
-        if (!wrongWayCollider)
-            wrongWayCollider = GameObject.Find("WrongWayCollider").GetComponent<Target>();
+        if(outOfBoundsCollider.Count == 0)
+            Debug.LogWarning("No out of bounds colliders set");
 
         ballRB = ball.GetComponent<Rigidbody>();
         ballRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
@@ -393,7 +406,9 @@ public class ProjectileTask : BaseTask
 
         //Setup target position
         target.GetComponent<Target>().ResetTarget();
-        wrongWayCollider.ResetTarget();
+
+        foreach (Target t in outOfBoundsCollider)
+            t.ResetTarget();
 
         displayText.text = "";
 
