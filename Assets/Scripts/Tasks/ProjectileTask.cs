@@ -255,7 +255,8 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = true;
 
                         lineColor = Color.green;
-                        StartCoroutine(DisplayMessage("Target hit"));
+                        float points = CalculatePoints(true);
+                        StartCoroutine(DisplayMessage("Target hit\n" + points + " points"));
                         IncrementStep();
                     }
                     // else if (dot <= 0.0f)
@@ -272,7 +273,8 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = true;
 
                         lineColor = Color.yellow;
-                        StartCoroutine(DisplayMessage("Ball came to a stop"));
+                        float points = CalculatePoints(false);
+                        StartCoroutine(DisplayMessage("Ball came to a stop\n" + points + " points"));
                         IncrementStep();
                     }
                     else
@@ -284,8 +286,10 @@ public class ProjectileTask : BaseTask
                                 ballRB.isKinematic = true;
 
                                 lineColor = Color.red;
-                                StartCoroutine(DisplayMessage("Ball out of bounds"));
+                                float points = CalculatePoints(false);
+                                StartCoroutine(DisplayMessage("Ball out of bounds\n" + points + " points"));
                                 IncrementStep();
+                                break;
                             }
                         }
                     }
@@ -330,6 +334,31 @@ public class ProjectileTask : BaseTask
         float dist = Vector3.Distance(startPos, endPos);
         Vector3 dir = endPos - startPos;
         Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
+    }
+
+    private float CalculatePoints(bool hitTarget)
+    {
+        float distanceFromTarget = Vector3.Distance(target.transform.position, ball.transform.position);
+        Debug.Log("The distance from target is " + distanceFromTarget + " units");
+        int points = 0;
+
+        if (hitTarget)
+        {
+            points = 5;
+        }
+        else
+        {
+            float targetWidth = target.GetComponent<MeshRenderer>().bounds.size.x;
+            Debug.Log("Target width " + targetWidth);
+
+            if (distanceFromTarget > targetWidth)
+                points = 0;
+            else if (distanceFromTarget <= targetWidth)
+                points = 1;
+        }
+
+        Debug.Log("Scored " + points + " points");
+        return points;
     }
 
     public override void SetUp()

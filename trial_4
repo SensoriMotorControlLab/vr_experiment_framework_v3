@@ -5,8 +5,8 @@
     "trial_num": 5,
     "block_num": 2,
     "trial_num_in_block": 2,
-    "start_time": 18.075710296630859,
-    "end_time": 21.744668960571289,
+    "start_time": 19.937849044799805,
+    "end_time": 22.576417922973633,
     "hand": "r",
     "target_hit": false,
     "type": "projectile",
@@ -17,13 +17,13 @@
     },
     "target_angle": 0,
     "launch_direction": {
-        "x": -0.58934974670410156,
+        "x": 0.14011082053184509,
         "y": 0,
-        "z": 0.80787801742553711
+        "z": 0.99013584852218628
     },
-    "launch_angle": 36.110874176025391,
-    "launch_angle_error": 36.110874176025391
-}e_error": 6.3855676651000977
+    "launch_angle": 8.0542507171630859,
+    "launch_angle_error": 8.0542507171630859
+}}e_error": 6.3855676651000977
 }2
 }}
 }}
