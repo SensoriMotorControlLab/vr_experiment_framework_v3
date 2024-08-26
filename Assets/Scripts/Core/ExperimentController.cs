@@ -203,6 +203,15 @@ public class ExperimentController : MonoBehaviour
             Debug.Log("Setting VR to " + InputHandler.Instance.GetSpatialPosition());
             vrCtlr.transform.position = InputHandler.Instance.GetSpatialPosition();
         }
+
+        GameObject cameraOffset = GameObject.Find("Camera Offset");
+        GameObject rotationAlignment = GameObject.Find("RotationAlignment");
+
+        rotationAlignment.transform.position = new Vector3(rotationAlignment.transform.position.x, cameraOffset.transform.position.y, rotationAlignment.transform.position.z);
+        // get difference between the camera offset rotation and the rotation alignment
+        float angle = cameraOffset.transform.GetChild(0).transform.rotation.eulerAngles.y - rotationAlignment.transform.rotation.eulerAngles.y;
+        // rotate the camera offset by the difference
+        cameraOffset.transform.Rotate(0, -angle, 0);
     }
 
     /// <summary>
