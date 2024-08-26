@@ -1,33 +1,28 @@
 {
-    "experiment": "projectile_experiment _2d",
-    "ppid": "test",
+    "experiment": "projectile_experiment ",
+    "ppid": "000",
     "session_num": 1,
     "trial_num": 1,
     "block_num": 1,
     "trial_num_in_block": 1,
-    "start_time": 2.2496795654296875,
-    "end_time": 5.6043710708618164,
+    "start_time": 5.8328056335449219,
+    "end_time": 20.310449600219727,
     "hand": "r",
     "target_hit": false,
     "type": "projectile",
     "target_position": {
-        "x": 0,
-        "y": -0.0560000017285347,
-        "z": 1.0440000295639038
+        "x": -0.66626220941543579,
+        "y": -0.0820000022649765,
+        "z": 1.1540000438690186
     },
-    "target_angle": 0,
+    "target_angle": -30,
     "launch_direction": {
-        "x": 0,
-        "y": 0,
-        "z": 0
+        "x": 0.32722815871238708,
+        "y": 0.35439515113830566,
+        "z": 0.87597137689590454
     },
-    "launch_angle": 0,
-    "launch_angle_error": 0
-}   "launch_angle": 63.502693176269531,
-    "launch_angle_error": 63.502693176269531
+    "launch_angle": 28.839853286743164,
+    "launch_angle_error": -1.1601467132568359
 }
-}
-}7236328
-}938
 }}}}
 }}
