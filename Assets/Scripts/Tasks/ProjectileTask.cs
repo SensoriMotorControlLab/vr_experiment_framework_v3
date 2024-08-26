@@ -52,6 +52,14 @@ public class ProjectileTask : BaseTask
     /// </summary>
     Vector3 endPos;
     /// <summary>
+    /// The normalized vector the ball will launch
+    /// </summary>
+    Vector3 launchVec;
+    /// <summary>
+    /// The vector the ball will launch
+    /// </summary>
+    Vector3 launchForce;
+    /// <summary>
     /// Which button to look for to check for button held
     /// </summary>
     string buttonCheck = "";
@@ -93,12 +101,13 @@ public class ProjectileTask : BaseTask
     /// Time the button was released or distance was greater than a certain amount
     /// </summary>
     float launchEndTime = 0.0f;
-    Vector3 launchVec;
-    Vector3 launchForce;
+
     float currentAngle = 0.0f;
     string currentType = "";
 
     float currentWaterForce = 0.0f;
+
+    int totalScore = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -255,7 +264,7 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = true;
 
                         lineColor = Color.green;
-                        float points = CalculatePoints(true);
+                        int points = CalculatePoints(true);
                         StartCoroutine(DisplayMessage("Target hit\n" + points + " points"));
                         IncrementStep();
                     }
@@ -273,8 +282,9 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = true;
 
                         lineColor = Color.yellow;
-                        float points = CalculatePoints(false);
+                        int points = CalculatePoints(false);
                         StartCoroutine(DisplayMessage("Ball came to a stop\n" + points + " points"));
+                        totalScore += points;
                         IncrementStep();
                     }
                     else
@@ -286,8 +296,7 @@ public class ProjectileTask : BaseTask
                                 ballRB.isKinematic = true;
 
                                 lineColor = Color.red;
-                                float points = CalculatePoints(false);
-                                StartCoroutine(DisplayMessage("Ball out of bounds\n" + points + " points"));
+                                StartCoroutine(DisplayMessage("Ball out of bounds\n0 points"));
                                 IncrementStep();
                                 break;
                             }
@@ -336,7 +345,7 @@ public class ProjectileTask : BaseTask
         Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
     }
 
-    private float CalculatePoints(bool hitTarget)
+    private int CalculatePoints(bool hitTarget)
     {
         float distanceFromTarget = Vector3.Distance(target.transform.position, ball.transform.position);
         Debug.Log("The distance from target is " + distanceFromTarget + " units");
@@ -365,6 +374,7 @@ public class ProjectileTask : BaseTask
     {
         base.SetUp();
         maxSteps = 4;
+        totalScore = 0;
 
         if (!ball)
             ball = GameObject.Find("Ball");
@@ -503,5 +513,7 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["launch_direction"] = launchVec;
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.forward, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.forward, launchVec) - Mathf.Abs(currentAngle);
+        session.CurrentTrial.result["distance_from_target"] = Vector3.Distance(target.transform.position, ball.transform.position);
+        session.CurrentTrial.result["total_score"] = totalScore;
     }
 }
