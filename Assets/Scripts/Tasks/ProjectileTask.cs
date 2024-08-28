@@ -107,7 +107,7 @@ public class ProjectileTask : BaseTask
 
     float currentWaterForce = 0.0f;
 
-    int totalScore = 0;
+    static int totalScore = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -266,6 +266,7 @@ public class ProjectileTask : BaseTask
                         lineColor = Color.green;
                         int points = CalculatePoints(true);
                         StartCoroutine(DisplayMessage("Target hit\n" + points + " points"));
+                        totalScore += points;
                         IncrementStep();
                     }
                     // else if (dot <= 0.0f)
@@ -374,7 +375,6 @@ public class ProjectileTask : BaseTask
     {
         base.SetUp();
         maxSteps = 4;
-        totalScore = 0;
 
         if (!ball)
             ball = GameObject.Find("Ball");

@@ -325,7 +325,7 @@ public class InputHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Get velocity of hand
+    /// Get velocity of hand controller
     /// </summary>
     /// <param name="hand">String name for hand to get velocity (either "LeftHand" or "RightHand")</param>
     /// <returns>Velocity of hand, default is dominant hand if no hand is specified</returns>
@@ -344,8 +344,7 @@ public class InputHandler : MonoBehaviour
             vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
         }
 
-        Vector3 velocity = Vector3.zero;
-        vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceVelocity, out velocity);
+        vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceVelocity, out Vector3 velocity);
 
         return velocity;
     }
