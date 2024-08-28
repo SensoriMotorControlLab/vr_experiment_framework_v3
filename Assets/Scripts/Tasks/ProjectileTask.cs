@@ -116,10 +116,22 @@ public class ProjectileTask : BaseTask
     float currentWaterForce = 0.0f;
 
     static int totalScore = 0;
+    public TextMeshProUGUI scoreText;
+
+    private int trialsRemaining;
+    public TextMeshProUGUI trialsRemainingText;
+    private ExperimentController experimentController;
 
     // Start is called before the first frame update
     void Start()
     {
+        experimentController = FindObjectOfType<ExperimentController>();
+
+        if (experimentController != null)
+        {
+            trialsRemaining = experimentController.GetTotalTrials();
+        }
+        UpdateTrialsUI();
     }
 
     void FixedUpdate()
@@ -329,6 +341,8 @@ public class ProjectileTask : BaseTask
                 }
                 break;
         }
+        UpdateScoreUI();
+        UpdateTrialsUI();
     }
 
     IEnumerator DisplayMessage(string displayMessage = "")
@@ -355,6 +369,18 @@ public class ProjectileTask : BaseTask
         IncrementStep();
         yield return new WaitForEndOfFrame();
     }
+    void UpdateTrialsUI()
+    {
+        trialsRemainingText.text = "Trials Remaining: " + trialsRemaining.ToString();
+    }
+
+    private void UpdateScoreUI()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + totalScore.ToString();
+        }
+    }
 
     private void DebugDrawLaunchVec()
     {
@@ -365,7 +391,7 @@ public class ProjectileTask : BaseTask
 
     private int CalculatePoints(bool hitTarget)
     {
-        float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count-1]);
+        float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
         Debug.Log("The distance from target is " + distanceFromTarget + " units");
         int points = 0;
 
@@ -384,9 +410,14 @@ public class ProjectileTask : BaseTask
                 points = 1;
         }
 
+        // Decrement trialsRemaining here
+        trialsRemaining--;
+        UpdateTrialsUI();  // Update the UI with the new value
+
         Debug.Log("Scored " + points + " points");
         return points;
     }
+
 
     public override void SetUp()
     {

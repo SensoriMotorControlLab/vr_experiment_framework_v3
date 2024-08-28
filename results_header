@@ -14,5 +14,10 @@
     "target_angle",
     "launch_direction",
     "launch_angle",
-    "launch_angle_error"
+    "launch_angle_error",
+    "ball_pos_x",
+    "ball_pos_z",
+    "ball_time",
+    "distance_from_target",
+    "total_score"
 ]

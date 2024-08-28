@@ -107,6 +107,11 @@ public class ExperimentController : MonoBehaviour
         }
     }
 
+    public int GetTotalTrials()
+    {
+        return totalNumOfTrials - (int) session.currentTrialNum +1;
+    }
+
     public Session Session
     {
         get { return session; }

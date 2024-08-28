@@ -2,8 +2,8 @@
     "use_vr": false,
     "target_angle_2": [
         25,
-        10,
-        -10
+        -10,
+        10
     ],
     "target_angle": [
         0,
