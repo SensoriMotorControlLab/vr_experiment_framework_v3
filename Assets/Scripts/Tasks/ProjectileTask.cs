@@ -120,17 +120,11 @@ public class ProjectileTask : BaseTask
 
     private int trialsRemaining;
     public TextMeshProUGUI trialsRemainingText;
-    private ExperimentController experimentController;
 
     // Start is called before the first frame update
     void Start()
     {
-        experimentController = FindObjectOfType<ExperimentController>();
-
-        if (experimentController != null)
-        {
-            trialsRemaining = experimentController.GetTotalTrials();
-        }
+        trialsRemaining = ExperimentController.Instance.GetTotalTrials();
         UpdateTrialsUI();
     }
 

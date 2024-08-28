@@ -1,9 +1,9 @@
 {
     "use_vr": false,
     "target_angle_2": [
-        45,
         -45,
-        -35
+        -35,
+        45
     ],
     "target_angle": [
         0,
