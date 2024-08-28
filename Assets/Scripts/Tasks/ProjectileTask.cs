@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+using System.Text;
 using UXF;
+using TMPro;
 
 public class ProjectileTask : BaseTask
 {
@@ -15,6 +18,7 @@ public class ProjectileTask : BaseTask
     /// Visible ball travel position
     /// </summary>
     List<Vector3> ballPos = new List<Vector3>();
+    List<float> ballTime = new List<float>();
     /// <summary>
     /// True ball/tool object
     /// </summary>
@@ -35,6 +39,10 @@ public class ProjectileTask : BaseTask
     /// </summary>
     [SerializeField]
     Text displayText;
+    [SerializeField]
+    TextMeshProUGUI ballDisplayText;
+    [SerializeField]
+    Canvas ballCanvas;
     /// <summary>
     /// Visible ball travel line
     /// </summary>
@@ -257,6 +265,7 @@ public class ProjectileTask : BaseTask
                     float dot = Vector3.Dot(toTarget, toBall);
                     */
                     ballPos.Add(ball.transform.position);
+                    ballTime.Add(Time.time);
 
                     //Ball hit the target
                     if (target.GetComponent<Target>().TargetHit)
@@ -266,9 +275,12 @@ public class ProjectileTask : BaseTask
                         lineColor = Color.green;
                         int points = CalculatePoints(true);
                         StartCoroutine(DisplayMessage("Target hit\n" + points + " points"));
+                        ballCanvas.transform.position = ballPos[ballPos.Count - 1];
+                        ballDisplayText.text = "+" + points;
                         totalScore += points;
                         IncrementStep();
                     }
+                    #region Dot product check
                     // else if (dot <= 0.0f)
                     // {
                     //     ballRB.isKinematic = true;
@@ -277,6 +289,7 @@ public class ProjectileTask : BaseTask
                     //     StartCoroutine(DisplayMessage("Missed target"));
                     //     IncrementStep();
                     // }
+                    #endregion
                     //Ball slowed down
                     else if (ballRB.velocity.magnitude <= END_SPEED)
                     {
@@ -285,6 +298,8 @@ public class ProjectileTask : BaseTask
                         lineColor = Color.yellow;
                         int points = CalculatePoints(false);
                         StartCoroutine(DisplayMessage("Ball came to a stop\n" + points + " points"));
+                        ballCanvas.transform.position = ballPos[ballPos.Count - 1];
+                        ballDisplayText.text = "+" + points;
                         totalScore += points;
                         IncrementStep();
                     }
@@ -298,6 +313,8 @@ public class ProjectileTask : BaseTask
 
                                 lineColor = Color.red;
                                 StartCoroutine(DisplayMessage("Ball out of bounds\n0 points"));
+                                ballCanvas.transform.position = ballPos[ballPos.Count - 1];
+                                ballDisplayText.text = "+0";
                                 IncrementStep();
                                 break;
                             }
@@ -348,7 +365,7 @@ public class ProjectileTask : BaseTask
 
     private int CalculatePoints(bool hitTarget)
     {
-        float distanceFromTarget = Vector3.Distance(target.transform.position, ball.transform.position);
+        float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count-1]);
         Debug.Log("The distance from target is " + distanceFromTarget + " units");
         int points = 0;
 
@@ -439,6 +456,7 @@ public class ProjectileTask : BaseTask
 
         handPos.Clear();
         ballPos.Clear();
+        ballTime.Clear();
         lineColor = Color.white;
         visBallTravelPath.positionCount = 0;
         visBallTravelPath.SetPositions(ballPos.ToArray());
@@ -450,6 +468,7 @@ public class ProjectileTask : BaseTask
             t.ResetTarget();
 
         displayText.text = "";
+        ballDisplayText.text = "";
 
         ballPlane = new Plane(ball.transform.up,ball.transform.position.y);
 
@@ -513,7 +532,12 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["launch_direction"] = launchVec;
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.forward, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.forward, launchVec) - Mathf.Abs(currentAngle);
-        session.CurrentTrial.result["distance_from_target"] = Vector3.Distance(target.transform.position, ball.transform.position);
+
+        session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
+        session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
+        session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
+
+        session.CurrentTrial.result["distance_from_target"] = Vector3.Distance(target.transform.position, ballPos[ballPos.Count-1]);
         session.CurrentTrial.result["total_score"] = totalScore;
     }
 }
