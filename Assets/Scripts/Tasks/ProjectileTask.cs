@@ -24,6 +24,8 @@ public class ProjectileTask : BaseTask
     /// </summary>
     [SerializeField]
     GameObject ball;
+    [SerializeField]
+    GameObject water;
     /// <summary>
     /// Rigidboy of the actual ball
     /// </summary>
@@ -125,7 +127,6 @@ public class ProjectileTask : BaseTask
     void Start()
     {
         trialsRemaining = ExperimentController.Instance.GetTotalTrials();
-        UpdateTrialsUI();
     }
 
     void FixedUpdate()
@@ -141,42 +142,44 @@ public class ProjectileTask : BaseTask
 
             if (Vector3.Distance(GetMousePos(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
             {
-                    endPos = GetMousePos();
-                    launchEndTime = Time.time;
+                //log step time
 
-                    float totalTime = launchEndTime - launchStartTime;
-                    launchVec = endPos - startPos;
-                    launchVec.Normalize();
-                    //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
+                endPos = GetMousePos();
+                launchEndTime = Time.time;
 
-                    Debug.Log("Launch time " + totalTime);
-                    Debug.Log("Launch vector " + launchVec);
+                float totalTime = launchEndTime - launchStartTime;
+                launchVec = endPos - startPos;
+                launchVec.Normalize();
+                //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
 
-                    ballRB.isKinematic = false;
-                    ballRB.useGravity = true;
+                Debug.Log("Launch time " + totalTime);
+                Debug.Log("Launch vector " + launchVec);
 
-                    Vector3 force = launchVec;
-                    force.y = 0.0f;
-                    force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
-                    force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
+                ballRB.isKinematic = false;
+                ballRB.useGravity = true;
 
-                    launchForce = force;
+                Vector3 force = launchVec;
+                force.y = 0.0f;
+                force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
+                force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
 
-                    if (launchForce.magnitude < MIN_MAG)
-                    {
-                        Debug.Log("The launch force was too small, applying a new force");
-                        Debug.Log("New force " + force * 2.0f);
-                        Debug.Log("New force mag " + (force * 2.0f).magnitude);
+                launchForce = force;
 
-                        launchForce = force * 2.0f;
-                    }
+                if (launchForce.magnitude < MIN_MAG)
+                {
+                    Debug.Log("The launch force was too small, applying a new force");
+                    Debug.Log("New force " + force * 2.0f);
+                    Debug.Log("New force mag " + (force * 2.0f).magnitude);
 
-                    ballRB.velocity = launchForce;
-                    Debug.Log("Launch force " + force);
-                    Debug.Log("Launch mag " + force.magnitude);
-                    cursor.SetActive(false);
+                    launchForce = force * 2.0f;
+                }
 
-                    IncrementStep();
+                ballRB.velocity = launchForce;
+                Debug.Log("Launch force " + force);
+                Debug.Log("Launch mag " + force.magnitude);
+                cursor.SetActive(false);
+
+                IncrementStep();
             }
         }
     }
@@ -197,6 +200,8 @@ public class ProjectileTask : BaseTask
 
                     launchStartTime = Time.time;
                     IncrementStep();
+
+                    //increment step time
                 } 
 
                 break;
@@ -264,7 +269,6 @@ public class ProjectileTask : BaseTask
             case 2:
                 {
                     DebugDrawLaunchVec();
-
                     /*
                     Vector3 toTarget = target.transform.position - home.transform.position;
                     Vector3 toBall = target.transform.position - ball.transform.position;
@@ -335,8 +339,7 @@ public class ProjectileTask : BaseTask
                 }
                 break;
         }
-        UpdateScoreUI();
-        UpdateTrialsUI();
+        UpdateScoreboardUI();
     }
 
     IEnumerator DisplayMessage(string displayMessage = "")
@@ -363,13 +366,11 @@ public class ProjectileTask : BaseTask
         IncrementStep();
         yield return new WaitForEndOfFrame();
     }
-    void UpdateTrialsUI()
+
+    private void UpdateScoreboardUI()
     {
         trialsRemainingText.text = "Trials Remaining: " + trialsRemaining.ToString();
-    }
 
-    private void UpdateScoreUI()
-    {
         if (scoreText != null)
         {
             scoreText.text = "Score: " + totalScore.ToString();
@@ -406,7 +407,7 @@ public class ProjectileTask : BaseTask
 
         // Decrement trialsRemaining here
         trialsRemaining--;
-        UpdateTrialsUI();  // Update the UI with the new value
+        UpdateScoreboardUI();  // Update the UI with the new value
 
         Debug.Log("Scored " + points + " points");
         return points;
@@ -449,14 +450,14 @@ public class ProjectileTask : BaseTask
             buttonCheck = "Fire1";
         }
 
-        GameObject water = GameObject.Find("Water");
+        if(!water)
+            water = GameObject.Find("Water");
+
         CurrentForce currentForce = water.GetComponent<CurrentForce>();
         currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[ExperimentController.Instance.Session.currentBlockNum - 1];
         currentForce.sideForce = currentWaterForce;
 
         water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
-
-        
     }
 
     public override void TaskBegin()
@@ -555,6 +556,10 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_position"] = target.transform.position;
         session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["launch_direction"] = launchVec;
+
+        session.CurrentTrial.result["water_current_x"] = water.GetComponent<CurrentForce>().sideForce;
+        session.CurrentTrial.result["water_current_z"] = water.GetComponent<CurrentForce>().forwardForce;
+
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.forward, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.forward, launchVec) - Mathf.Abs(currentAngle);
 
