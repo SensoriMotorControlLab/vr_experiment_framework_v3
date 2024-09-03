@@ -251,23 +251,30 @@ public class ExperimentGenerator : MonoBehaviour
             throw new NullReferenceException();
         }
 
-        return GeneratePseudoRandom(list);
+        return GeneratePseudoRandom(list, theBlock.trials.Count / list.Count);
     }
 
-    public object GeneratePseudoRandom(List<object> list)
+    public object GeneratePseudoRandom(List<object> list, int listMod)
     {
         List<object> randomList = new List<object>
         {
             //set the capacity to be the size of the original list
-            Capacity = list.Count
+            Capacity = list.Count * listMod
         };
-        List<int> RandomOrder = GenerateIntegerList(0, list.Count - 1);
+        List<int> RandomOrder = GenerateIntegerList(0, (list.Count * listMod) - 1);
         pseudoRandomOrder = ShuffleList(RandomOrder);
 
         //loop through and randomly set new values
         foreach (int i in pseudoRandomOrder)
         {
-            randomList.Add(list[i]);
+            if (i >= list.Count)
+            {
+                randomList.Add(list[i % list.Count]);
+            }
+            else
+            {
+                randomList.Add(list[i]);
+            }
         }
 
         return randomList;

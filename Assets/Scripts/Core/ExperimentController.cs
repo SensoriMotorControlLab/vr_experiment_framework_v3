@@ -183,8 +183,9 @@ public class ExperimentController : MonoBehaviour
 
         //find input devices
         InputHandler.Instance.FindDevices();
-        GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + taskPrefabNames[0]));
-        currentTaskPrefab.name = taskPrefabNames[0];
+        string prefabName = session.settings.GetString("experiment_name") + "prefab";
+        GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName));
+        currentTaskPrefab.name = prefabName;
         currentTaskPrefab.transform.position = Vector3.zero;
 
         currentTask = currentTaskPrefab.GetComponent<BaseTask>();
@@ -303,9 +304,10 @@ public class ExperimentController : MonoBehaviour
             //if there are more blocks to go through
             if (session.CurrentBlock.number < taskPrefabNames.Count)
             {
+                string prefabName = session.settings.GetString("experiment_name") + "prefab";
                 //move on to the next task and prepare it
-                GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + taskPrefabNames[session.CurrentBlock.number]));
-                currentTaskPrefab.name = taskPrefabNames[session.CurrentBlock.number];
+                GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName));
+                currentTaskPrefab.name = prefabName;
                 currentTaskPrefab.transform.position = Vector3.zero;
 
                 currentTask = currentTaskPrefab.GetComponent<BaseTask>();

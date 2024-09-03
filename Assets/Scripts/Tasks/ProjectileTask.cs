@@ -152,9 +152,6 @@ public class ProjectileTask : BaseTask
                 launchVec.Normalize();
                 //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
 
-                Debug.Log("Launch time " + totalTime);
-                Debug.Log("Launch vector " + launchVec);
-
                 ballRB.isKinematic = false;
                 ballRB.useGravity = true;
 
@@ -458,6 +455,13 @@ public class ProjectileTask : BaseTask
         currentForce.sideForce = currentWaterForce;
 
         water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
+
+        string taskType = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        if(taskType == "invisible")
+        {
+            GameObject plane = GameObject.Find("Plane");
+            plane.transform.position = new Vector3(plane.transform.position.x, plane.transform.position.y - 0.025f, plane.transform.position.z);
+        }
     }
 
     public override void TaskBegin()

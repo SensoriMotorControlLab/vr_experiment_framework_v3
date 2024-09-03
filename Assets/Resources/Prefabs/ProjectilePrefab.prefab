@@ -651,6 +651,7 @@ MonoBehaviour:
   cursor: {fileID: 3825054604519124607}
   prefabCamera: {fileID: 3589949665665710019}
   ball: {fileID: 6914487447540812243}
+  water: {fileID: 0}
   outOfBoundsCollider:
   - {fileID: 59265041686874710}
   - {fileID: 1823843151132430129}
@@ -1948,7 +1949,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8110339310989644735}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.0511, z: 0.109999985}
+  m_LocalPosition: {x: 0, y: -0.05, z: 0.109999985}
   m_LocalScale: {x: 1.22, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
