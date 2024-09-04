@@ -19,6 +19,7 @@ public class ProjectileTask : BaseTask
     /// </summary>
     List<Vector3> ballPos = new List<Vector3>();
     List<float> ballTime = new List<float>();
+    List<float> stepTime = new List<float>();
     /// <summary>
     /// True ball/tool object
     /// </summary>
@@ -35,7 +36,6 @@ public class ProjectileTask : BaseTask
     /// </summary>
     [SerializeField]
     List<Target> outOfBoundsCollider;
-    Plane ballPlane;
     /// <summary>
     /// Feedback text
     /// </summary>
@@ -177,6 +177,8 @@ public class ProjectileTask : BaseTask
                 cursor.SetActive(false);
 
                 IncrementStep();
+
+                stepTime.Add(Time.time);
             }
         }
     }
@@ -199,6 +201,7 @@ public class ProjectileTask : BaseTask
                     IncrementStep();
 
                     //increment step time
+                    stepTime.Add(Time.time);
                 } 
 
                 break;
@@ -271,7 +274,8 @@ public class ProjectileTask : BaseTask
                     Vector3 toBall = target.transform.position - ball.transform.position;
                     float dot = Vector3.Dot(toTarget, toBall);
                     */
-                    ballPos.Add(ball.transform.position);
+                    Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
+                    ballPos.Add(skewedPos);
                     ballTime.Add(Time.time);
 
                     //Ball hit the target
@@ -286,6 +290,8 @@ public class ProjectileTask : BaseTask
                         ballDisplayText.text = "+" + points;
                         totalScore += points;
                         IncrementStep();
+
+                        stepTime.Add(Time.time);
                     }
                     #region Dot product check
                     // else if (dot <= 0.0f)
@@ -309,6 +315,8 @@ public class ProjectileTask : BaseTask
                         ballDisplayText.text = "+" + points;
                         totalScore += points;
                         IncrementStep();
+
+                        stepTime.Add(Time.time);
                     }
                     else
                     {
@@ -323,6 +331,9 @@ public class ProjectileTask : BaseTask
                                 ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                                 ballDisplayText.text = "+0";
                                 IncrementStep();
+
+                                stepTime.Add(Time.time);
+
                                 break;
                             }
                         }
@@ -487,6 +498,7 @@ public class ProjectileTask : BaseTask
         handPos.Clear();
         ballPos.Clear();
         ballTime.Clear();
+        stepTime.Clear();
         lineColor = Color.white;
         visBallTravelPath.positionCount = 0;
         visBallTravelPath.SetPositions(ballPos.ToArray());
@@ -498,9 +510,7 @@ public class ProjectileTask : BaseTask
             t.ResetTarget();
 
         displayText.text = "";
-        ballDisplayText.text = "";
-
-        ballPlane = new Plane(ball.transform.up,ball.transform.position.y);
+        ballDisplayText.text = "";;
 
         //Debug.Log("target angle: " + targetAngles[currentTrial]);
         // target.transform.position = Vector3.zero;
@@ -540,11 +550,6 @@ public class ProjectileTask : BaseTask
         return Vector3.zero;
     }
 
-    private Vector3 GetHandOnBallPlane()
-    {
-        return Vector3.ProjectOnPlane(InputHandler.Instance.GetHandPosition(), ballPlane.normal) + Vector3.Dot(InputHandler.Instance.GetHandPosition(),ballPlane.normal) * ballPlane.normal;
-    }
-
     public override void TaskEnd()
     {
         base.TaskEnd();
@@ -573,5 +578,10 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["distance_from_target"] = Vector3.Distance(target.transform.position, ballPos[ballPos.Count-1]);
         session.CurrentTrial.result["total_score"] = totalScore;
+
+        for(int i = 0; i < stepTime.Count; i++)
+        {
+            session.CurrentTrial.result["step_" + i + "_time"] = stepTime[i]; 
+        }
     }
 }
