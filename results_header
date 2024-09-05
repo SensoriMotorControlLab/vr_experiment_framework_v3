@@ -13,11 +13,16 @@
     "target_position",
     "target_angle",
     "launch_direction",
+    "water_current_x",
+    "water_current_z",
     "launch_angle",
     "launch_angle_error",
     "ball_pos_x",
     "ball_pos_z",
     "ball_time",
     "distance_from_target",
-    "total_score"
+    "total_score",
+    "step_0_time",
+    "step_1_time",
+    "step_2_time"
 ]

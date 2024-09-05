@@ -1,20 +1,20 @@
 {
-    "use_vr": false,
-    "target_angle_2": [
-        -45,
-        -35,
-        45
-    ],
-    "target_angle": [
-        0,
-        0,
-        0
-    ],
-    "input_name": "mouse",
+    "use_vr": true,
+    "input_name": "vr_controller",
     "task": "projectile",
-    "rotation": 30,
+    "rotation": 0,
     "water_force": 0,
-    "instruction": null
+    "instruction": null,
+    "target_angle": [
+        10,
+        10,
+        0,
+        -10,
+        -10,
+        0
+    ]
+}    ]
+}ruction": null
 }",
     "task": "projectile",
 =======
