@@ -566,11 +566,10 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["launch_direction"] = launchVec;
 
-        session.CurrentTrial.result["water_current_x"] = water.GetComponent<CurrentForce>().sideForce;
-        session.CurrentTrial.result["water_current_z"] = water.GetComponent<CurrentForce>().forwardForce;
+        session.CurrentTrial.result["water_force"] = currentWaterForce;
 
-        session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.forward, launchVec);
-        session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.forward, launchVec) - Mathf.Abs(currentAngle);
+        session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
+        session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
 
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
