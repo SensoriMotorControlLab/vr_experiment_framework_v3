@@ -45,6 +45,12 @@ public class ProjectileTask : BaseTask
     TextMeshProUGUI ballDisplayText;
     [SerializeField]
     Canvas ballCanvas;
+    [SerializeField]
+    AudioSource prefabAudio;
+    [SerializeField]
+    AudioClip correctAudio;
+    [SerializeField]
+    AudioClip incorrectAudio;
     /// <summary>
     /// Visible ball travel line
     /// </summary>
@@ -289,6 +295,8 @@ public class ProjectileTask : BaseTask
                         ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                         ballDisplayText.text = "+" + points;
                         totalScore += points;
+                        prefabAudio.clip = correctAudio;
+                        prefabAudio.Play();
                         IncrementStep();
 
                         stepTime.Add(Time.time);
@@ -314,6 +322,8 @@ public class ProjectileTask : BaseTask
                         ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                         ballDisplayText.text = "+" + points;
                         totalScore += points;
+                        prefabAudio.clip = incorrectAudio;
+                        prefabAudio.Play();
                         IncrementStep();
 
                         stepTime.Add(Time.time);
@@ -330,6 +340,8 @@ public class ProjectileTask : BaseTask
                                 StartCoroutine(DisplayMessage("Ball out of bounds\n0 points"));
                                 ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                                 ballDisplayText.text = "+0";
+                                prefabAudio.clip = incorrectAudio;
+                                prefabAudio.Play();
                                 IncrementStep();
 
                                 stepTime.Add(Time.time);
