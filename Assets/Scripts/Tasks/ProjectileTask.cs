@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using UXF;
 using TMPro;
+using UnityEditor;
 
 public class ProjectileTask : BaseTask
 {
@@ -123,6 +124,8 @@ public class ProjectileTask : BaseTask
     private int trialsRemaining;
     public TextMeshProUGUI trialsRemainingText;
 
+    float closestDistance = float.MaxValue;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -172,8 +175,8 @@ public class ProjectileTask : BaseTask
                 }
 
                 ballRB.velocity = launchForce;
-                Debug.Log("Launch force " + force);
-                Debug.Log("Launch mag " + force.magnitude);
+                // Debug.Log("Launch force " + force);
+                // Debug.Log("Launch mag " + force.magnitude);
                 cursor.SetActive(false);
 
                 IncrementStep();
@@ -192,7 +195,7 @@ public class ProjectileTask : BaseTask
             case 0:
                 if (/*Vector3.Distance(cursor.transform.position,home.transform.position) <= PRE_LAUNCH_DIST && */Input.GetButtonDown(buttonCheck))
                 {
-                    Debug.Log("Button held");
+                    // Debug.Log("Button held");
                     //If we are using VR use the VR hand position else get the
                     //converted mouse position
                     startPos = GetMousePos();
@@ -209,59 +212,7 @@ public class ProjectileTask : BaseTask
             //Track cursor(hand position) and launch when certain distance from home
             // case 1:
             //     {
-            //         //If button is pressed
-            //         if (Input.GetButton(buttonCheck))
-            //         {
-            //             Vector3 pos = GetMousePos();
-
-            //             handPos.Add(new Vector4(pos.x, pos.y, pos.z, Time.time));
-            //         }
-
-            //         if (Vector3.Distance(GetMousePos(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
-            //         {
-            //             endPos = GetMousePos();
-            //             launchEndTime = Time.time;
-
-            //             float totalTime = launchEndTime - launchStartTime;
-            //             launchVec = endPos - startPos;
-            //             launchVec.Normalize();
-            //             launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
-            //             //launchVec = Quaternion.Euler(90, 0, 0) * launchVec;
-
-            //             Debug.Log("Launch time " + totalTime);
-            //             Debug.Log("Launch vector " + launchVec);
-
-            //             ballRB.isKinematic = false;
-            //             ballRB.useGravity = true;
-
-            //             Vector3 force = launchVec;
-            //             force.y = 0.0f;
-            //             force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
-            //             force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
-
-            //             Debug.Log("fire force: " + (((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE)));
-            //             Debug.Log("target angle: " + targetAngles[currentTrial]);
-
-
-
-            //             Vector3 launchForce = force;
-
-            //             if (launchForce.magnitude < MIN_MAG)
-            //             {
-            //                 Debug.Log("The launch force was too small, applying a new force");
-            //                 Debug.Log("New force " + force * 2.0f);
-            //                 Debug.Log("New force mag " + (force * 2.0f).magnitude);
-
-            //                 launchForce = force * 2.0f;
-            //             }
-
-            //             ballRB.velocity = launchForce;
-            //             Debug.Log("Launch force " + force);
-            //             Debug.Log("Launch mag " + force.magnitude);
-            //             cursor.SetActive(false);
-
-            //             IncrementStep();
-            //         }
+                
             //     }
             //     break;
             #endregion
@@ -269,6 +220,7 @@ public class ProjectileTask : BaseTask
             case 2:
                 {
                     DebugDrawLaunchVec();
+                    ClosestPointToTarget(ball.transform.position);
                     /*
                     Vector3 toTarget = target.transform.position - home.transform.position;
                     Vector3 toBall = target.transform.position - ball.transform.position;
@@ -289,6 +241,7 @@ public class ProjectileTask : BaseTask
                         ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                         ballDisplayText.text = "+" + points;
                         totalScore += points;
+                        closestDistance = 0.0f;
                         IncrementStep();
 
                         stepTime.Add(Time.time);
@@ -361,7 +314,7 @@ public class ProjectileTask : BaseTask
         //Display feedback text here
         if (displayMessage.Length > 0)
         {
-            Debug.Log(displayMessage);
+            // Debug.Log(displayMessage);
             displayText.text = displayMessage;
         }
 
@@ -395,7 +348,7 @@ public class ProjectileTask : BaseTask
     private int CalculatePoints(bool hitTarget)
     {
         float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
-        Debug.Log("The distance from target is " + distanceFromTarget + " units");
+        // Debug.Log("The distance from target is " + distanceFromTarget + " units");
         int points = 0;
 
         if (hitTarget)
@@ -405,7 +358,7 @@ public class ProjectileTask : BaseTask
         else
         {
             float targetWidth = target.GetComponent<MeshRenderer>().bounds.size.x;
-            Debug.Log("Target width " + targetWidth);
+            // Debug.Log("Target width " + targetWidth);
 
             if (distanceFromTarget > targetWidth)
                 points = 0;
@@ -421,6 +374,17 @@ public class ProjectileTask : BaseTask
         return points;
     }
 
+    private void ClosestPointToTarget(Vector3 location)
+    {
+        Collider targetCollider = target.GetComponent<Collider>();
+        Vector3 closestPoint = targetCollider.ClosestPoint(location);
+        float distance = Vector3.Distance(location, closestPoint);
+        
+        if (distance < closestDistance)
+        {
+            closestDistance = distance;
+        }
+    }
 
     public override void SetUp()
     {
@@ -478,6 +442,7 @@ public class ProjectileTask : BaseTask
     public override void TaskBegin()
     {
         base.TaskBegin();
+        closestDistance = float.MaxValue;
 
         launchStartTime = 0.0f;
         launchEndTime = 0.0f;
@@ -575,7 +540,7 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
 
-        session.CurrentTrial.result["distance_from_target"] = Vector3.Distance(target.transform.position, ballPos[ballPos.Count-1]);
+        session.CurrentTrial.result["distance_from_target"] = closestDistance;
         session.CurrentTrial.result["total_score"] = totalScore;
 
         for(int i = 0; i < stepTime.Count; i++)
