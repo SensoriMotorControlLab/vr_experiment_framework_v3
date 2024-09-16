@@ -46,6 +46,8 @@ public class ProjectileTask : BaseTask
     [SerializeField]
     Canvas ballCanvas;
     [SerializeField]
+    AudioSource ballAudio;
+    [SerializeField]
     AudioSource prefabAudio;
     [SerializeField]
     AudioClip correctAudio;
@@ -182,6 +184,7 @@ public class ProjectileTask : BaseTask
                 Debug.Log("Launch mag " + force.magnitude);
                 cursor.SetActive(false);
 
+                ballAudio.Play();
                 IncrementStep();
 
                 stepTime.Add(Time.time);
@@ -297,6 +300,7 @@ public class ProjectileTask : BaseTask
                         totalScore += points;
                         prefabAudio.clip = correctAudio;
                         prefabAudio.Play();
+                        ballAudio.Stop();
                         IncrementStep();
 
                         stepTime.Add(Time.time);
@@ -324,6 +328,7 @@ public class ProjectileTask : BaseTask
                         totalScore += points;
                         prefabAudio.clip = incorrectAudio;
                         prefabAudio.Play();
+                        ballAudio.Stop();
                         IncrementStep();
 
                         stepTime.Add(Time.time);
@@ -342,6 +347,7 @@ public class ProjectileTask : BaseTask
                                 ballDisplayText.text = "+0";
                                 prefabAudio.clip = incorrectAudio;
                                 prefabAudio.Play();
+                                ballAudio.Stop();
                                 IncrementStep();
 
                                 stepTime.Add(Time.time);
