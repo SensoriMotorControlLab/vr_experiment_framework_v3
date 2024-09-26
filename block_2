@@ -1,22 +1,23 @@
 {
-    "use_vr": false,
-    "target_angle_2": [
-        -45,
-        -35,
-        45
+    "use_vr": true,
+    "test": [
+        130,
+        50,
+        70,
+        110
     ],
     "target_angle": [
-        0,
-        0,
-        0
+        130,
+        50,
+        70,
+        110
     ],
     "input_name": "mouse",
-    "task": "projectile",
+    "task": "slingShot",
     "rotation": 30,
-    "water_force": 0,
     "instruction": null
-}",
-    "task": "projectile",
+}: null
+}   "task": "projectile",
 =======
     "use_vr": false,
     "target_angle_2": [

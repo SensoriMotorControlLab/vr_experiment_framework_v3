@@ -1,13 +1,14 @@
 [
-    "experiment",
+    
+]periment",
     "ppid",
     "session_num",
     "trial_num",
     "block_num",
     "trial_num_in_block",
     "start_time",
-    "end_time",
-    "hand",
+    "end_time"
+]    "hand",
     "target_hit",
     "type",
     "target_position",
