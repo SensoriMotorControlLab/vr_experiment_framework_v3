@@ -1,22 +1,21 @@
 {
-    "use_vr": true,
+    "use_vr": false,
     "test": [
-        130,
-        50,
         70,
-        110
+        110,
+        130,
+        50
     ],
     "target_angle": [
-        130,
-        50,
         70,
-        110
+        110,
+        130,
+        50
     ],
     "input_name": "mouse",
-    "task": "slingShot",
+    "task": "ObjectTransporter",
     "rotation": 30,
     "instruction": null
-}: null
 }   "task": "projectile",
 =======
     "use_vr": false,
