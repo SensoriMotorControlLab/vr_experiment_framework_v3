@@ -50,9 +50,11 @@ public class ProjectileTask : BaseTask
     [SerializeField]
     AudioSource prefabAudio;
     [SerializeField]
-    AudioClip correctAudio;
+    AudioClip correctAudioClip;
     [SerializeField]
-    AudioClip incorrectAudio;
+    AudioClip incorrectAudioClip;
+    [SerializeField]
+    AudioSource waterAudio;
     /// <summary>
     /// Visible ball travel line
     /// </summary>
@@ -298,7 +300,7 @@ public class ProjectileTask : BaseTask
                         ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                         ballDisplayText.text = "+" + points;
                         totalScore += points;
-                        prefabAudio.clip = correctAudio;
+                        prefabAudio.clip = correctAudioClip ;
                         prefabAudio.Play();
                         ballAudio.Stop();
                         IncrementStep();
@@ -326,7 +328,7 @@ public class ProjectileTask : BaseTask
                         ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                         ballDisplayText.text = "+" + points;
                         totalScore += points;
-                        prefabAudio.clip = incorrectAudio;
+                        prefabAudio.clip = incorrectAudioClip;
                         prefabAudio.Play();
                         ballAudio.Stop();
                         IncrementStep();
@@ -345,7 +347,7 @@ public class ProjectileTask : BaseTask
                                 StartCoroutine(DisplayMessage("Ball out of bounds\n0 points"));
                                 ballCanvas.transform.position = ballPos[ballPos.Count - 1];
                                 ballDisplayText.text = "+0";
-                                prefabAudio.clip = incorrectAudio;
+                                prefabAudio.clip = incorrectAudioClip;
                                 prefabAudio.Play();
                                 ballAudio.Stop();
                                 IncrementStep();
@@ -484,6 +486,15 @@ public class ProjectileTask : BaseTask
         currentForce.sideForce = currentWaterForce;
 
         water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
+
+        if(currentWaterForce > 0.0f)
+        {
+            waterAudio.volume = 1.0f;
+        }
+        else
+        {
+            waterAudio.volume = 0.0f;
+        }
 
         string taskType = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
         if(taskType == "invisible")
