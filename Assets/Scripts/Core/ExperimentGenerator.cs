@@ -12,7 +12,7 @@ public class ExperimentGenerator : MonoBehaviour
     /// <summary>
     /// List of the order of the pseudo randomization
     /// </summary>
-    private List<int> pseudoRandomOrder = new List<int>();
+    private List<int> pseudoRandomOrder;
 
     public List<int> PseudoRandomOrder
     {

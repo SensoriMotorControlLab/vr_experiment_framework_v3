@@ -34,8 +34,7 @@ public class Slingshot : MonoBehaviour
     const float BALL_FORCE = 1000.0f;
     //velocity mag to consider the shot ball has stopped
     //const float BALL_LOW_VEL_THRES = 0.1f;
-    //speed to move the sling back
-    float speed = 0.25f;
+    
     //amount to fill the bar
     //also used for pullback amount
     float fillAmount = 0.0f;

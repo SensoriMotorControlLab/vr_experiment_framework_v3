@@ -59,6 +59,28 @@
       0,
       0
     ],
+    "per_block_debris_spawn_rate": [
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1
+    ],
+    "per_block_debris_count": [
+      2,
+      3,
+      2,
+      2,
+      3,
+      2,
+      2,
+      3,
+      2
+    ],
     "per_block_instruction": [
       null,
       null,

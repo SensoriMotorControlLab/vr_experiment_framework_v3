@@ -126,6 +126,10 @@ public class ProjectileTask : BaseTask
 
     float closestDistance = float.MaxValue;
 
+    float debrisSpawnRate;
+    int debrisCount;
+    DebrisSpawner debrisSpawner;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -429,6 +433,14 @@ public class ProjectileTask : BaseTask
         currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[ExperimentController.Instance.Session.currentBlockNum - 1];
         currentForce.sideForce = currentWaterForce;
 
+        debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
+        debrisSpawner.speed = currentWaterForce/30;
+        debrisSpawnRate = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_debris_spawn_rate")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        debrisCount = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_debris_count")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        debrisSpawner.spawnRate = debrisSpawnRate;
+        debrisSpawner.debrisCount = debrisCount;
+
+
         water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
 
         string taskType = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
@@ -513,6 +525,16 @@ public class ProjectileTask : BaseTask
         }
 
         return Vector3.zero;
+    }
+    public override bool IncrementStep()
+    {
+        // check if current trial is the last in the current block
+        if (currentTrial == totalTrials - 1 && currentStep == maxSteps - 1)
+        {
+            debrisSpawner.DestroyDebris();
+        }
+
+        return base.IncrementStep();
     }
 
     public override void TaskEnd()
