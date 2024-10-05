@@ -26,8 +26,8 @@
     ],
     "per_block_water_force": [
       30,
-      50,
-      10
+      40,
+      50
     ],
     "per_block_instruction": [
       null,

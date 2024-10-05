@@ -141,6 +141,7 @@ public class ProjectileTask : BaseTask
 
     void FixedUpdate()
     {
+        //Check for distance away from ball to launch
         if(currentStep == 1)
         {
             if (Input.GetButton(buttonCheck))
@@ -150,7 +151,7 @@ public class ProjectileTask : BaseTask
                 handPos.Add(new Vector4(pos.x, pos.y, pos.z, Time.time));
             }
 
-            if (Vector3.Distance(GetMousePos(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
+            if (Vector3.Distance(GetMousePos(), startPos) > FLICK_DIST /*|| !Input.GetButton(buttonCheck)*/)
             {
                 //log step time
 
@@ -487,9 +488,21 @@ public class ProjectileTask : BaseTask
 
         water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
 
-        if(currentWaterForce > 0.0f)
+        if (currentWaterForce > 0.0f || currentWaterForce < 0.0f)
         {
-            waterAudio.volume = 1.0f;
+            waterAudio.volume = 0.5f;
+
+            if(currentWaterForce > 30.0f)
+            {
+                float forceDiff = Math.Abs(currentWaterForce) - 30.0f;
+                float pitchAdjust = forceDiff / 50.0f;
+
+                waterAudio.pitch = 1.0f + pitchAdjust;
+            }
+            else
+            {
+                waterAudio.pitch = 1.0f;
+            }
         }
         else
         {
