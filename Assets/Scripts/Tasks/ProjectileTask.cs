@@ -488,16 +488,30 @@ public class ProjectileTask : BaseTask
 
         water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
 
+        //Adjusted water audio based on current water force
         if (currentWaterForce > 0.0f || currentWaterForce < 0.0f)
         {
             waterAudio.volume = 0.5f;
 
-            if(currentWaterForce > 30.0f)
+            if (currentWaterForce > 30.0f)
             {
                 float forceDiff = Math.Abs(currentWaterForce) - 30.0f;
                 float pitchAdjust = forceDiff / 50.0f;
 
                 waterAudio.pitch = 1.0f + pitchAdjust;
+            }
+            else if (currentWaterForce < 30.0f)
+            {
+                
+                float forceDiff = 30.0f - Math.Abs(currentWaterForce);
+                float pitchAdjust = forceDiff / 50.0f;
+
+                Debug.Log("Force diff " + forceDiff);
+                Debug.Log("Pitch adjustment " + pitchAdjust);
+
+                waterAudio.pitch = 1.0f - pitchAdjust;
+
+                Debug.Log("Total diff " + (1.0f - pitchAdjust));
             }
             else
             {
