@@ -51,7 +51,7 @@ public class ExperimentController : MonoBehaviour
         {
             instance = this;
 
-            expGenerator = new ExperimentGenerator();
+            expGenerator = gameObject.AddComponent<ExperimentGenerator>();
         }
         else
         {

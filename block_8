@@ -1,0 +1,16 @@
+{
+    "use_vr": true,
+    "input_name": "vr_controller",
+    "task": "projectile",
+    "rotation": 0,
+    "water_force": 0,
+    "instruction": null,
+    "target_angle": [
+        10,
+        10,
+        0,
+        0,
+        -10,
+        -10
+    ]
+}

@@ -6,18 +6,24 @@
     "block_num",
     "trial_num_in_block",
     "start_time",
-    "end_time",
-    "hand",
+    "end_time"
+]    "hand",
     "target_hit",
     "type",
     "target_position",
     "target_angle",
     "launch_direction",
+    "water_force",
     "launch_angle",
     "launch_angle_error",
     "ball_pos_x",
     "ball_pos_z",
     "ball_time",
     "distance_from_target",
-    "total_score"
+    "total_score",
+    "step_0_time",
+    "step_1_time",
+    "step_2_time"
+]time",
+    "step_2_time"
 ]

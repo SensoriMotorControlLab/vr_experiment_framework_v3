@@ -1,20 +1,19 @@
 {
     "use_vr": false,
-    "target_angle_2": [
-        -45,
-        -35,
-        45
-    ],
+    "input_name": "mouse",
+    "task": "projectile",
+    "rotation": 30,
+    "water_force": 10,
+    "debris_spawn_rate": 1,
+    "debris_count": 2,
+    "instruction": null,
     "target_angle": [
         0,
         0,
         0
-    ],
-    "input_name": "mouse",
-    "task": "projectile",
-    "rotation": 30,
-    "water_force": 0,
-    "instruction": null
+    ]
+}
+}ruction": null
 }",
     "task": "projectile",
 =======

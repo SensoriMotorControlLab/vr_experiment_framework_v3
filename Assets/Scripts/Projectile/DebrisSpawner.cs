@@ -7,13 +7,11 @@ public class DebrisSpawner : MonoBehaviour
     public List<GameObject> debrisPrefabs = new List<GameObject>(); // List of debris prefabs
     public Transform spawnPoint; // The spawn point
     public float spawnRate = 1.0f; // The rate at which debris is spawned
-    public int minSpawnDebris = 1; // Minimum number of debris to spawn each time
-    public int maxSpawnDebris = 5; // Maximum number of debris to spawn each time
-    public float minSpeed = 1.0f; // Minimum speed of the debris
-    public float maxSpeed = 5.0f; // Maximum speed of the debris
-    public int percentChance = 70; // Percentage chance that the debris will be at max speed
+    public int debrisCount = 0; // The number of debris to spawn
+    public float speed = 1.0f; // Speed of the debris
     public float spawnAreaWidth = 10f; // Width of the spawn area
     public float spawnAreaHeight = 5f; // Height of the spawn area
+    private List<GameObject> debrisList = new List<GameObject>(); // List of spawned debris
 
     private GameObject despawner;
     void Start()
@@ -24,7 +22,6 @@ public class DebrisSpawner : MonoBehaviour
 
     void SpawnDebris()
     {
-        int debrisCount = Random.Range(minSpawnDebris, maxSpawnDebris + 1);
 
         for (int i = 0; i < debrisCount; i++)
         {
@@ -42,8 +39,8 @@ public class DebrisSpawner : MonoBehaviour
             model.transform.rotation = Quaternion.Euler(model.transform.eulerAngles.x, Random.Range(0, 360), model.transform.eulerAngles.z);
 
             GameObject debris = Instantiate(selectedPrefab, spawnPosition, spawnPoint.rotation);
+            debrisList.Add(debris);
 
-            float speed = Random.value <= percentChance / 100.0f ? maxSpeed : Random.Range(minSpeed, maxSpeed);
             DebrisMovement debrisMovement = debris.GetComponent<DebrisMovement>();
             if (debrisMovement != null)
             {
@@ -51,6 +48,15 @@ public class DebrisSpawner : MonoBehaviour
                 debrisMovement.SetSpeed(speed);
             }
         }
+    }
+
+    public void DestroyDebris()
+    {
+        foreach (GameObject debris in debrisList)
+        {
+            Destroy(debris);
+        }
+        debrisList.Clear();
     }
 }
 

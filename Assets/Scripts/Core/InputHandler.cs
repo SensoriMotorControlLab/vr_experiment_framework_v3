@@ -32,6 +32,8 @@ public class InputHandler : MonoBehaviour
     /// Name Unity InputDevice associated with the VR controllers when using OpenXR
     /// </summary>
     public const string TOUCH_CONTROLLER_NAME = "OculusTouchControllerOpenXR";
+
+    public const string TOUCH_PRO_CONTROLLER_NAME = "MetaQuestProTouchControllerOpenXR";
     /// <summary>
     /// JSON string to use VR controllers
     /// </summary>
@@ -228,6 +230,7 @@ public class InputHandler : MonoBehaviour
 
             if (!currentDevices.Values.Contains(d))
             {
+                Debug.Log("Device Name: " + deviceName);
                 //Set the priority based on the device
                 //For new devices new cases can be added or just have the default
                 //Commenting out the default case will add the keyboard which is almost never used
@@ -236,7 +239,7 @@ public class InputHandler : MonoBehaviour
                     case (HEADSET_DEVICE_NAME):
                         inputDevices[HIGHEST_PRIORITY - 1] = CreateInputDeviceProperty(d);
                         break;
-                    case (TOUCH_CONTROLLER_NAME):
+                    case (TOUCH_PRO_CONTROLLER_NAME):
                         FindHandAnchors();
                         inputDevices[HIGHEST_PRIORITY] = CreateInputDeviceProperty(d);
                         break;
@@ -249,7 +252,7 @@ public class InputHandler : MonoBehaviour
             }
             else
             {
-                if(d.name != HEADSET_DEVICE_NAME || d.name != TOUCH_CONTROLLER_NAME)
+                if(d.name != HEADSET_DEVICE_NAME || d.name != TOUCH_PRO_CONTROLLER_NAME)
                 {
                     counter++;
                 }
@@ -268,7 +271,7 @@ public class InputHandler : MonoBehaviour
         {
             case (HEADSET_DEVICE_NAME):
                 return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, inputDevice, null, null);
-            case (TOUCH_CONTROLLER_NAME):
+            case (TOUCH_PRO_CONTROLLER_NAME):
                 return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.SPATIAL, inputDevice, GetHandPosition, GetHandRotation);
             case (MOUSE_NAME):
                 return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, inputDevice, delegate { return Input.mousePosition; }, null);
@@ -317,10 +320,12 @@ public class InputHandler : MonoBehaviour
         if(domHand == "LeftHand")
         {
             return InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+
         }
         else
         {
             return InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+
         }
     }
 
@@ -338,10 +343,12 @@ public class InputHandler : MonoBehaviour
         if (handToGet == "LeftHand")
         {
             vrHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+
         }
         else
         {
             vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+
         }
 
         vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceVelocity, out Vector3 velocity);
@@ -353,6 +360,7 @@ public class InputHandler : MonoBehaviour
     public string GetDominantHandString()
     {
         return domHand;
+        Debug.Log("domHand");
     }
 
     /// <summary>
@@ -361,6 +369,7 @@ public class InputHandler : MonoBehaviour
     /// <returns></returns>
     public Vector3 GetHandPosition()
     {
+      
         if (vrHands[domHand])
         {
             return vrHands[domHand].transform.position;
@@ -559,7 +568,7 @@ public class InputHandler : MonoBehaviour
             switch (deviceName)
             {
                 case (JSON_VR):
-                    deviceString = TOUCH_CONTROLLER_NAME;
+                    deviceString = TOUCH_PRO_CONTROLLER_NAME;
                     break;
                 default:
                     deviceString = deviceName;

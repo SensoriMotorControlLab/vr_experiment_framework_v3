@@ -66,12 +66,12 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Distance: 29.18
+    - _Distance: 20.51
     - _DstBlend: 0
-    - _FoamAmount: 12.7
-    - _FoamCuttoff: 48.79
+    - _FoamAmount: 8.5
+    - _FoamCuttoff: 46.59
     - _FoamScale: 0
-    - _FoamSpeed: 82.3
+    - _FoamSpeed: 77.76
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -79,7 +79,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Scale: 0.86
+    - _Scale: 2.53
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: -0.2
@@ -88,8 +88,8 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.38364774, g: 0.71246696, b: 1, a: 1}
-    - _DeepColour: {r: 0, g: 0.79607844, b: 1, a: 0.1137255}
+    - _DeepColour: {r: 0, g: 0.2817202, b: 0.7075472, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FoamColour: {r: 0.6273585, g: 0.71672, b: 1, a: 0.5019608}
-    - _ShallowColour: {r: 0.4481132, g: 0.8459017, b: 1, a: 0.3803922}
+    - _FoamColour: {r: 0.15817463, g: 1, b: 0, a: 0.5019608}
+    - _ShallowColour: {r: 0.26498157, g: 0.4845672, b: 0.7264151, a: 0.3803922}
   m_BuildTextureStacks: []
