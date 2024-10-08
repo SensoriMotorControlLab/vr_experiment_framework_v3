@@ -129,6 +129,7 @@ public class ProjectileTask : BaseTask
     float debrisSpawnRate;
     int debrisCount;
     DebrisSpawner debrisSpawner;
+    Vector3 cursorPos;
 
     // Start is called before the first frame update
     void Start()
@@ -140,53 +141,7 @@ public class ProjectileTask : BaseTask
     {
         if(currentStep == 1)
         {
-            if (Input.GetButton(buttonCheck))
-            {
-                Vector3 pos = GetMousePos();
-
-                handPos.Add(new Vector4(pos.x, pos.y, pos.z, Time.time));
-            }
-
-            if (Vector3.Distance(GetMousePos(), startPos) > FLICK_DIST || !Input.GetButton(buttonCheck))
-            {
-                //log step time
-
-                endPos = GetMousePos();
-                launchEndTime = Time.time;
-
-                float totalTime = launchEndTime - launchStartTime;
-                launchVec = endPos - startPos;
-                launchVec.Normalize();
-                //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
-
-                ballRB.isKinematic = false;
-                ballRB.useGravity = true;
-
-                Vector3 force = launchVec;
-                force.y = 0.0f;
-                force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
-                force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
-
-                launchForce = force;
-
-                if (launchForce.magnitude < MIN_MAG)
-                {
-                    Debug.Log("The launch force was too small, applying a new force");
-                    Debug.Log("New force " + force * 2.0f);
-                    Debug.Log("New force mag " + (force * 2.0f).magnitude);
-
-                    launchForce = force * 2.0f;
-                }
-
-                ballRB.velocity = launchForce;
-                // Debug.Log("Launch force " + force);
-                // Debug.Log("Launch mag " + force.magnitude);
-                cursor.SetActive(false);
-
-                IncrementStep();
-
-                stepTime.Add(Time.time);
-            }
+            
         }
     }
 
@@ -203,6 +158,7 @@ public class ProjectileTask : BaseTask
                     //If we are using VR use the VR hand position else get the
                     //converted mouse position
                     startPos = GetMousePos();
+                    cursorPos = startPos;
 
                     launchStartTime = Time.time;
                     IncrementStep();
@@ -214,11 +170,61 @@ public class ProjectileTask : BaseTask
                 break;
             #region Launch ball
             //Track cursor(hand position) and launch when certain distance from home
-            // case 1:
-            //     {
-                
-            //     }
-            //     break;
+            case 1:
+                {
+                    if(Input.GetButtonDown(buttonCheck))
+                    {
+                        startPos = GetMousePos();
+                        cursorPos = startPos;
+                        handPos.Clear();
+                    }
+                    else if (Input.GetButton(buttonCheck))
+                    {
+                        cursorPos = GetMousePos();
+                        handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
+                    }
+
+                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && !Input.GetButton(buttonCheck))
+                    {
+                        //log step time
+                        endPos = GetMousePos();
+                        launchEndTime = Time.time;
+
+                        float totalTime = launchEndTime - launchStartTime;
+                        launchVec = endPos - startPos;
+                        launchVec.Normalize();
+                        //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
+
+                        ballRB.isKinematic = false;
+                        ballRB.useGravity = true;
+
+                        Vector3 force = launchVec;
+                        force.y = 0.0f;
+                        force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
+                        force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
+
+                        launchForce = force;
+
+                        if (launchForce.magnitude < MIN_MAG)
+                        {
+                            Debug.Log("The launch force was too small, applying a new force");
+                            Debug.Log("New force " + force * 2.0f);
+                            Debug.Log("New force mag " + (force * 2.0f).magnitude);
+
+                            launchForce = force * 2.0f;
+                        }
+
+                        ballRB.velocity = launchForce;
+                        // Debug.Log("Launch force " + force);
+                        // Debug.Log("Launch mag " + force.magnitude);
+                        cursor.SetActive(false);
+
+                        IncrementStep();
+
+                        stepTime.Add(Time.time);
+                    }
+                }
+                break;
             #endregion
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
