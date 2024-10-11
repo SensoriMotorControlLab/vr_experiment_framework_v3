@@ -5,12 +5,13 @@ using UnityEngine;
 public class ObjectTransporterTask : BaseTask
 {
     // Start is called before the first frame update
-    [SerializeField] 
-    List<Tool> toolList = new List<Tool>();
+    [SerializeField]
+    GameObject xrHands;
     
     [SerializeField] 
-    List<GoalCheck> goalChecks = new List<GoalCheck>();
-    Tool GrabbedObject;
+    List<Target> goalChecks = new List<Target>();
+    [SerializeField]
+    GameObject grabbedObject;
     void Start()
     {
         
@@ -21,35 +22,31 @@ public class ObjectTransporterTask : BaseTask
     {
         switch (currentStep)
         {
-            //reach to dock
-            case 0:
-                foreach (Tool t in toolList){
-                    if (t.IsGrabbed){
-                        GrabbedObject = t;
-                        IncrementStep();
-                        break;
-                    }
-                }
-                break;
-            //reach to home
-            case 1:
-                GrabbedObject.transform.position = cursor.transform.position;
-                foreach (GoalCheck g in goalChecks){
-                    if (g.colliding){
-                        IncrementStep();
-                        break;
-                    }
-                }
-                break;
         }
     }
 
     public override void SetUp()
     {
         base.SetUp();
-        maxSteps = 3;
-        CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
+        maxSteps = 4;
 
+        CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
+        xrHands.SetActive(ExperimentController.Instance.UseVR);
+
+        if (ExperimentController.Instance.UseVR)
+        {
+            grabbedObject.GetComponent<Tool>().enabled = false;
+            //Enable XRInteractableScript
+            //grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
+            cursor.SetActive(false);
+        }
+        else
+        {
+            grabbedObject.GetComponent<Tool>().enabled = true;
+            //Disable XRInteractableScript
+            //grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
+            cursor.SetActive(true);
+        }
     }
 
     public override void TaskBegin()

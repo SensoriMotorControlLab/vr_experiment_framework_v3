@@ -3,10 +3,6 @@
     "experiment_name": "ObjectTransporter",
     "use_vr": false,
     "optional_params": {
-      "linkPseudoRandom": [
-        "per_block_list_target_angle",
-        "per_block_list_test"
-      ]
     },
 	"per_block_input_name": [
 	"mouse",
@@ -22,31 +18,6 @@
       "ObjectTransporter",
       "ObjectTransporter",
       "ObjectTransporter"
-    ],
-    "per_block_rotation": [
-      30,
-      0,
-      30
-    ],
-    "per_block_instruction": [
-      null,
-      null,
-      null
-    ],
-    "per_block_list_target_angle": [
-      "ta1",
-      "ta1",
-      "ta2"
-    ],
-    "per_block_list_test": [
-      "ta3", 
-      "ta3", 
-      "ta4"
-    ],
-    "ta1": [90, 45, 125, 100],
-    "ta2": [50, 130, 70, 110],
-    "ta3": [90, 45, 125, 100],
-    "ta4": [50, 130, 70,110],
-    "ins1": "Reach to the target as fast as possible."
+    ]
   }
 }
