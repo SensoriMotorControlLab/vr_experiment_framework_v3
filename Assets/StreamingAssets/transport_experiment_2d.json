@@ -1,13 +1,13 @@
 {
   "session_1": {
     "experiment_name": "ObjectTransporter",
-    "use_vr": true,
+    "use_vr": false,
     "optional_params": {
     },
 	"per_block_input_name": [
-	"vr_controller",
-	"vr_controller",
-	"vr_controller"
+	"mouse",
+	"mouse",
+	"mouse"
 	],
     "trials_in_block": [
       4,
