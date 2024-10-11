@@ -22,6 +22,11 @@ public class ObjectTransporterTask : BaseTask
     // Update is called once per frame
     void Update()
     {
+        if (grabbedObject.GetComponent<Tool>().IsGrabbed)
+        {
+            grabbedObject.transform.position = cursor.transform.position;
+        }
+
         switch (currentStep)
         {
         }
