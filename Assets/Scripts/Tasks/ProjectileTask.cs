@@ -122,6 +122,7 @@ public class ProjectileTask : BaseTask
     /// Time the button was released or distance was greater than a certain amount
     /// </summary>
     float launchEndTime = 0.0f;
+    bool hitTarget = false;
 
     float currentAngle = 0.0f;
     string currentType = "";
@@ -250,6 +251,8 @@ public class ProjectileTask : BaseTask
                     Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
                     ballPos.Add(skewedPos);
                     ballTime.Add(Time.time);
+                    string displayMsg = "";
+                    int points = 0;
 
                     //Ball hit the target
                     if (target.GetComponent<Target>().TargetHit)
@@ -257,12 +260,19 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = true;
 
                         lineColor = Color.green;
-                        int points = CalculatePoints(true);
-                        StartCoroutine(DisplayMessage("Target hit\n" + points + " points"));
-                        ballCanvas.transform.position = ballPos[ballPos.Count - 1];
-                        ballDisplayText.text = "+" + points;
+                        hitTarget = true;
+                        
+                        points = CalculatePoints();
                         totalScore += points;
+
+                        displayMsg = "Target hit\n" + points + " points";
+
+                        prefabAudio.clip = correctAudioClip;
+                        //prefabAudio.Play();
+                        ballAudio.Stop();
+
                         closestDistance = 0.0f;
+                        ShowFeedback(points, displayMsg);
                         IncrementStep();
 
                         stepTime.Add(Time.time);
@@ -283,18 +293,23 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = true;
 
                         lineColor = Color.yellow;
-                        int points = CalculatePoints(false);
-                        StartCoroutine(DisplayMessage("Ball came to a stop\n" + points + " points"));
-                        ballCanvas.transform.position = ballPos[ballPos.Count - 1];
-                        ballDisplayText.text = "+" + points;
+                        hitTarget = false;
+
+                        points = CalculatePoints();
                         totalScore += points;
+
+                        displayMsg = "Ball came to a stop\n" + points + " points";
+
                         prefabAudio.clip = incorrectAudioClip;
-                        prefabAudio.Play();
+                        //prefabAudio.Play();
                         ballAudio.Stop();
+
+                        ShowFeedback(points, displayMsg);
                         IncrementStep();
 
                         stepTime.Add(Time.time);
                     }
+                    //Ball went out of bounds
                     else
                     {
                         foreach (Target t in outOfBoundsCollider)
@@ -304,12 +319,16 @@ public class ProjectileTask : BaseTask
                                 ballRB.isKinematic = true;
 
                                 lineColor = Color.red;
-                                StartCoroutine(DisplayMessage("Ball out of bounds\n0 points"));
-                                ballCanvas.transform.position = ballPos[ballPos.Count - 1];
-                                ballDisplayText.text = "+0";
+                                hitTarget = false;
+
+                                points = 0;
+                                displayMsg = "Ball out of bounds\n0 points";
+
                                 prefabAudio.clip = incorrectAudioClip;
-                                prefabAudio.Play();
+                                //prefabAudio.Play();
                                 ballAudio.Stop();
+
+                                ShowFeedback(points, displayMsg);
                                 IncrementStep();
 
                                 stepTime.Add(Time.time);
@@ -330,6 +349,25 @@ public class ProjectileTask : BaseTask
         UpdateScoreboardUI();
     }
 
+    private void ShowFeedback(int points, string feedbackMsg)
+    {
+        if (taskType != "invisible")
+        {
+            StartCoroutine(DisplayMessage(feedbackMsg));
+            ballCanvas.transform.position = ballPos[ballPos.Count - 1];
+            ballDisplayText.text = "+" + points;
+
+            prefabAudio.Play();
+        }
+        else
+        {
+            ballCanvas.transform.position = new Vector3(0.0f, -100.0f, 0.0f);
+            ballDisplayText.text = "";
+            IncrementStep();
+        }
+    }
+
+
     IEnumerator DisplayMessage(string displayMessage = "")
     {
         float delayTime = 0.0f;
@@ -347,7 +385,7 @@ public class ProjectileTask : BaseTask
 
         while (delayTime <= DISPLAY_TIME)
         {
-            delayTime += Time.deltaTime;
+            delayTime += Time.fixedDeltaTime;
             yield return null;
         }
 
@@ -372,7 +410,7 @@ public class ProjectileTask : BaseTask
         Debug.DrawRay(home.transform.position, dir.normalized * dist, Color.red);
     }
 
-    private int CalculatePoints(bool hitTarget)
+    private int CalculatePoints()
     {
         float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
         // Debug.Log("The distance from target is " + distanceFromTarget + " units");
@@ -392,10 +430,6 @@ public class ProjectileTask : BaseTask
             else if (distanceFromTarget <= targetWidth)
                 points = 1;
         }
-
-        // Decrement trialsRemaining here
-        trialsRemaining--;
-        UpdateScoreboardUI();  // Update the UI with the new value
 
         Debug.Log("Scored " + points + " points");
         return points;
@@ -501,7 +535,7 @@ public class ProjectileTask : BaseTask
             waterAudio.volume = 0.0f;
         }
 
-        string taskType = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        taskType = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
         if(taskType == "invisible")
         {
             GameObject plane = GameObject.Find("Plane");
@@ -520,6 +554,7 @@ public class ProjectileTask : BaseTask
         startPos = Vector3.zero;
         endPos = Vector3.zero;
 
+        hitTarget = false;
         //cursor.SetActive(true);
 
         ballRB.velocity = Vector3.zero;
@@ -592,12 +627,21 @@ public class ProjectileTask : BaseTask
             debrisSpawner.DestroyDebris();
         }
 
+        if(currentStep + 1 == maxSteps)
+        {
+            // Decrement trialsRemaining here
+            trialsRemaining--;
+        }
+
+
         return base.IncrementStep();
     }
 
     public override void TaskEnd()
     {
         base.TaskEnd();
+
+
     }
 
     public override void LogParameters()
