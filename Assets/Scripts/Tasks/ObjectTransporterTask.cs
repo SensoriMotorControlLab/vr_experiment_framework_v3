@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class ObjectTransporterTask : BaseTask
 {
@@ -37,14 +39,14 @@ public class ObjectTransporterTask : BaseTask
         {
             grabbedObject.GetComponent<Tool>().enabled = false;
             //Enable XRInteractableScript
-            //grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
+            grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
             cursor.SetActive(false);
         }
         else
         {
             grabbedObject.GetComponent<Tool>().enabled = true;
             //Disable XRInteractableScript
-            //grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
+            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
             cursor.SetActive(true);
         }
     }
@@ -53,6 +55,21 @@ public class ObjectTransporterTask : BaseTask
     {
         base.TaskBegin();
         //the task start
+
+        if (ExperimentController.Instance.UseVR)
+        {
+            grabbedObject.GetComponent<Tool>().enabled = false;
+            //Enable XRInteractableScript
+            grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
+            cursor.SetActive(false);
+        }
+        else
+        {
+            grabbedObject.GetComponent<Tool>().enabled = true;
+            //Disable XRInteractableScript
+            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
+            cursor.SetActive(true);
+        }
     }
     
     public override void TaskEnd()
