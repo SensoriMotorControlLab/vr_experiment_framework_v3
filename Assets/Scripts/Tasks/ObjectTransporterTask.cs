@@ -29,6 +29,9 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     GameObject rightHandCtrl;
 
+    [SerializeField]
+    GameObject PrefabCamera;
+
     Vector3 homePos;
 
     float startTime = 0.0f;
@@ -140,8 +143,12 @@ public class ObjectTransporterTask : BaseTask
             leftHand.SetActive(false);
             leftHandCtrl.SetActive(false);
 
-            objectResetPlane.SetActive(true);
+            objectResetPlane.SetActive(true);    // Comment out for now 
             dock.GetComponent<Target>().SetProjectile(rightHand);
+
+            //Switch Camera to VR
+            PrefabCamera.SetActive(false);
+
         }
         else
         {
@@ -159,6 +166,9 @@ public class ObjectTransporterTask : BaseTask
 
             objectResetPlane.SetActive(false);
             dock.GetComponent<Target>().SetProjectile(cursor);
+
+            //Switch Camera to 2D
+            PrefabCamera.SetActive(true);
         }
     }
 

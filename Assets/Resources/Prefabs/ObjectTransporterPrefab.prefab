@@ -102,6 +102,7 @@ MonoBehaviour:
   leftHandCtrl: {fileID: 230111589768410227}
   rightHand: {fileID: 5130416784580098783}
   rightHandCtrl: {fileID: 7550362036431783254}
+  PrefabCamera: {fileID: 6841807596335930729}
 --- !u!1 &3196042522259283610
 GameObject:
   m_ObjectHideFlags: 0
@@ -1478,10 +1479,20 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9092739823578475913}
     m_Modifications:
+    - target: {fileID: 305436337226433489, guid: 5eccbf4be2c00e94689ee8062e4e7276,
+        type: 3}
+      propertyPath: m_RequestedTrackingOriginMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 865075385244835223, guid: 5eccbf4be2c00e94689ee8062e4e7276,
         type: 3}
       propertyPath: m_Name
       value: XR Origin Hands
+      objectReference: {fileID: 0}
+    - target: {fileID: 1470082431402870574, guid: 5eccbf4be2c00e94689ee8062e4e7276,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.98
       objectReference: {fileID: 0}
     - target: {fileID: 3113582726751902587, guid: 5eccbf4be2c00e94689ee8062e4e7276,
         type: 3}
