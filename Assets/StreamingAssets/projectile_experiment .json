@@ -59,6 +59,17 @@
       0,
       0
     ],
+    "per_block_water_force_forward": [
+      0,
+      0,
+      0,
+      40,
+      40,
+      40,
+      0,
+      0,
+      0
+    ],
     "per_block_debris_spawn_rate": [
       1,
       2,

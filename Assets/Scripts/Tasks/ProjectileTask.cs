@@ -128,6 +128,7 @@ public class ProjectileTask : BaseTask
     string currentType = "";
 
     float currentWaterForce = 0.0f;
+    float currentWaterForceForward = 0.0f;
 
     static int totalScore = 0;
     public TextMeshProUGUI scoreText;
@@ -487,8 +488,12 @@ public class ProjectileTask : BaseTask
             water = GameObject.Find("Water");
 
         CurrentForce currentForce = water.GetComponent<CurrentForce>();
+        
         currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[ExperimentController.Instance.Session.currentBlockNum - 1];
         currentForce.sideForce = currentWaterForce;
+
+        currentWaterForceForward = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force_forward")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        currentForce.forwardForce = currentWaterForceForward;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
         debrisSpawner.speed = currentWaterForce/30;
@@ -656,6 +661,7 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["launch_direction"] = launchVec;
 
         session.CurrentTrial.result["water_force"] = currentWaterForce;
+        session.CurrentTrial.result["water_force_forward"] = currentWaterForceForward;
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
