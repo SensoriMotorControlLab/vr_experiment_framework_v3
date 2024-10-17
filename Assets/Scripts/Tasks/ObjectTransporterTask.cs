@@ -6,10 +6,6 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class ObjectTransporterTask : BaseTask
 {
-    // Start is called before the first frame update
-    [SerializeField]
-    GameObject xrHands;
-
     [SerializeField]
     GameObject objectResetPlane;
 
@@ -73,6 +69,7 @@ public class ObjectTransporterTask : BaseTask
                         //Check if correct
                         endTime = Time.time;
                         dock.SetActive(true);
+                        grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
                         IncrementStep();
                     }
                     else if (rightGoal.TargetHit)
@@ -80,6 +77,7 @@ public class ObjectTransporterTask : BaseTask
                         //Check if correct
                         endTime = Time.time;
                         dock.SetActive(true);
+                        grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
                         IncrementStep();
                     }
                 }
@@ -87,9 +85,23 @@ public class ObjectTransporterTask : BaseTask
             //Return to dock
             case 2:
                 {
-                    if (dock.GetComponent<Target>().TargetHit)
+                    if (ExperimentController.Instance.UseVR)
                     {
-                        IncrementStep();
+                        if(Vector3.Distance(leftHand.transform.position,dock.transform.position) <= 0.1f)
+                        {
+                            IncrementStep();
+                        }
+                        else if(Vector3.Distance(rightHand.transform.position, dock.transform.position) <= 0.1f)
+                        {
+                            IncrementStep();
+                        }
+                    }
+                    else
+                    {
+                        if (dock.GetComponent<Target>().TargetHit)
+                        {
+                            IncrementStep();
+                        }
                     }
                 }
                 break;
@@ -106,9 +118,13 @@ public class ObjectTransporterTask : BaseTask
         endTime = 0.0f;
 
         homePos = grabbedObject.transform.position;
+        leftHand = GameObject.Find("Left Hand");
+        rightHand = GameObject.Find("Right Hand");
+
+        leftHandCtrl = GameObject.Find("Left Controller");
+        rightHandCtrl = GameObject.Find("Right Controller");
 
         CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
-        xrHands.SetActive(ExperimentController.Instance.UseVR);
 
         SetupXR();
     }
@@ -124,7 +140,9 @@ public class ObjectTransporterTask : BaseTask
         dock.GetComponent<Target>().ResetTarget();
         dock.SetActive(false);
 
+
         grabbedObject.transform.position = homePos;
+        grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
         grabbedObject.transform.rotation = Quaternion.identity;
     }
 
