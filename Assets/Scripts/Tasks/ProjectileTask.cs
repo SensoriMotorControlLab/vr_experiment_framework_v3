@@ -137,25 +137,19 @@ public class ProjectileTask : BaseTask
     public TextMeshProUGUI trialsRemainingText;
 
     float closestDistance = float.MaxValue;
-
+    Vector2 closestBallPosToTarget;
     float debrisSpawnRate;
     int debrisCount;
     DebrisSpawner debrisSpawner;
     Vector3 cursorPos;
+    Vector3 throwSpeed;
+    Vector2 absTurning;
+    string finalBallState;
 
     // Start is called before the first frame update
     void Start()
     {
         trialsRemaining = ExperimentController.Instance.GetTotalTrials();
-    }
-
-    void FixedUpdate()
-    {
-        //Check for distance away from ball to launch
-        if(currentStep == 1)
-        {
-            
-        }
     }
 
     // Update is called once per frame
@@ -188,6 +182,7 @@ public class ProjectileTask : BaseTask
                     if(Input.GetButtonDown(buttonCheck))
                     {
                         startPos = GetMousePos();
+                        Debug.Log("start position: " + startPos);
                         cursorPos = startPos;
                         handPos.Clear();
                     }
@@ -196,8 +191,9 @@ public class ProjectileTask : BaseTask
                         cursorPos = GetMousePos();
                         handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
                     }
+                    Debug.Log(Vector3.Distance(cursorPos, startPos));
 
-                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && !Input.GetButton(buttonCheck))
+                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST)
                     {
                         //log step time
                         endPos = GetMousePos();
@@ -211,20 +207,18 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = false;
                         ballRB.useGravity = true;
 
-                        Vector3 force = launchVec;
-                        force.y = 0.0f;
-                        force = Vector3.ClampMagnitude(force / (totalTime * 50.0f), LAUNCH_MAG);
-                        force *= ((targetAngles[currentTrial] / 5) * 0.5f) + (LAUNCH_FORCE);
+                        throwSpeed = InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec;
+                        throwSpeed.y = 0.0f;
 
-                        launchForce = force;
+                        launchForce = throwSpeed;
 
                         if (launchForce.magnitude < MIN_MAG)
                         {
                             Debug.Log("The launch force was too small, applying a new force");
-                            Debug.Log("New force " + force * 2.0f);
-                            Debug.Log("New force mag " + (force * 2.0f).magnitude);
+                            Debug.Log("New force " + throwSpeed * 2.0f);
+                            Debug.Log("New force mag " + (throwSpeed * 2.0f).magnitude);
 
-                            launchForce = force * 2.0f;
+                            launchForce = throwSpeed * 2.0f;
                         }
 
                         ballRB.velocity = launchForce;
@@ -242,6 +236,14 @@ public class ProjectileTask : BaseTask
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
+                    if(currentWaterForce >= 0 && absTurning.x < ball.transform.position.x)
+                    {
+                        absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
+                    }
+                    else if(currentWaterForce < 0 && absTurning.x > ball.transform.position.x)
+                    {
+                        absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
+                    }
                     DebugDrawLaunchVec();
                     ClosestPointToTarget(ball.transform.position);
                     /*
@@ -259,6 +261,8 @@ public class ProjectileTask : BaseTask
                     if (target.GetComponent<Target>().TargetHit)
                     {
                         ballRB.isKinematic = true;
+
+                        finalBallState = "Hit";
 
                         lineColor = Color.green;
                         hitTarget = true;
@@ -293,6 +297,15 @@ public class ProjectileTask : BaseTask
                     {
                         ballRB.isKinematic = true;
 
+                        if(ball.transform.position.x > target.transform.position.x)
+                        {
+                            finalBallState = "To the right";
+                        }
+                        else
+                        {
+                            finalBallState = "To the left";
+                        }
+
                         lineColor = Color.yellow;
                         hitTarget = false;
 
@@ -318,6 +331,8 @@ public class ProjectileTask : BaseTask
                             if (t.TargetHit)
                             {
                                 ballRB.isKinematic = true;
+
+                                finalBallState = "Missed";
 
                                 lineColor = Color.red;
                                 hitTarget = false;
@@ -445,6 +460,7 @@ public class ProjectileTask : BaseTask
         if (distance < closestDistance)
         {
             closestDistance = distance;
+            closestBallPosToTarget = new Vector2(ball.transform.position.x, ball.transform.position.z);
         }
     }
 
@@ -501,6 +517,15 @@ public class ProjectileTask : BaseTask
         debrisCount = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_debris_count")[ExperimentController.Instance.Session.currentBlockNum - 1];
         debrisSpawner.spawnRate = debrisSpawnRate;
         debrisSpawner.debrisCount = debrisCount;
+
+        if(currentWaterForce >= 0)
+        {
+            absTurning.x = float.MinValue;
+        }
+        else
+        {
+            absTurning.x = float.MaxValue;
+        }
 
 
         water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
@@ -655,22 +680,27 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["hand"] = "r";
         session.CurrentTrial.result["target_hit"] = target.GetComponent<Target>().TargetHit;
+        session.CurrentTrial.result["final_ball_state"] = finalBallState;
         session.CurrentTrial.result["type"] = currentType;
         session.CurrentTrial.result["target_position"] = target.transform.position;
         session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["launch_direction"] = launchVec;
 
-        session.CurrentTrial.result["water_force"] = currentWaterForce;
-        session.CurrentTrial.result["water_force_forward"] = currentWaterForceForward;
+        session.CurrentTrial.result["side_water_force"] = currentWaterForce;
+        session.CurrentTrial.result["forward_water_force"] = currentWaterForceForward;
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
+        session.CurrentTrial.result["launch_Speed"] = throwSpeed.magnitude;
 
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
+        session.CurrentTrial.result["absolute_x"] = absTurning;
+
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
+        session.CurrentTrial.result["min_distance_from_target"] = closestBallPosToTarget;
         session.CurrentTrial.result["total_score"] = totalScore;
 
         for(int i = 0; i < stepTime.Count; i++)
