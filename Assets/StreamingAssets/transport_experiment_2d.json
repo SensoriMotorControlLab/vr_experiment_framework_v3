@@ -4,11 +4,11 @@
     "use_vr": false,
     "optional_params": {
     },
-	"per_block_input_name": [
-	"mouse",
-	"mouse",
-	"mouse"
-	],
+    "per_block_input_name": [
+      "mouse",
+      "mouse",
+      "mouse"
+    ],
     "trials_in_block": [
       4,
       4,
@@ -18,6 +18,11 @@
       "ObjectTransporter",
       "ObjectTransporter",
       "ObjectTransporter"
+    ],
+    "per_block_instruction": [
+      null,
+      null,
+      null
     ]
   }
 }

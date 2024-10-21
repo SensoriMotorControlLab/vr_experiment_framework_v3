@@ -87,24 +87,44 @@ public class ObjectTransporterTask : BaseTask
                 {
                     if (ExperimentController.Instance.UseVR)
                     {
-                        if(Vector3.Distance(leftHand.transform.position,dock.transform.position) <= 0.1f)
+                        // VR Mode: Check if hands are close enough to the dock
+                        float leftHandDistance = Vector3.Distance(leftHand.transform.position, dock.transform.position);
+                        float rightHandDistance = Vector3.Distance(rightHand.transform.position, dock.transform.position);
+
+                        Debug.Log("Left Hand Distance: " + leftHandDistance);
+                        Debug.Log("Right Hand Distance: " + rightHandDistance);
+
+                        // Check if either hand is within the dock's proximity (0.1f threshold)
+                        if (leftHandDistance <= 0.1f)
                         {
+                            Debug.Log("Left hand reached the dock.");
                             IncrementStep();
                         }
-                        else if(Vector3.Distance(rightHand.transform.position, dock.transform.position) <= 0.1f)
+                        else if (rightHandDistance <= 0.1f)
                         {
+                            Debug.Log("Right hand reached the dock.");
                             IncrementStep();
                         }
                     }
                     else
                     {
-                        if (dock.GetComponent<Target>().TargetHit)
+                        // Non-VR Mode: Check if the dock's Target has been hit
+                        Target dockTarget = dock.GetComponent<Target>();
+
+                        // Log whether the dock was hit and if it's still colliding
+                        Debug.Log("Dock TargetHit: " + dockTarget.TargetHit);
+                        Debug.Log("Dock IsColliding: " + dockTarget.IsColliding);
+
+                        // Proceed if the dock's target has been hit and is still colliding
+                        if (dockTarget.TargetHit && dockTarget.IsColliding)
                         {
+                            Debug.Log("Cursor hit the dock.");
                             IncrementStep();
                         }
                     }
+                    break;
                 }
-                break;
+
 
         }
     }
