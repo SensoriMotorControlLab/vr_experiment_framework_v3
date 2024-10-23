@@ -4,11 +4,11 @@
     "use_vr": true,
     "optional_params": {
     },
-	"per_block_input_name": [
-	"vr_controller",
-	"vr_controller",
-	"vr_controller"
-	],
+    "per_block_input_name": [
+      "vr_controller",
+      "vr_controller",
+      "vr_controller"
+    ],
     "trials_in_block": [
       4,
       4,
@@ -18,6 +18,11 @@
       "ObjectTransporter",
       "ObjectTransporter",
       "ObjectTransporter"
+    ],
+    "per_block_instruction": [
+      null,
+      null,
+      null
     ]
   }
 }

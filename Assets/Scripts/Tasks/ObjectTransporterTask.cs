@@ -176,10 +176,10 @@ public class ObjectTransporterTask : BaseTask
             cursor.SetActive(false);
 
             //Get which hand is being used
-            rightHand.SetActive(true);
-            rightHandCtrl.SetActive(false);
-            leftHand.SetActive(false);
-            leftHandCtrl.SetActive(false);
+            //rightHand.SetActive(true);
+            //rightHandCtrl.SetActive(false);
+            //leftHand.SetActive(false);
+            //leftHandCtrl.SetActive(false);
 
             objectResetPlane.SetActive(true);    // Comment out for now 
             dock.GetComponent<Target>().SetProjectile(rightHand);
@@ -197,10 +197,6 @@ public class ObjectTransporterTask : BaseTask
             cursor.SetActive(true);
             dock.GetComponent<Target>().SetProjectile(cursor);
 
-            rightHand.SetActive(true);
-            rightHandCtrl.SetActive(false);
-            leftHand.SetActive(false);
-            leftHandCtrl.SetActive(false);
 
             objectResetPlane.SetActive(false);
             dock.GetComponent<Target>().SetProjectile(cursor);
