@@ -28,6 +28,8 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     GameObject PrefabCamera;
 
+    [SerializeField]
+    GameObject MainCamera;
 
     Vector3 homePos;
 
@@ -145,6 +147,9 @@ public class ObjectTransporterTask : BaseTask
         leftHandCtrl = GameObject.Find("Left Controller");
         rightHandCtrl = GameObject.Find("Right Controller");
 
+        MainCamera = GameObject.Find("Main Camera");
+        
+
         CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
 
         SetupXR();
@@ -203,8 +208,11 @@ public class ObjectTransporterTask : BaseTask
             dock.GetComponent<Target>().SetProjectile(cursor);
 
             //Switch Camera to 2D
-            GameObject.Find("Main Camera").SetActive(false);
             PrefabCamera.SetActive(true);
+            if (MainCamera != null)
+            {
+                MainCamera.SetActive(false);
+            }
         }
     }
 
