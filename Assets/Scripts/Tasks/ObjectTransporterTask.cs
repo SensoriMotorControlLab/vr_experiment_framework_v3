@@ -28,6 +28,7 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     GameObject PrefabCamera;
 
+
     Vector3 homePos;
 
     float startTime = 0.0f;
@@ -202,6 +203,7 @@ public class ObjectTransporterTask : BaseTask
             dock.GetComponent<Target>().SetProjectile(cursor);
 
             //Switch Camera to 2D
+            GameObject.Find("Main Camera").SetActive(false);
             PrefabCamera.SetActive(true);
         }
     }
