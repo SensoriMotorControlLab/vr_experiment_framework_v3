@@ -243,6 +243,10 @@ public class InputHandler : MonoBehaviour
                         FindHandAnchors();
                         inputDevices[HIGHEST_PRIORITY] = CreateInputDeviceProperty(d);
                         break;
+                    case (TOUCH_CONTROLLER_NAME):
+                        FindHandAnchors();
+                        inputDevices[HIGHEST_PRIORITY] = CreateInputDeviceProperty(d);
+                        break;
                     case (MOUSE_NAME):
                     //default:
                         inputDevices[counter] = CreateInputDeviceProperty(d);
