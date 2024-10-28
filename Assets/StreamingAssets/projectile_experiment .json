@@ -114,6 +114,17 @@
       "ta1",
       "ta1"
     ],
+    "per_block_target_width": [
+      0.5,
+      0.75,
+      1,
+      0.5,
+      0.75,
+      1,
+      0.5,
+      0.75,
+      1
+    ],
     "ta1": [0, -20, -30],
     "ta2": [0, 20, 30],
     "ins1": "Toss the ball to the target."

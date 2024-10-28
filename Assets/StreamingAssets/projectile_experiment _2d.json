@@ -15,7 +15,7 @@
       3
     ],
     "per_block_task": [
-      "invisible",
+      "projectile",
       "projectile",
       "projectile"
     ],
@@ -53,6 +53,11 @@
       "ta1",
       "ta1",
       "ta1"
+    ],
+    "per_block_target_width": [
+      0.5,
+      0.25,
+      1
     ],
     "ta1": [0, 0, 0],
     "ins1": "Toss the ball to the target."

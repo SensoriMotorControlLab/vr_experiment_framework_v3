@@ -145,6 +145,7 @@ public class ProjectileTask : BaseTask
     Vector3 throwSpeed;
     Vector2 absTurning;
     string finalBallState;
+    float targetWidth;
 
     // Start is called before the first frame update
     void Start()
@@ -468,6 +469,7 @@ public class ProjectileTask : BaseTask
     {
         base.SetUp();
         maxSteps = 4;
+        int currBlock = ExperimentController.Instance.Session.currentBlockNum - 1;
 
         if (!ball)
             ball = GameObject.Find("Ball");
@@ -487,6 +489,8 @@ public class ProjectileTask : BaseTask
         {
             targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
         }
+        targetWidth = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_target_width")[currBlock];
+        target.transform.localScale = new Vector3(target.transform.localScale.x, targetWidth * target.transform.localScale.y, target.transform.localScale.z);
 
         if(ExperimentController.Instance.UseVR == true)
         {
@@ -505,16 +509,16 @@ public class ProjectileTask : BaseTask
 
         CurrentForce currentForce = water.GetComponent<CurrentForce>();
         
-        currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[currBlock];
         currentForce.sideForce = currentWaterForce;
 
-        currentWaterForceForward = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force_forward")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        currentWaterForceForward = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force_forward")[currBlock];
         currentForce.forwardForce = currentWaterForceForward;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
         debrisSpawner.speed = currentWaterForce/30;
-        debrisSpawnRate = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_debris_spawn_rate")[ExperimentController.Instance.Session.currentBlockNum - 1];
-        debrisCount = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_debris_count")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        debrisSpawnRate = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_debris_spawn_rate")[currBlock];
+        debrisCount = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_debris_count")[currBlock];
         debrisSpawner.spawnRate = debrisSpawnRate;
         debrisSpawner.debrisCount = debrisCount;
 
@@ -565,7 +569,7 @@ public class ProjectileTask : BaseTask
             waterAudio.volume = 0.0f;
         }
 
-        taskType = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        taskType = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("per_block_task")[currBlock];
         if(taskType == "invisible")
         {
             GameObject plane = GameObject.Find("Plane");
@@ -585,10 +589,7 @@ public class ProjectileTask : BaseTask
         endPos = Vector3.zero;
 
         hitTarget = false;
-        //cursor.SetActive(true);
-
-        ballRB.velocity = Vector3.zero;
-        ballRB.angularVelocity = Vector3.zero;
+        
         ballRB.isKinematic = true;
         ballRB.useGravity = false;
         
