@@ -101,12 +101,12 @@ public class ObjectTransporterTask : BaseTask
                         Debug.Log("Right Hand Distance: " + rightHandDistance);
 
                         // Check if either hand is within the dock's proximity (0.1f threshold)
-                        if (leftHandDistance <= 0.1f)
+                        if (leftHandDistance <= 0.001f)
                         {
                             Debug.Log("Left hand reached the dock.");
                             IncrementStep();
                         }
-                        else if (rightHandDistance <= 0.1f)
+                        else if (rightHandDistance <= 0.001f)
                         {
                             Debug.Log("Right hand reached the dock.");
                             IncrementStep();
@@ -130,8 +130,6 @@ public class ObjectTransporterTask : BaseTask
                     }
                     break;
                 }
-
-
         }
     }
 
@@ -151,7 +149,6 @@ public class ObjectTransporterTask : BaseTask
         rightHandCtrl = GameObject.Find("Right Controller");
 
         MainCamera = GameObject.Find("Main Camera");
-        
 
         CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
 
@@ -168,7 +165,6 @@ public class ObjectTransporterTask : BaseTask
         rightGoal.ResetTarget();
         dock.GetComponent<Target>().ResetTarget();
         dock.SetActive(false);
-
 
         grabbedObject.transform.position = homePos;
         grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
