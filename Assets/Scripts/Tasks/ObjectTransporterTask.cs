@@ -44,16 +44,6 @@ public class ObjectTransporterTask : BaseTask
     // Update is called once per frame
     void Update()
     {
-        if (grabbedObject.GetComponent<Tool>().IsGrabbed)
-        {
-            grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
-            grabbedObject.transform.position = new Vector3(cursor.transform.position.x, grabbedObject.transform.position.y, cursor.transform.position.z);
-        }
-        else
-        {
-            grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
-        }
-
         switch (currentStep)
         {
             //Check for initial grab, record time for start
@@ -67,6 +57,19 @@ public class ObjectTransporterTask : BaseTask
             //Check for which goal hit
             case 1:
                 {
+                    if (!ExperimentController.Instance.UseVR)
+                    {
+                        if (grabbedObject.GetComponent<Tool>().IsGrabbed)
+                        {
+                            grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
+                            grabbedObject.transform.position = new Vector3(cursor.transform.position.x, grabbedObject.transform.position.y, cursor.transform.position.z);
+                        }
+                        else
+                        {
+                            grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
+                        }
+                    }
+
                     if (leftGoal.TargetHit)
                     {
                         //Check if correct
