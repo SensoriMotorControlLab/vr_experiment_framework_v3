@@ -97,16 +97,16 @@ public class ObjectTransporterTask : BaseTask
                         float leftHandDistance = Vector3.Distance(leftHand.transform.position, dock.transform.position);
                         float rightHandDistance = Vector3.Distance(rightHand.transform.position, dock.transform.position);
 
-                        Debug.Log("Left Hand Distance: " + leftHandDistance);
-                        Debug.Log("Right Hand Distance: " + rightHandDistance);
+                        //Debug.Log("Left Hand Distance: " + leftHandDistance);
+                        //Debug.Log("Right Hand Distance: " + rightHandDistance);
 
                         // Check if either hand is within the dock's proximity (0.1f threshold)
-                        if (leftHandDistance <= 0.001f)
+                        if (leftHandDistance <= 0.08f)
                         {
                             Debug.Log("Left hand reached the dock.");
                             IncrementStep();
                         }
-                        else if (rightHandDistance <= 0.001f)
+                        else if (rightHandDistance <= 0.08)
                         {
                             Debug.Log("Right hand reached the dock.");
                             IncrementStep();
