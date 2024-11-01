@@ -240,9 +240,6 @@ public class InputHandler : MonoBehaviour
                         inputDevices[HIGHEST_PRIORITY - 1] = CreateInputDeviceProperty(d);
                         break;
                     case (TOUCH_PRO_CONTROLLER_NAME):
-                        FindHandAnchors();
-                        inputDevices[HIGHEST_PRIORITY] = CreateInputDeviceProperty(d);
-                        break;
                     case (TOUCH_CONTROLLER_NAME):
                         FindHandAnchors();
                         inputDevices[HIGHEST_PRIORITY] = CreateInputDeviceProperty(d);
@@ -263,6 +260,8 @@ public class InputHandler : MonoBehaviour
             }
         }
     }
+
+
     /// <summary>
     /// Returns InputDeviceProperty based on the passed InputDevice.
     /// Define specific device names and cases for specific devices here.
@@ -276,6 +275,7 @@ public class InputHandler : MonoBehaviour
             case (HEADSET_DEVICE_NAME):
                 return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, inputDevice, null, null);
             case (TOUCH_PRO_CONTROLLER_NAME):
+            case (TOUCH_CONTROLLER_NAME):
                 return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.SPATIAL, inputDevice, GetHandPosition, GetHandRotation);
             case (MOUSE_NAME):
                 return new InputDeviceProperties(Vector3.zero, Quaternion.identity, InputType.RAY, inputDevice, delegate { return Input.mousePosition; }, null);
@@ -572,7 +572,14 @@ public class InputHandler : MonoBehaviour
             switch (deviceName)
             {
                 case (JSON_VR):
-                    deviceString = TOUCH_PRO_CONTROLLER_NAME;
+                foreach (InputDevice d in InputSystem.devices)
+                {
+                    if (d.name == TOUCH_PRO_CONTROLLER_NAME)
+                        deviceString = TOUCH_PRO_CONTROLLER_NAME;
+                    
+                    else if(d.name == TOUCH_CONTROLLER_NAME)
+                        deviceString = TOUCH_CONTROLLER_NAME;
+                }    
                     break;
                 default:
                     deviceString = deviceName;
