@@ -606,7 +606,7 @@ public class InputHandler : MonoBehaviour
         else
         {
             Debug.LogWarning("Device name was null or empty string");
-            FindDevices();
+            //FindDevices();
         }
 
 

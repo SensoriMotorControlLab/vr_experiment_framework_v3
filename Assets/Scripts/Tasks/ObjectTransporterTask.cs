@@ -31,6 +31,8 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     GameObject MainCamera;
 
+    [SerializeField]
+    GameObject direct;
     Vector3 homePos;
 
     float startTime = 0.0f;
@@ -94,21 +96,17 @@ public class ObjectTransporterTask : BaseTask
                     if (ExperimentController.Instance.UseVR)
                     {
                         // VR Mode: Check if hands are close enough to the dock
-                        float leftHandDistance = Vector3.Distance(leftHand.transform.position, dock.transform.position);
-                        float rightHandDistance = Vector3.Distance(rightHand.transform.position, dock.transform.position);
+                        //float leftHandDistance = Vector3.Distance(leftHand.transform.position, dock.transform.position);
+                        //float rightHandDistance = Vector3.Distance(rightHand.transform.position, dock.transform.position);
 
                         //Debug.Log("Left Hand Distance: " + leftHandDistance);
                         //Debug.Log("Right Hand Distance: " + rightHandDistance);
 
                         // Check if either hand is within the dock's proximity (0.1f threshold)
-                        if (leftHandDistance <= 0.08f)
+                        Target dockTarget = dock.GetComponent<Target>();
+
+                        if (dockTarget.IsColliding && dockTarget.TargetHit)
                         {
-                            Debug.Log("Left hand reached the dock.");
-                            IncrementStep();
-                        }
-                        else if (rightHandDistance <= 0.08)
-                        {
-                            Debug.Log("Right hand reached the dock.");
                             IncrementStep();
                         }
                     }
@@ -144,6 +142,7 @@ public class ObjectTransporterTask : BaseTask
         homePos = grabbedObject.transform.position;
         leftHand = GameObject.Find("Left Hand");
         rightHand = GameObject.Find("Right Hand");
+        direct = GameObject.Find("Direct Interactor");
 
         leftHandCtrl = GameObject.Find("Left Controller");
         rightHandCtrl = GameObject.Find("Right Controller");
@@ -160,15 +159,24 @@ public class ObjectTransporterTask : BaseTask
         base.TaskBegin();
         //the task start
 
-        SetupXR();
-        leftGoal.ResetTarget();
-        rightGoal.ResetTarget();
-        dock.GetComponent<Target>().ResetTarget();
-        dock.SetActive(false);
-
+        //SetupXR();
         grabbedObject.transform.position = homePos;
         grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
         grabbedObject.transform.rotation = Quaternion.identity;
+
+        if (ExperimentController.Instance.UseVR == false) { 
+            leftGoal.ResetTarget();
+            rightGoal.ResetTarget();
+        }
+        dock.GetComponent<Target>().ResetTarget();
+        dock.SetActive(false);
+
+
+        //if (ExperimentController.Instance.UseVR) {
+        //    rhCollider = rightHand.transform.GetChild(1).gameObject;
+        //}
+
+
     }
 
     void SetupXR()
@@ -187,10 +195,14 @@ public class ObjectTransporterTask : BaseTask
             //leftHandCtrl.SetActive(false);
 
             objectResetPlane.SetActive(true);    // Comment out for now 
-            dock.GetComponent<Target>().SetProjectile(rightHand);
+            //rightHand = InputHandler.Instance.GetDominantHandGameObject();
+            rightHand = GameObject.Find("Right Hand");
+            direct = GameObject.Find("Direct Interactor");
+            dock.GetComponent<Target>().SetProjectile(direct);
 
             //Switch Camera to VR
             PrefabCamera.SetActive(false);
+
 
         }
         else

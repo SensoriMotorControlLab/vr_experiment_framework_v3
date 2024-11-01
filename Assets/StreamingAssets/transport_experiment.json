@@ -5,9 +5,9 @@
     "optional_params": {
     },
     "per_block_input_name": [
-      "vr_controller",
-      "vr_controller",
-      "vr_controller"
+      "null",
+      "null",
+      "null"
     ],
     "trials_in_block": [
       4,
