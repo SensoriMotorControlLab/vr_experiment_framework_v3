@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Transformers;
 
 public class ObjectTransporterTask : BaseTask
 {
@@ -15,6 +16,8 @@ public class ObjectTransporterTask : BaseTask
     Target rightGoal;
     [SerializeField]
     GameObject grabbedObject;
+    [SerializeField]
+    GameObject toolPrefab;
 
     [SerializeField]
     GameObject leftHand;
@@ -71,13 +74,17 @@ public class ObjectTransporterTask : BaseTask
                             grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
                         }
                     }
-
                     if (leftGoal.TargetHit)
                     {
                         //Check if correct
                         endTime = Time.time;
                         dock.SetActive(true);
                         grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
+                        if(ExperimentController.Instance.UseVR)
+                        {
+                            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
+                            grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
+                        }
                         IncrementStep();
                     }
                     else if (rightGoal.TargetHit)
@@ -86,6 +93,11 @@ public class ObjectTransporterTask : BaseTask
                         endTime = Time.time;
                         dock.SetActive(true);
                         grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
+                        if(ExperimentController.Instance.UseVR)
+                        {
+                            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
+                            grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
+                        }
                         IncrementStep();
                     }
                 }
@@ -107,6 +119,7 @@ public class ObjectTransporterTask : BaseTask
 
                         if (dockTarget.IsColliding && dockTarget.TargetHit)
                         {
+                            Destroy(grabbedObject);
                             IncrementStep();
                         }
                     }
@@ -123,9 +136,11 @@ public class ObjectTransporterTask : BaseTask
                         if (dockTarget.TargetHit && dockTarget.IsColliding)
                         {
                             Debug.Log("Cursor hit the dock.");
+                            Destroy(grabbedObject);
                             IncrementStep();
                         }
                     }
+
                     break;
                 }
         }
@@ -159,17 +174,26 @@ public class ObjectTransporterTask : BaseTask
         base.TaskBegin();
         //the task start
 
+        if(grabbedObject == null)
+        {
+            grabbedObject = Instantiate(toolPrefab, homePos, Quaternion.identity);
+            leftGoal.GetComponent<Target>().SetProjectile(grabbedObject);
+            rightGoal.GetComponent<Target>().SetProjectile(grabbedObject);
+        }
+
         //SetupXR();
         grabbedObject.transform.position = homePos;
         grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
         grabbedObject.transform.rotation = Quaternion.identity;
 
-        if (ExperimentController.Instance.UseVR == false) { 
-            leftGoal.ResetTarget();
-            rightGoal.ResetTarget();
-        }
+        leftGoal.ResetTarget();
+        rightGoal.ResetTarget();
         dock.GetComponent<Target>().ResetTarget();
         dock.SetActive(false);
+        if(ExperimentController.Instance.UseVR)
+        {
+            grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
+        }
 
 
         //if (ExperimentController.Instance.UseVR) {
