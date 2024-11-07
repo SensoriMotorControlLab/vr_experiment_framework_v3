@@ -624,6 +624,7 @@ GameObject:
   - component: {fileID: 8443461777940388905}
   - component: {fileID: 3766432060326026165}
   - component: {fileID: 8716341584191954373}
+  - component: {fileID: 3157222653255493212}
   m_Layer: 0
   m_Name: Dock
   m_TagString: Untagged
@@ -639,9 +640,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6806402543708253634}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.0059, z: -0.0743}
-  m_LocalScale: {x: 1, y: 0.015, z: 0.025}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: -0.0016, z: -0.0457}
+  m_LocalScale: {x: 0.02, y: 0.005999999, z: 0.02}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 9092739823578475913}
   m_RootOrder: -1
@@ -708,7 +709,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6806402543708253634}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!65 &3766432060326026165
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -726,7 +727,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -757,6 +758,28 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!64 &3157222653255493212
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6806402543708253634}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &6841807596335930729
 GameObject:
   m_ObjectHideFlags: 0
@@ -1110,7 +1133,7 @@ PrefabInstance:
     - target: {fileID: 4274039672624018576, guid: 69bb66b1203ba7b4db33c2210d00ba5f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.046
+      value: -0.0681
       objectReference: {fileID: 0}
     - target: {fileID: 4274039672624018576, guid: 69bb66b1203ba7b4db33c2210d00ba5f,
         type: 3}
@@ -1376,6 +1399,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tool (Sphere)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5672610194799326353, guid: 69bb66b1203ba7b4db33c2210d00ba5f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8167827204462843681, guid: 69bb66b1203ba7b4db33c2210d00ba5f,
         type: 3}

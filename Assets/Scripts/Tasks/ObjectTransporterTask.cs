@@ -119,6 +119,8 @@ public class ObjectTransporterTask : BaseTask
 
                         if (dockTarget.IsColliding && dockTarget.TargetHit)
                         {
+                            Debug.Log("Dock TargetHit: " + dockTarget.TargetHit);
+                            Debug.Log("Dock IsColliding: " + dockTarget.IsColliding);
                             Destroy(grabbedObject);
                             IncrementStep();
                         }
