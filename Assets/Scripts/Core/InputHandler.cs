@@ -563,7 +563,7 @@ public class InputHandler : MonoBehaviour
     IEnumerator FindAndSetDevice(string deviceName)
     {
         //If a device name was passed
-        if (deviceName != null && deviceName.Length > 0)
+        if (deviceName != null && deviceName.Length > 0 && deviceName != "null")
         {
             //The actual device string
             string deviceString = "";
@@ -626,7 +626,7 @@ public class InputHandler : MonoBehaviour
         else
         {
             Debug.LogWarning("Device name was null or empty string");
-            FindDevices();
+            //FindDevices();
         }
 
 
