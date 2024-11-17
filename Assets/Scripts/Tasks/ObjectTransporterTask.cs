@@ -16,6 +16,8 @@ public class ObjectTransporterTask : BaseTask
     Target rightGoal;
     [SerializeField]
     GameObject grabbedObject;
+    [SerializeField]
+    GameObject grabbedObjectVisable;
 
     [SerializeField]
     MeshFilter toolMesh;
@@ -110,6 +112,9 @@ public class ObjectTransporterTask : BaseTask
                         }
                         IncrementStep();
                     }
+                    float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
+                    grabbedObjectVisable.transform.position = Quaternion.Euler(0, -rotation, 0) * (grabbedObject.transform.position - homePos) + homePos;
+                    grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
                 }
                 break;
             //Return to dock
@@ -198,6 +203,10 @@ public class ObjectTransporterTask : BaseTask
         grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
         grabbedObject.transform.rotation = Quaternion.identity;
 
+        grabbedObjectVisable.transform.position = homePos;
+        grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
+
+
         leftGoal.ResetTarget();
         rightGoal.ResetTarget();
         dock.GetComponent<Target>().ResetTarget();
@@ -213,10 +222,12 @@ public class ObjectTransporterTask : BaseTask
             {
             case "Cube":
                 toolMesh.sharedMesh = cube.GetComponent<MeshFilter>().mesh;
+                grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = cube.GetComponent<MeshFilter>().mesh;
                 break;
 
             case "Sphere":
                 toolMesh.sharedMesh = sphere.GetComponent<MeshFilter>().mesh;
+                grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = sphere.GetComponent<MeshFilter>().mesh;
                 break;
 
         }

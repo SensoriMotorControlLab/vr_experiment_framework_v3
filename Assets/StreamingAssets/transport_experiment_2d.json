@@ -28,6 +28,11 @@
       "Cube",
       "Sphere",
       "Cube"
+    ],
+    "per_block_rotation": [
+      15,
+      35,
+      10
     ]
   }
 }
