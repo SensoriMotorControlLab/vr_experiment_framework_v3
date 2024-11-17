@@ -16,6 +16,16 @@ public class ObjectTransporterTask : BaseTask
     Target rightGoal;
     [SerializeField]
     GameObject grabbedObject;
+
+    [SerializeField]
+    MeshFilter toolMesh;
+
+    [SerializeField]
+    MeshFilter cube;
+
+    [SerializeField]
+    MeshFilter sphere;
+
     [SerializeField]
     GameObject toolPrefab;
 
@@ -197,7 +207,20 @@ public class ObjectTransporterTask : BaseTask
             grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
         }
 
+        toolMesh = grabbedObject.GetComponent<MeshFilter>();
+        string meshName = (string) ExperimentController.Instance.ExperimentLists["mesh"][ExperimentController.Instance.Session.currentBlockNum-1];
+        switch (meshName) 
+            {
+            case "Cube":
+                toolMesh.sharedMesh = cube.GetComponent<MeshFilter>().mesh;
+                break;
 
+            case "Sphere":
+                toolMesh.sharedMesh = sphere.GetComponent<MeshFilter>().mesh;
+                break;
+
+        }
+        
         //if (ExperimentController.Instance.UseVR) {
         //    rhCollider = rightHand.transform.GetChild(1).gameObject;
         //}
