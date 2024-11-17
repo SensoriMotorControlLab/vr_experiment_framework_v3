@@ -159,7 +159,7 @@ public class ObjectTransporterTask : BaseTask
         homePos = grabbedObject.transform.position;
         leftHand = GameObject.Find("Left Hand");
         rightHand = GameObject.Find("Right Hand");
-        direct = GameObject.Find("Direct Interactor");
+        direct = GameObject.Find("RH Direct Interactor");
 
         leftHandCtrl = GameObject.Find("Left Controller");
         rightHandCtrl = GameObject.Find("Right Controller");
@@ -223,7 +223,7 @@ public class ObjectTransporterTask : BaseTask
             objectResetPlane.SetActive(true);    // Comment out for now 
             //rightHand = InputHandler.Instance.GetDominantHandGameObject();
             rightHand = GameObject.Find("Right Hand");
-            direct = GameObject.Find("Direct Interactor");
+            direct = GameObject.Find("RH Direct Interactor");
             dock.GetComponent<Target>().SetProjectile(direct);
 
             //Switch Camera to VR

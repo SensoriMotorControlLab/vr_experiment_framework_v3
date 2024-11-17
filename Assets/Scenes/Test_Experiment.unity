@@ -410,6 +410,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1177544554784985734, guid: a57f35a38a537614c84a1ed17cec9fee,
+        type: 3}
+      propertyPath: m_Name
+      value: RH Direct Interactor
+      objectReference: {fileID: 0}
+    - target: {fileID: 1177544554899611487, guid: a57f35a38a537614c84a1ed17cec9fee,
+        type: 3}
+      propertyPath: m_Name
+      value: LH Direct Interactor
+      objectReference: {fileID: 0}
     - target: {fileID: 1281388443084500223, guid: a57f35a38a537614c84a1ed17cec9fee,
         type: 3}
       propertyPath: m_RootOrder
