@@ -23,12 +23,6 @@ public class ObjectTransporterTask : BaseTask
     MeshFilter toolMesh;
 
     [SerializeField]
-    MeshFilter cube;
-
-    [SerializeField]
-    MeshFilter sphere;
-
-    [SerializeField]
     GameObject toolPrefab;
 
     [SerializeField]
@@ -221,13 +215,13 @@ public class ObjectTransporterTask : BaseTask
         switch (meshName) 
             {
             case "Cube":
-                toolMesh.sharedMesh = cube.GetComponent<MeshFilter>().mesh;
-                grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = cube.GetComponent<MeshFilter>().mesh;
+                toolMesh.sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+                grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
                 break;
 
             case "Sphere":
-                toolMesh.sharedMesh = sphere.GetComponent<MeshFilter>().mesh;
-                grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = sphere.GetComponent<MeshFilter>().mesh;
+                toolMesh.sharedMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
+                grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
                 break;
 
         }

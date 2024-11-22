@@ -1134,6 +1134,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 473592654}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1113629791 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4784919919104383654, guid: a57f35a38a537614c84a1ed17cec9fee,
+    type: 3}
+  m_PrefabInstance: {fileID: 430427049}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1224544683
 GameObject:
   m_ObjectHideFlags: 0
@@ -1380,7 +1386,7 @@ MonoBehaviour:
   endSessionPrefab: {fileID: 2517357246821121372, guid: af7f624760b75cf4fa67a51e1b6e9ab6,
     type: 3}
   taskPrefabNames: []
-  vrCtlr: {fileID: 6744171333814253303, guid: de839e9ba8a2982459c6aee6f0d4ccc4, type: 3}
+  vrCtlr: {fileID: 1113629791}
   vrPrefab: {fileID: 6578057208008651646, guid: 5899de6eee158cd4cbc3e43193b50e3f,
     type: 3}
 --- !u!4 &1486654464

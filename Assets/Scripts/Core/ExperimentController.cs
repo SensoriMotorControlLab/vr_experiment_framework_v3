@@ -73,9 +73,9 @@ public class ExperimentController : MonoBehaviour
             }
 
 
-            if (Input.GetKey(KeyCode.J))
+            if (Input.GetKeyDown(KeyCode.J))
             {
-                CenterOVRPlayerController();
+                CentreOVRPlayerHand();
             }
 
             if (Input.GetKeyDown(KeyCode.N))
@@ -83,12 +83,12 @@ public class ExperimentController : MonoBehaviour
                 Session.EndCurrentTrial();
             }
 
-            if (Input.GetKey(KeyCode.DownArrow))
+            if (Input.GetKeyDown(KeyCode.DownArrow))
             {
                 Vector3 vec = vrCtlr.transform.position;
                 vrCtlr.transform.position = new Vector3(vec.x, vec.y - 0.05f, vec.z);
             }
-            if (Input.GetKey(KeyCode.UpArrow))
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 Vector3 vec = vrCtlr.transform.position;
                 vrCtlr.transform.position = new Vector3(vec.x, vec.y + 0.05f, vec.z);
@@ -223,6 +223,16 @@ public class ExperimentController : MonoBehaviour
             // rotate the camera offset by the difference
             cameraOffset.transform.Rotate(0, -angle, 0);
         }
+    }
+
+    public void CentreOVRPlayerHand()
+    {
+        if(!useVR)
+        {
+            return;
+        }
+        Vector3 pos = new Vector3(0.00f, GameObject.Find("R_Wrist").transform.position.y, 0.00f);
+        currentTask.gameObject.transform.position = pos;
     }
 
     /// <summary>
