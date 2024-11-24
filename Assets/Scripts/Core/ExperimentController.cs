@@ -231,7 +231,10 @@ public class ExperimentController : MonoBehaviour
         {
             return;
         }
-        Vector3 pos = new Vector3(0.00f, GameObject.Find("R_Wrist").transform.position.y, 0.00f);
+        //TODO
+        //Test this one and see if the GetHandPosition works
+        //Vector3 pos = new Vector3(0.0f, InputHandler.Instance.GetHandPosition("RightHand").y, 0.0f);
+        Vector3 pos = new Vector3(0.0f, GameObject.Find("R_Wrist").transform.position.y, 0.0f);
         currentTask.gameObject.transform.position = pos;
     }
 

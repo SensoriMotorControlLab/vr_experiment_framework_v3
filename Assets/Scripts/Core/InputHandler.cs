@@ -38,7 +38,7 @@ public class InputHandler : MonoBehaviour
     public const string JSON_VR = "vr_controller";
 
     /// <summary>
-    /// Dominant hand to track
+    /// Dominant hand to track, either "LeftHand" or "RightHand"
     /// </summary>
     private string domHand = "RightHand";
 
@@ -277,7 +277,7 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-
+    /*
     public Vector3 GetHandPosition(string handName)
     {
         if (vrHands[handName])
@@ -287,7 +287,9 @@ public class InputHandler : MonoBehaviour
 
         return Vector3.zero;
     }
+    */
 
+    /*
     public Quaternion GetHandRotation(string handName)
     {
         if (vrHands[handName])
@@ -297,6 +299,7 @@ public class InputHandler : MonoBehaviour
 
         return Quaternion.identity;
     }
+    */
 
     public void SetDominantHand(string newDomHand)
     {
@@ -331,22 +334,33 @@ public class InputHandler : MonoBehaviour
     /// <returns>Velocity of hand, default is dominant hand if no hand is specified</returns>
     public Vector3 GetHandVelocity(string hand = "")
     {
-        string handToGet = hand.Length > 0 ? hand : domHand;
-
-        UnityEngine.XR.InputDevice vrHand;
-
-        if (handToGet == "LeftHand")
+        if (hand.Length > 0 && hand != null && hand != "null")
         {
-            vrHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+            string handToGet = hand.Length > 0 ? hand : domHand;
+
+            UnityEngine.XR.InputDevice vrHand;
+
+            if (handToGet == "LeftHand")
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+            }
+            else if(handToGet == "RightHand")
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+            }
+            else
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.GameController);
+            }
+
+            vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceVelocity, out Vector3 velocity);
+
+            return velocity;
         }
         else
         {
-            vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+            return Vector3.zero;
         }
-
-        vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceVelocity, out Vector3 velocity);
-
-        return velocity;
     }
 
 
@@ -370,6 +384,43 @@ public class InputHandler : MonoBehaviour
     }
 
     /// <summary>
+    /// Get position of hand controller
+    /// </summary>
+    /// <param name="hand">String name for hand to get position (either "LeftHand" or "RightHand")</param>
+    /// <returns>Position of hand, default is dominant hand if no hand is specified</returns>
+    public Vector3 GetHandPosition(string hand = "")
+    {
+        if (hand.Length > 0 && hand != null && hand != "null")
+        {
+            string handToGet = hand.Length > 0 ? hand : domHand;
+
+            UnityEngine.XR.InputDevice vrHand;
+
+            if (handToGet == "LeftHand")
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+            }
+            else if (handToGet == "RightHand")
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+            }
+            else
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.GameController);
+            }
+
+            vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.devicePosition, out Vector3 position);
+
+            return position;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+    }
+
+
+    /// <summary>
     /// Get dominant hand rotation
     /// </summary>
     /// <returns></returns>
@@ -381,6 +432,42 @@ public class InputHandler : MonoBehaviour
         }
 
         return Quaternion.identity;
+    }
+
+    /// <summary>
+    /// Get rotation of hand controller
+    /// </summary>
+    /// <param name="hand">String name for hand to get rotation (either "LeftHand" or "RightHand")</param>
+    /// <returns>Rotation of hand, default is dominant hand if no hand is specified</returns>
+    public Quaternion GetHandRotation(string hand = "")
+    {
+        if (hand.Length > 0 && hand != null && hand != "null")
+        {
+            string handToGet = hand.Length > 0 ? hand : domHand;
+
+            UnityEngine.XR.InputDevice vrHand;
+
+            if (handToGet == "LeftHand")
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+            }
+            else if (handToGet == "RightHand")
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+            }
+            else
+            {
+                vrHand = InputDevices.GetDeviceAtXRNode(XRNode.GameController);
+            }
+
+            vrHand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.deviceRotation, out Quaternion rotation);
+
+            return rotation;
+        }
+        else
+        {
+            return Quaternion.identity;
+        }
     }
 
     /// <summary>
