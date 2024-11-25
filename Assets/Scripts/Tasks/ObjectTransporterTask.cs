@@ -15,6 +15,22 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     Target rightGoal;
     [SerializeField]
+    Target middleGoal;
+
+    [SerializeField]
+    MeshFilter SquareGoalMesh;
+
+    [SerializeField]
+    MeshFilter SphereGoalMesh;
+
+    [SerializeField]
+    MeshFilter leftGoalMesh;
+    [SerializeField]
+    MeshFilter rightGoalMesh;
+    [SerializeField]
+    MeshFilter middleGoalMesh;
+
+    [SerializeField]
     GameObject grabbedObject;
     [SerializeField]
     GameObject grabbedObjectVisable;
@@ -106,6 +122,19 @@ public class ObjectTransporterTask : BaseTask
                         }
                         IncrementStep();
                     }
+                    else if (middleGoal.TargetHit)
+                    {
+                        //Check if correct
+                        endTime = Time.time;
+                        dock.SetActive(true);
+                        grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
+                        if (ExperimentController.Instance.UseVR)
+                        {
+                            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
+                            grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
+                        }
+                        IncrementStep();
+                    }
                     float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
                     grabbedObjectVisable.transform.position = Quaternion.Euler(0, -rotation, 0) * (grabbedObject.transform.position - homePos) + homePos;
                     grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
@@ -188,8 +217,7 @@ public class ObjectTransporterTask : BaseTask
         if(grabbedObject == null)
         {
             grabbedObject = Instantiate(toolPrefab, homePos, Quaternion.identity);
-            leftGoal.GetComponent<Target>().SetProjectile(grabbedObject);
-            rightGoal.GetComponent<Target>().SetProjectile(grabbedObject);
+            
         }
 
         //SetupXR();
@@ -202,9 +230,56 @@ public class ObjectTransporterTask : BaseTask
 
 
         leftGoal.ResetTarget();
+        middleGoal.ResetTarget();
         rightGoal.ResetTarget();
+
+        leftGoalMesh.sharedMesh = null;
+        middleGoalMesh.sharedMesh = null;
+        rightGoalMesh.sharedMesh = null;
+
         dock.GetComponent<Target>().ResetTarget();
         dock.SetActive(false);
+
+        int[] GoalList = randomGoals();
+        
+        for (int i = 0; i < GoalList.Length; i++)
+        {
+            MeshFilter PathName = SquareGoalMesh;
+            if (GoalList[i] == 1)
+            {
+                PathName = SquareGoalMesh;
+            }
+            else if (GoalList[i] == 2)
+            {
+                PathName = SphereGoalMesh;
+            }
+
+            if (i == 0)
+            {
+                if (GoalList[i] > 0)
+                {
+                    //leftGoalMesh = Resources.Load<GameObject>(PathName);
+
+                    leftGoalMesh.GetComponent<MeshFilter>().sharedMesh = PathName.sharedMesh;
+                }
+            }
+            else if (i == 1)
+            {
+                if (GoalList[i] > 0)
+                    //middleGoalMesh = Resources.Load<GameObject>(PathName);
+                    middleGoalMesh.GetComponent<MeshFilter>().sharedMesh = PathName.sharedMesh;
+            }
+            else if (i == 2)
+            {
+                if (GoalList[i] > 0)
+                    //rightGoalMesh = Resources.Load<GameObject>(PathName);
+                    rightGoalMesh.GetComponent<MeshFilter>().sharedMesh = PathName.sharedMesh;
+            }
+            
+
+        }
+
+
         if(ExperimentController.Instance.UseVR)
         {
             grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
@@ -217,15 +292,35 @@ public class ObjectTransporterTask : BaseTask
             case "Cube":
                 toolMesh.sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
                 grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+                grabbedObject.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+                grabbedObjectVisable.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
                 break;
 
             case "Sphere":
                 toolMesh.sharedMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
                 grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
+                grabbedObject.transform.localScale = new Vector3(0.006f, 0.006f, 0.006f);
+                grabbedObjectVisable.transform.localScale = new Vector3(0.006f, 0.006f, 0.006f);
+
                 break;
 
         }
-        
+        float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
+        if (rotation == 0)
+        {
+            leftGoal.GetComponent<Target>().SetProjectile(grabbedObject);
+            middleGoal.GetComponent<Target>().SetProjectile(grabbedObject);
+            rightGoal.GetComponent<Target>().SetProjectile(grabbedObject);
+            grabbedObjectVisable.SetActive(false);
+        }
+        else
+        {
+            grabbedObjectVisable.SetActive(true);
+            leftGoal.GetComponent<Target>().SetProjectile(grabbedObjectVisable);
+            middleGoal.GetComponent<Target>().SetProjectile(grabbedObjectVisable);
+            rightGoal.GetComponent<Target>().SetProjectile(grabbedObjectVisable);
+
+        }
         //if (ExperimentController.Instance.UseVR) {
         //    rhCollider = rightHand.transform.GetChild(1).gameObject;
         //}
@@ -302,5 +397,20 @@ public class ObjectTransporterTask : BaseTask
     public override void LogParameters()
     {
 
+    }
+
+    private int[] randomGoals()
+    {
+        int[] list = new int[3];
+        int num = Random.Range(0, 3);
+        list[num] = 1;
+        num = Random.Range(0, 3);
+        while (list[num] == 1)
+        {
+            num = Random.Range(0, 3);
+        }
+        list[num] = 2;
+
+        return list;
     }
 }
