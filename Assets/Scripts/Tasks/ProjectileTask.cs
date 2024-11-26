@@ -573,7 +573,7 @@ public class ProjectileTask : BaseTask
         if(taskType == "invisible")
         {
             GameObject plane = GameObject.Find("Plane");
-            plane.transform.position = new Vector3(plane.transform.position.x, plane.transform.position.y - 0.025f, plane.transform.position.z);
+            plane.transform.position = new Vector3(plane.transform.position.x, plane.transform.position.y - 0.075f, plane.transform.position.z);
         }
     }
 
