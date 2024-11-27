@@ -255,7 +255,7 @@ public class ObjectTransporterTask : BaseTask
         dock.GetComponent<Target>().ResetTarget();
         dock.SetActive(false);
 
-        string valString = goalMeshesVal[ExperimentController.Instance.Session.currentBlockNum - 1];
+        string valString = goalMeshesVal[(ExperimentController.Instance.Session.currentTrialNum  - 1) % 4];
 
         int counter = 0;
         foreach(char c in valString)
@@ -383,10 +383,8 @@ public class ObjectTransporterTask : BaseTask
 
     private List<string> PseudoRandomList()
     {
-        List<string> list = ExperimentController.Instance.Session.settings.GetStringList("per_block_target_location");
+        List<string> list = ExperimentController.Instance.Session.settings.GetStringList("per_trial_target_location");
         List<string> toReturn = new List<string>();
-
-        int prevVal = -1;
 
         while(list.Count > 0)
         {
@@ -395,8 +393,6 @@ public class ObjectTransporterTask : BaseTask
             toReturn.Add(list[random]);
 
             list.RemoveAt(random);
-
-            prevVal = random;
         }
 
         return toReturn;
