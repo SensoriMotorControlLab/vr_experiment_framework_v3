@@ -11,24 +11,25 @@ public class ObjectTransporterTask : BaseTask
     GameObject objectResetPlane;
 
     [SerializeField]
+    List<Target> goals = new List<Target>();
+    [SerializeField]
+    List<MeshFilter> goalMeshes = new List<MeshFilter>();
+
+    List<string> goalMeshesVal = new List<string>();
+
+    /*
+    [SerializeField]
     Target leftGoal;
     [SerializeField]
     Target rightGoal;
     [SerializeField]
     Target middleGoal;
-
+    */
     [SerializeField]
     MeshFilter SquareGoalMesh;
 
     [SerializeField]
     MeshFilter SphereGoalMesh;
-
-    [SerializeField]
-    MeshFilter leftGoalMesh;
-    [SerializeField]
-    MeshFilter rightGoalMesh;
-    [SerializeField]
-    MeshFilter middleGoalMesh;
 
     [SerializeField]
     GameObject grabbedObject;
@@ -96,48 +97,30 @@ public class ObjectTransporterTask : BaseTask
                             grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
                         }
                     }
-                    if (leftGoal.TargetHit)
+
+                    foreach(Target t in goals)
                     {
-                        //Check if correct
-                        endTime = Time.time;
-                        dock.SetActive(true);
-                        grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
-                        if(ExperimentController.Instance.UseVR)
+                        if (t.TargetHit)
                         {
-                            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
-                            grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
+                            //Check if correct
+                            endTime = Time.time;
+                            dock.SetActive(true);
+                            grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
+                            if (ExperimentController.Instance.UseVR)
+                            {
+                                grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
+                                grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
+                            }
+                            IncrementStep();
                         }
-                        IncrementStep();
                     }
-                    else if (rightGoal.TargetHit)
-                    {
-                        //Check if correct
-                        endTime = Time.time;
-                        dock.SetActive(true);
-                        grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
-                        if(ExperimentController.Instance.UseVR)
-                        {
-                            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
-                            grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
-                        }
-                        IncrementStep();
-                    }
-                    else if (middleGoal.TargetHit)
-                    {
-                        //Check if correct
-                        endTime = Time.time;
-                        dock.SetActive(true);
-                        grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
-                        if (ExperimentController.Instance.UseVR)
-                        {
-                            grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
-                            grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
-                        }
-                        IncrementStep();
-                    }
+                    
                     float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
-                    grabbedObjectVisable.transform.position = Quaternion.Euler(0, -rotation, 0) * (grabbedObject.transform.position - homePos) + homePos;
-                    grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
+                    if (rotation != 0)
+                    {
+                        grabbedObjectVisable.transform.position = Quaternion.Euler(0, -rotation, 0) * (grabbedObject.transform.position - homePos) + homePos;
+                        grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
+                    }
                 }
                 break;
             //Return to dock
@@ -206,6 +189,7 @@ public class ObjectTransporterTask : BaseTask
 
         CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
 
+        goalMeshesVal = PseudoRandomList();
         SetupXR();
     }
 
@@ -229,56 +213,70 @@ public class ObjectTransporterTask : BaseTask
         grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
 
 
+        foreach(Target t in goals)
+        {
+            t.ResetTarget();
+        }
+
+        float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
+        if (rotation == 0)
+        {
+            foreach (Target t in goals)
+            {
+                t.SetProjectile(grabbedObject);
+            }
+
+            grabbedObjectVisable.SetActive(false);
+        }
+        else
+        {
+
+            grabbedObjectVisable.SetActive(true);
+
+            foreach (Target t in goals)
+            {
+                t.SetProjectile(grabbedObjectVisable);
+            }
+
+        }
+
+        /*
         leftGoal.ResetTarget();
         middleGoal.ResetTarget();
         rightGoal.ResetTarget();
+        */
 
-        leftGoalMesh.sharedMesh = null;
-        middleGoalMesh.sharedMesh = null;
-        rightGoalMesh.sharedMesh = null;
+
+        foreach (MeshFilter m in goalMeshes)
+        {
+            m.sharedMesh = null;
+        }
 
         dock.GetComponent<Target>().ResetTarget();
         dock.SetActive(false);
 
-        int[] GoalList = randomGoals();
-        
-        for (int i = 0; i < GoalList.Length; i++)
+        string valString = goalMeshesVal[ExperimentController.Instance.Session.currentBlockNum - 1];
+
+        int counter = 0;
+        foreach(char c in valString)
         {
-            MeshFilter PathName = SquareGoalMesh;
-            if (GoalList[i] == 1)
+            int v = int.Parse(c.ToString());
+
+            if (v == 1)
             {
-                PathName = SquareGoalMesh;
+                goalMeshes[counter].GetComponent<MeshFilter>().sharedMesh = SquareGoalMesh.sharedMesh;
             }
-            else if (GoalList[i] == 2)
+            else if(v == 2)
             {
-                PathName = SphereGoalMesh;
+                goalMeshes[counter].GetComponent<MeshFilter>().sharedMesh = SphereGoalMesh.sharedMesh;
+            }
+            else if(v == 0)
+            {
+                goals[counter].SetProjectile(null);
             }
 
-            if (i == 0)
-            {
-                if (GoalList[i] > 0)
-                {
-                    //leftGoalMesh = Resources.Load<GameObject>(PathName);
-
-                    leftGoalMesh.GetComponent<MeshFilter>().sharedMesh = PathName.sharedMesh;
-                }
-            }
-            else if (i == 1)
-            {
-                if (GoalList[i] > 0)
-                    //middleGoalMesh = Resources.Load<GameObject>(PathName);
-                    middleGoalMesh.GetComponent<MeshFilter>().sharedMesh = PathName.sharedMesh;
-            }
-            else if (i == 2)
-            {
-                if (GoalList[i] > 0)
-                    //rightGoalMesh = Resources.Load<GameObject>(PathName);
-                    rightGoalMesh.GetComponent<MeshFilter>().sharedMesh = PathName.sharedMesh;
-            }
-            
-
+            counter++;
         }
-
 
         if(ExperimentController.Instance.UseVR)
         {
@@ -303,22 +301,6 @@ public class ObjectTransporterTask : BaseTask
                 grabbedObjectVisable.transform.localScale = new Vector3(0.006f, 0.006f, 0.006f);
 
                 break;
-
-        }
-        float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
-        if (rotation == 0)
-        {
-            leftGoal.GetComponent<Target>().SetProjectile(grabbedObject);
-            middleGoal.GetComponent<Target>().SetProjectile(grabbedObject);
-            rightGoal.GetComponent<Target>().SetProjectile(grabbedObject);
-            grabbedObjectVisable.SetActive(false);
-        }
-        else
-        {
-            grabbedObjectVisable.SetActive(true);
-            leftGoal.GetComponent<Target>().SetProjectile(grabbedObjectVisable);
-            middleGoal.GetComponent<Target>().SetProjectile(grabbedObjectVisable);
-            rightGoal.GetComponent<Target>().SetProjectile(grabbedObjectVisable);
 
         }
         //if (ExperimentController.Instance.UseVR) {
@@ -399,18 +381,24 @@ public class ObjectTransporterTask : BaseTask
 
     }
 
-    private int[] randomGoals()
+    private List<string> PseudoRandomList()
     {
-        int[] list = new int[3];
-        int num = Random.Range(0, 3);
-        list[num] = 1;
-        num = Random.Range(0, 3);
-        while (list[num] == 1)
-        {
-            num = Random.Range(0, 3);
-        }
-        list[num] = 2;
+        List<string> list = ExperimentController.Instance.Session.settings.GetStringList("per_block_target_location");
+        List<string> toReturn = new List<string>();
 
-        return list;
+        int prevVal = -1;
+
+        while(list.Count > 0)
+        {
+            int random = Random.Range(0, list.Count);
+
+            toReturn.Add(list[random]);
+
+            list.RemoveAt(random);
+
+            prevVal = random;
+        }
+
+        return toReturn;
     }
 }

@@ -29,6 +29,11 @@
       "Sphere",
       "Cube"
     ],
+	"per_block_target_location":[
+		"1002",
+		"0120",
+		"2001"
+	],
     "per_block_rotation": [
       15,
       35,
