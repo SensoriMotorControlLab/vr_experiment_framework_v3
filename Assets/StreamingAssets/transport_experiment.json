@@ -29,6 +29,12 @@
       "Sphere",
       "Cube"
     ],
+	"per_trial_target_location":[
+		"1002",
+		"0120",
+		"2001",
+		"0210"
+	],
     "per_block_rotation": [
       15,
       35,
