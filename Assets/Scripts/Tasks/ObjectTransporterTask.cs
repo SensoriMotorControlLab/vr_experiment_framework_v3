@@ -192,7 +192,11 @@ public class ObjectTransporterTask : BaseTask
 
         CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
 
-        goalMeshesVal = PseudoRandomList();
+        if (goalMeshesVal.Count == 0)
+        {
+            goalMeshesVal = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("target_location");
+        }
+
         SetupXR();
     }
 
@@ -242,16 +246,14 @@ public class ObjectTransporterTask : BaseTask
         //        break;
         //}
 
-
-
-
-
         foreach (Target t in goals)
         {
             t.ResetTarget();
         }
 
         float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
+
+        //If not rotated
         if (rotation == 0)
         {
             foreach (Target t in goals)
@@ -261,6 +263,8 @@ public class ObjectTransporterTask : BaseTask
 
             grabbedObjectVisable.SetActive(false);
         }
+
+        //If rotated
         else
         {
 
@@ -415,22 +419,5 @@ public class ObjectTransporterTask : BaseTask
     public override void LogParameters()
     {
 
-    }
-
-    private List<string> PseudoRandomList()
-    {
-        List<string> list = ExperimentController.Instance.Session.settings.GetStringList("per_trial_target_location");
-        List<string> toReturn = new List<string>();
-
-        while(list.Count > 0)
-        {
-            int random = Random.Range(0, list.Count);
-
-            toReturn.Add(list[random]);
-
-            list.RemoveAt(random);
-        }
-
-        return toReturn;
     }
 }

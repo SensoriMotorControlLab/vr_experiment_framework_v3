@@ -29,7 +29,12 @@
       "Sphere",
       "Cube"
     ],
-	"per_trial_target_location":[
+	"per_block_list_target_location":[
+		"ta1",
+		"ta1",
+		"ta1"
+	],
+	"ta1" : [
 		"1002",
 		"0120",
 		"2001",
