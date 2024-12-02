@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Transformers;
+using UXF;
 
 public class ObjectTransporterTask : BaseTask
 {
@@ -60,6 +61,8 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     GameObject direct;
     Vector3 homePos;
+
+    private int session_count = 0; // var for counting the centering function each new block
 
     float startTime = 0.0f;
     float endTime = 0.0f;
@@ -213,7 +216,37 @@ public class ObjectTransporterTask : BaseTask
         grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
 
 
-        foreach(Target t in goals)
+        // Refer to line 368 in SetupXR() "ExperimentController.Instance.CentreOVRPlayerHand();" 
+
+        //switch (ExperimentController.Instance.Session.currentBlockNum)  // centers the player after each trial block
+        //{
+        //    case 1:
+        //        if (session_count == 0)
+        //            ExperimentController.Instance.CentreOVRPlayerHand(); // Centers player after each trial block
+        //        session_count++;
+        //        break;
+
+        //    case 2:
+        //        if (session_count == 0)
+        //            ExperimentController.Instance.CentreOVRPlayerHand(); // Centers player after each trial block
+        //        session_count++;
+        //        break;
+
+        //    case 3:
+        //        if (session_count == 0)
+        //            ExperimentController.Instance.CentreOVRPlayerHand(); // Centers player after each trial block
+        //        session_count++;
+        //        break;
+
+        //    default:
+        //        break;
+        //}
+
+
+
+
+
+        foreach (Target t in goals)
         {
             t.ResetTarget();
         }
@@ -333,6 +366,9 @@ public class ObjectTransporterTask : BaseTask
 
             //Switch Camera to VR
             PrefabCamera.SetActive(false);
+
+            // Centers player
+            ExperimentController.Instance.CentreOVRPlayerHand();
 
 
         }
