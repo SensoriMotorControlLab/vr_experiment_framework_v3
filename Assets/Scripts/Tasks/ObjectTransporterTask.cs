@@ -14,6 +14,8 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     List<Target> goals = new List<Target>();
     [SerializeField]
+    Target resetPlane;
+    [SerializeField]
     List<MeshFilter> goalMeshes = new List<MeshFilter>();
 
     List<string> goalMeshesVal = new List<string>();
@@ -75,6 +77,15 @@ public class ObjectTransporterTask : BaseTask
     // Update is called once per frame
     void Update()
     {
+        if (ExperimentController.Instance.UseVR)
+        {
+            if (resetPlane.TargetHit)
+            {
+                grabbedObject.transform.position = home.transform.position;
+                resetPlane.ResetTarget();
+            }
+        }
+
         switch (currentStep)
         {
             //Check for initial grab, record time for start
@@ -223,6 +234,7 @@ public class ObjectTransporterTask : BaseTask
         {
             t.ResetTarget();
         }
+        resetPlane.ResetTarget();
 
         float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
 
@@ -292,6 +304,7 @@ public class ObjectTransporterTask : BaseTask
             grabbedObject.GetComponent<XRGrabInteractable>().enabled = true;
         }
 
+        //Setting mesh for grabbed object and visual object
         toolMesh = grabbedObject.GetComponent<MeshFilter>();
         string meshName = (string) ExperimentController.Instance.ExperimentLists["mesh"][ExperimentController.Instance.Session.currentBlockNum-1];
         switch (meshName) 
@@ -312,6 +325,8 @@ public class ObjectTransporterTask : BaseTask
                 break;
 
         }
+
+        resetPlane.SetProjectile(grabbedObject);
         //if (ExperimentController.Instance.UseVR) {
         //    rhCollider = rightHand.transform.GetChild(1).gameObject;
         //}
