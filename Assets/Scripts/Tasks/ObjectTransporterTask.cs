@@ -81,10 +81,22 @@ public class ObjectTransporterTask : BaseTask
             if (resetPlane.TargetHit)
             {
                 Debug.Log("Collided with reset plane");
-                grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
+                Destroy(grabbedObject);
+                
+                grabbedObject = Instantiate(toolPrefab, home.transform.position, Quaternion.identity);
+
+                
+
+                //SetupXR();
                 grabbedObject.transform.position = home.transform.position;
-                resetPlane.ResetTarget();
                 grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
+                grabbedObject.transform.rotation = Quaternion.identity;
+
+                grabbedObjectVisable.transform.position = home.transform.position;
+                grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
+                resetPlane.SetProjectile(grabbedObject);
+                
+                resetPlane.ResetTarget();
             }
         }
 
