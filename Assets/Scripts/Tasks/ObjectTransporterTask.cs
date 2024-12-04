@@ -10,6 +10,7 @@ public class ObjectTransporterTask : BaseTask
 {
     [SerializeField]
     GameObject objectResetPlane;
+    AudioSource audioSource;
 
     [SerializeField]
     List<Target> goals = new List<Target>();
@@ -63,6 +64,14 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     GameObject direct;
 
+    [SerializeField]
+    AudioClip correctSFX;
+    [SerializeField]
+    AudioClip incorrectSFX;
+    [SerializeField]
+    AudioClip buttonClickSFX;
+
+
     private int session_count = 0; // var for counting the centering function each new block
 
     float startTime = 0.0f;
@@ -76,7 +85,7 @@ public class ObjectTransporterTask : BaseTask
 
     void Start()
     {
-        
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -153,11 +162,15 @@ public class ObjectTransporterTask : BaseTask
                             if(goalType != toolType)
                             {
                                 hitTarget = false;
+                                audioSource.clip = incorrectSFX;
+                                audioSource.Play();
                             }
                             //If same type target hit
                             else if(goalType == toolType)
                             {
                                 hitTarget = true;
+                                audioSource.clip = correctSFX;
+                                audioSource.Play();
                                 totalScore++;
                             }
 
@@ -186,44 +199,18 @@ public class ObjectTransporterTask : BaseTask
             //Return to dock
             case 2:
                 {
-                    if (ExperimentController.Instance.UseVR)
+                    Target dockTarget = dock.GetComponent<Target>();
+
+                    if (dockTarget.IsColliding && dockTarget.TargetHit)
                     {
-                        // VR Mode: Check if hands are close enough to the dock
-                        //float leftHandDistance = Vector3.Distance(leftHand.transform.position, dock.transform.position);
-                        //float rightHandDistance = Vector3.Distance(rightHand.transform.position, dock.transform.position);
-
-                        //Debug.Log("Left Hand Distance: " + leftHandDistance);
-                        //Debug.Log("Right Hand Distance: " + rightHandDistance);
-
-                        // Check if either hand is within the dock's proximity (0.1f threshold)
-                        Target dockTarget = dock.GetComponent<Target>();
-
-                        if (dockTarget.IsColliding && dockTarget.TargetHit)
-                        {
-                            Debug.Log("Dock TargetHit: " + dockTarget.TargetHit);
-                            Debug.Log("Dock IsColliding: " + dockTarget.IsColliding);
-                            Destroy(grabbedObject);
-                            stepTime.Add(Time.time);
-                            IncrementStep();
-                        }
-                    }
-                    else
-                    {
-                        // Non-VR Mode: Check if the dock's Target has been hit
-                        Target dockTarget = dock.GetComponent<Target>();
-
-                        // Log whether the dock was hit and if it's still colliding
                         Debug.Log("Dock TargetHit: " + dockTarget.TargetHit);
                         Debug.Log("Dock IsColliding: " + dockTarget.IsColliding);
-
-                        // Proceed if the dock's target has been hit and is still colliding
-                        if (dockTarget.TargetHit && dockTarget.IsColliding)
-                        {
-                            Debug.Log("Cursor hit the dock.");
-                            Destroy(grabbedObject);
-                            stepTime.Add(Time.time);
-                            IncrementStep();
-                        }
+                        Destroy(grabbedObject);
+                        stepTime.Add(Time.time);
+                        IncrementStep();
+                        audioSource.clip = buttonClickSFX;
+                        audioSource.Play();
+                        StartCoroutine(PlayFeedback(0.5f));
                     }
 
                     break;
@@ -234,7 +221,7 @@ public class ObjectTransporterTask : BaseTask
     public override void SetUp()
     {
         base.SetUp();
-        maxSteps = 3;
+        maxSteps = 4;
 
         startTime = 0.0f;
         endTime = 0.0f;
@@ -384,6 +371,20 @@ public class ObjectTransporterTask : BaseTask
         //}
 
 
+    }
+
+    IEnumerator PlayFeedback(float endDelayTime = 0.0f)
+    {
+        float delayTime = 0.0f;
+
+        while (delayTime <= endDelayTime)
+        {
+            delayTime += Time.deltaTime;
+            yield return null;
+        }
+
+        IncrementStep();
+        yield return new WaitForEndOfFrame();
     }
 
     void SetupXR()
