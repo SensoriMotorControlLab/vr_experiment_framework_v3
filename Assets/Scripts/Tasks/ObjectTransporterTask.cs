@@ -81,8 +81,10 @@ public class ObjectTransporterTask : BaseTask
             if (resetPlane.TargetHit)
             {
                 Debug.Log("Collided with reset plane");
+                grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
                 grabbedObject.transform.position = home.transform.position;
                 resetPlane.ResetTarget();
+                grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
             }
         }
 
