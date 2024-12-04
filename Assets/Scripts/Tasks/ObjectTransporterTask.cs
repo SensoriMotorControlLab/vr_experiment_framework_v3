@@ -62,7 +62,6 @@ public class ObjectTransporterTask : BaseTask
 
     [SerializeField]
     GameObject direct;
-    Vector3 homePos;
 
     private int session_count = 0; // var for counting the centering function each new block
 
@@ -82,7 +81,7 @@ public class ObjectTransporterTask : BaseTask
             if (resetPlane.TargetHit)
             {
                 Debug.Log("Collided with reset plane");
-                grabbedObject.transform.position = homePos;
+                grabbedObject.transform.position = home.transform.position;
                 resetPlane.ResetTarget();
             }
         }
@@ -133,7 +132,7 @@ public class ObjectTransporterTask : BaseTask
                     float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
                     if (rotation != 0)
                     {
-                        grabbedObjectVisable.transform.position = Quaternion.Euler(0, -rotation, 0) * (grabbedObject.transform.position - homePos) + homePos;
+                        grabbedObjectVisable.transform.position = Quaternion.Euler(0, -rotation, 0) * (grabbedObject.transform.position - home.transform.position) + home.transform.position;
                         grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
                     }
                 }
@@ -192,7 +191,6 @@ public class ObjectTransporterTask : BaseTask
         startTime = 0.0f;
         endTime = 0.0f;
 
-        homePos = grabbedObject.transform.position;
         leftHand = GameObject.Find("Left Hand");
         rightHand = GameObject.Find("Right Hand");
         direct = GameObject.Find("RH Direct Interactor");
@@ -219,16 +217,16 @@ public class ObjectTransporterTask : BaseTask
 
         if(grabbedObject == null)
         {
-            grabbedObject = Instantiate(toolPrefab, homePos, Quaternion.identity);
+            grabbedObject = Instantiate(toolPrefab, home.transform.position, Quaternion.identity);
             
         }
 
         //SetupXR();
-        grabbedObject.transform.position = homePos;
+        grabbedObject.transform.position = home.transform.position;
         grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
         grabbedObject.transform.rotation = Quaternion.identity;
 
-        grabbedObjectVisable.transform.position = homePos;
+        grabbedObjectVisable.transform.position = home.transform.position;
         grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
 
         foreach (Target t in goals)
