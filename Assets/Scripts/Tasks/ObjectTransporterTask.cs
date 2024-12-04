@@ -19,7 +19,7 @@ public class ObjectTransporterTask : BaseTask
     List<MeshFilter> goalMeshes = new List<MeshFilter>();
 
     List<string> goalMeshesVal = new List<string>();
-
+    List<float> stepTime = new List<float>();
     /*
     [SerializeField]
     Target leftGoal;
@@ -68,6 +68,12 @@ public class ObjectTransporterTask : BaseTask
     float startTime = 0.0f;
     float endTime = 0.0f;
 
+    int toolType = 0;
+    int goalType = 0;
+    static int totalScore = 0;
+
+    bool hitTarget = false;
+
     void Start()
     {
         
@@ -108,6 +114,7 @@ public class ObjectTransporterTask : BaseTask
                 {
                     startTime = Time.time;
                     IncrementStep();
+                    stepTime.Add(Time.time);
                 }
                 break;
             //Check for which goal hit
@@ -126,12 +133,34 @@ public class ObjectTransporterTask : BaseTask
                         }
                     }
 
-                    foreach(Target t in goals)
+                    int targetIndex = 0;
+
+                    //Check goals for collision
+                    foreach (Target t in goals)
                     {
                         if (t.TargetHit)
                         {
                             //Check if correct
                             endTime = Time.time;
+                            stepTime.Add(Time.time);
+
+                            //Get types of goal and check if same as tool
+                            string valString = goalMeshesVal[(ExperimentController.Instance.Session.currentTrialNum - 1) % 4];
+                            char c = valString[targetIndex];
+                            goalType = int.Parse(c.ToString());
+
+                            //If not same target missed
+                            if(goalType != toolType)
+                            {
+                                hitTarget = false;
+                            }
+                            //If same type target hit
+                            else if(goalType == toolType)
+                            {
+                                hitTarget = true;
+                                totalScore++;
+                            }
+
                             dock.SetActive(true);
                             grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
                             if (ExperimentController.Instance.UseVR)
@@ -140,7 +169,10 @@ public class ObjectTransporterTask : BaseTask
                                 grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
                             }
                             IncrementStep();
+                            break;
                         }
+
+                        targetIndex++;
                     }
                     
                     float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
@@ -171,6 +203,7 @@ public class ObjectTransporterTask : BaseTask
                             Debug.Log("Dock TargetHit: " + dockTarget.TargetHit);
                             Debug.Log("Dock IsColliding: " + dockTarget.IsColliding);
                             Destroy(grabbedObject);
+                            stepTime.Add(Time.time);
                             IncrementStep();
                         }
                     }
@@ -188,6 +221,7 @@ public class ObjectTransporterTask : BaseTask
                         {
                             Debug.Log("Cursor hit the dock.");
                             Destroy(grabbedObject);
+                            stepTime.Add(Time.time);
                             IncrementStep();
                         }
                     }
@@ -228,8 +262,11 @@ public class ObjectTransporterTask : BaseTask
     {
         base.TaskBegin();
         //the task start
+        stepTime.Clear();
+        toolType = 0;
+        goalType = 0;
 
-        if(grabbedObject == null)
+        if (grabbedObject == null)
         {
             grabbedObject = Instantiate(toolPrefab, home.transform.position, Quaternion.identity);
             
@@ -328,6 +365,7 @@ public class ObjectTransporterTask : BaseTask
                 grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
                 grabbedObject.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
                 grabbedObjectVisable.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+                toolType = 1;
                 break;
 
             case "Sphere":
@@ -335,7 +373,7 @@ public class ObjectTransporterTask : BaseTask
                 grabbedObjectVisable.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
                 grabbedObject.transform.localScale = new Vector3(0.006f, 0.006f, 0.006f);
                 grabbedObjectVisable.transform.localScale = new Vector3(0.006f, 0.006f, 0.006f);
-
+                toolType = 2;
                 break;
 
         }
@@ -417,6 +455,20 @@ public class ObjectTransporterTask : BaseTask
 
     public override void LogParameters()
     {
+        Session session = ExperimentController.Instance.Session;
 
+        session.CurrentTrial.result["hand"] = "r";
+        session.CurrentTrial.result["correct_target"] = hitTarget;
+        session.CurrentTrial.result["rotation"] = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
+        session.CurrentTrial.result["tool_type"] = toolType;
+        session.CurrentTrial.result["goal_type"] = goalType;
+        session.CurrentTrial.result["start_time"] = startTime;
+        session.CurrentTrial.result["end_time"] = endTime;
+        session.CurrentTrial.result["total_score"] = totalScore;
+
+        for (int i = 0; i < stepTime.Count; i++)
+        {
+            session.CurrentTrial.result["step_" + i + "_time"] = stepTime[i];
+        }
     }
 }
