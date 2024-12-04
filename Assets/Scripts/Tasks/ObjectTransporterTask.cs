@@ -81,7 +81,8 @@ public class ObjectTransporterTask : BaseTask
         {
             if (resetPlane.TargetHit)
             {
-                grabbedObject.transform.position = home.transform.position;
+                Debug.Log("Collided with reset plane");
+                grabbedObject.transform.position = homePos;
                 resetPlane.ResetTarget();
             }
         }
@@ -235,6 +236,7 @@ public class ObjectTransporterTask : BaseTask
             t.ResetTarget();
         }
         resetPlane.ResetTarget();
+        resetPlane.SetProjectile(grabbedObject);
 
         float rotation = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
 
@@ -326,7 +328,7 @@ public class ObjectTransporterTask : BaseTask
 
         }
 
-        resetPlane.SetProjectile(grabbedObject);
+        
         //if (ExperimentController.Instance.UseVR) {
         //    rhCollider = rightHand.transform.GetChild(1).gameObject;
         //}
