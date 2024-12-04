@@ -219,33 +219,6 @@ public class ObjectTransporterTask : BaseTask
         grabbedObjectVisable.transform.position = homePos;
         grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
 
-
-        // Refer to line 368 in SetupXR() "ExperimentController.Instance.CentreOVRPlayerHand();" 
-
-        //switch (ExperimentController.Instance.Session.currentBlockNum)  // centers the player after each trial block
-        //{
-        //    case 1:
-        //        if (session_count == 0)
-        //            ExperimentController.Instance.CentreOVRPlayerHand(); // Centers player after each trial block
-        //        session_count++;
-        //        break;
-
-        //    case 2:
-        //        if (session_count == 0)
-        //            ExperimentController.Instance.CentreOVRPlayerHand(); // Centers player after each trial block
-        //        session_count++;
-        //        break;
-
-        //    case 3:
-        //        if (session_count == 0)
-        //            ExperimentController.Instance.CentreOVRPlayerHand(); // Centers player after each trial block
-        //        session_count++;
-        //        break;
-
-        //    default:
-        //        break;
-        //}
-
         foreach (Target t in goals)
         {
             t.ResetTarget();
@@ -282,7 +255,6 @@ public class ObjectTransporterTask : BaseTask
         middleGoal.ResetTarget();
         rightGoal.ResetTarget();
         */
-
 
         foreach (MeshFilter m in goalMeshes)
         {
@@ -372,9 +344,7 @@ public class ObjectTransporterTask : BaseTask
             PrefabCamera.SetActive(false);
 
             // Centers player
-            ExperimentController.Instance.CentreOVRPlayerHand();
-
-
+            //ExperimentController.Instance.CentreOVRPlayerHand();
         }
         else
         {

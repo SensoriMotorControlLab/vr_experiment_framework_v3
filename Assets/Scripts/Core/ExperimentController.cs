@@ -30,6 +30,8 @@ public class ExperimentController : MonoBehaviour
     /// The prefab to spawn if using VR
     /// </summary>
     public GameObject vrPrefab;
+
+    Vector3 prefabPosition = Vector3.zero;
     /// <summary>
     /// The active task
     /// </summary>
@@ -186,7 +188,7 @@ public class ExperimentController : MonoBehaviour
         string prefabName = session.settings.GetString("experiment_name") + "prefab";
         GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName));
         currentTaskPrefab.name = prefabName;
-        currentTaskPrefab.transform.position = Vector3.zero;
+        currentTaskPrefab.transform.position = prefabPosition;
 
         currentTask = currentTaskPrefab.GetComponent<BaseTask>();
         currentTask.enabled = true;
@@ -231,11 +233,10 @@ public class ExperimentController : MonoBehaviour
         {
             return;
         }
-        //TODO
-        //Test this one and see if the GetHandPosition works
-        //Vector3 pos = new Vector3(0.0f, InputHandler.Instance.GetHandPosition("RightHand").y, 0.0f);
+
         Vector3 pos = new Vector3(0.0f, GameObject.Find("R_Wrist").transform.position.y, 0.0f);
         currentTask.gameObject.transform.position = pos;
+        prefabPosition = pos;
     }
 
     /// <summary>
@@ -324,7 +325,7 @@ public class ExperimentController : MonoBehaviour
                 //move on to the next task and prepare it
                 GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName));
                 currentTaskPrefab.name = prefabName;
-                currentTaskPrefab.transform.position = Vector3.zero;
+                currentTaskPrefab.transform.position = prefabPosition;
 
                 currentTask = currentTaskPrefab.GetComponent<BaseTask>();
                 currentTask.enabled = true;
