@@ -411,7 +411,7 @@ public class ObjectTransporterTask : BaseTask
             PrefabCamera.SetActive(false);
 
             // Centers player
-            //ExperimentController.Instance.CentreOVRPlayerHand();
+            ExperimentController.Instance.CentreOVRPlayerHand();
         }
         else
         {
