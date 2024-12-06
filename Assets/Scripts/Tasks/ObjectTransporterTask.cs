@@ -5,6 +5,8 @@ using Unity;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Transformers;
 using UXF;
+using TMPro;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ObjectTransporterTask : BaseTask
 {
@@ -71,6 +73,15 @@ public class ObjectTransporterTask : BaseTask
     [SerializeField]
     AudioClip buttonClickSFX;
 
+    [SerializeField]
+    GameObject Scoreboard;
+    [SerializeField]
+    TextMeshProUGUI ScoreTXT;
+    [SerializeField]
+    TextMeshProUGUI TrialTXT;
+    [SerializeField]
+    TextMeshProUGUI TimeTXT;
+
 
     private int session_count = 0; // var for counting the centering function each new block
 
@@ -113,6 +124,9 @@ public class ObjectTransporterTask : BaseTask
                 
                 resetPlane.ResetTarget();
             }
+        } else
+        {
+            Scoreboard.transform.eulerAngles = new Vector3(90f, Scoreboard.transform.eulerAngles.y, Scoreboard.transform.eulerAngles.z);
         }
 
         switch (currentStep)
@@ -131,6 +145,7 @@ public class ObjectTransporterTask : BaseTask
                 {
                     if (!ExperimentController.Instance.UseVR)
                     {
+                        //Scoreboard.transform.eulerAngles = new Vector3(90f, Scoreboard.transform.eulerAngles.y, Scoreboard.transform.eulerAngles.z);
                         if (grabbedObject.GetComponent<Tool>().IsGrabbed)
                         {
                             grabbedObject.GetComponent<Rigidbody>().isKinematic = true;
@@ -181,6 +196,7 @@ public class ObjectTransporterTask : BaseTask
                                 grabbedObject.GetComponent<XRGrabInteractable>().enabled = false;
                                 grabbedObject.GetComponent<XRBaseGrabTransformer>().enabled = false;
                             }
+                            UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore, endTime - startTime);
                             IncrementStep();
                             break;
                         }
@@ -266,6 +282,9 @@ public class ObjectTransporterTask : BaseTask
 
         grabbedObjectVisable.transform.position = home.transform.position;
         grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
+
+
+        UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore, endTime - startTime);
 
         foreach (Target t in goals)
         {
@@ -471,5 +490,24 @@ public class ObjectTransporterTask : BaseTask
         {
             session.CurrentTrial.result["step_" + i + "_time"] = stepTime[i];
         }
+    }
+
+    private void UpdateScoreboard(int trialNumber, int score, float totalTime)
+    {
+        int seconds = Mathf.FloorToInt(totalTime);
+        int milliseconds = Mathf.FloorToInt((totalTime - seconds) * 1000);
+
+        // Format the time as "Seconds:Milliseconds"
+        string formattedTime = $"{seconds:00}.{milliseconds:000}";
+
+        // Find child objects (requires proper hierarchy structure)
+        TextMeshProUGUI scoreText = Scoreboard.transform.Find("ScoreTXT").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI trialText = Scoreboard.transform.Find("TrialTXT").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI timeText = Scoreboard.transform.Find("TimeTXT").GetComponent<TextMeshProUGUI>();
+
+        // Update the Text fields
+        scoreText.text = $"Score: {score}";
+        trialText.text = $"Trial: {trialNumber}";
+        timeText.text = $"Time: {formattedTime}";
     }
 }
