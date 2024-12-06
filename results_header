@@ -8,17 +8,17 @@
     "start_time",
     "end_time",
     "hand",
+    "cursor",
     "correct_target",
     "rotation",
     "tool_type",
     "goal_type",
     "total_score",
+    "total_time",
     "step_0_time",
     "step_1_time",
     "step_2_time"
-]all_pos_x",
-    "ball_pos_z",
-    "ball_time",
+]  "ball_time",
     "distance_from_target",
     "total_score"
 ]

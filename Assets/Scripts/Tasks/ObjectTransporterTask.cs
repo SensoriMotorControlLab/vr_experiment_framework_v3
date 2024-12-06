@@ -477,14 +477,30 @@ public class ObjectTransporterTask : BaseTask
     {
         Session session = ExperimentController.Instance.Session;
 
-        session.CurrentTrial.result["hand"] = "r";
+        int seconds = Mathf.FloorToInt(endTime - startTime);
+        int milliseconds = Mathf.FloorToInt((endTime - startTime - seconds) * 1000);
+
+        // Format the time as "Seconds:Milliseconds"
+        string formattedTime = $"{seconds:00}.{milliseconds:000}";
+        if (ExperimentController.Instance.UseVR)
+        {
+            session.CurrentTrial.result["hand"] = "R";
+            session.CurrentTrial.result["cursor"] = "N/A";
+        }
+        else
+        {
+            session.CurrentTrial.result["hand"] = "N/A";
+            session.CurrentTrial.result["cursor"] = "True";
+        }
         session.CurrentTrial.result["correct_target"] = hitTarget;
         session.CurrentTrial.result["rotation"] = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
         session.CurrentTrial.result["tool_type"] = toolType;
         session.CurrentTrial.result["goal_type"] = goalType;
+        session.CurrentTrial.result["total_score"] = totalScore;
         session.CurrentTrial.result["start_time"] = startTime;
         session.CurrentTrial.result["end_time"] = endTime;
-        session.CurrentTrial.result["total_score"] = totalScore;
+        session.CurrentTrial.result["total_time"] = formattedTime;
+        
 
         for (int i = 0; i < stepTime.Count; i++)
         {
