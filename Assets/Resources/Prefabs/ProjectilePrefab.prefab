@@ -2743,7 +2743,12 @@ PrefabInstance:
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
       propertyPath: spawnAreaHeight
-      value: 0.5
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
+        type: 3}
+      propertyPath: debrisPrefabs.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
@@ -2755,13 +2760,13 @@ PrefabInstance:
         type: 3}
       propertyPath: debrisPrefabs.Array.data[1]
       value: 
-      objectReference: {fileID: 2522891218907377506, guid: 3cfbf1729c86638488b6633576283bd5,
+      objectReference: {fileID: 663819489779789860, guid: fc7b6354a6941e046bfec73854c8702e,
         type: 3}
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
       propertyPath: debrisPrefabs.Array.data[2]
       value: 
-      objectReference: {fileID: 663819489779789860, guid: fc7b6354a6941e046bfec73854c8702e,
+      objectReference: {fileID: 6986451386120865513, guid: 26073d8033ee0d04d8639eff6b26e274,
         type: 3}
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
@@ -2787,7 +2792,7 @@ PrefabInstance:
     - target: {fileID: 5718992107118093465, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.55799997
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5718992107118093465, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
