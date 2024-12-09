@@ -146,6 +146,7 @@ public class ProjectileTask : BaseTask
     Vector2 absTurning;
     string finalBallState;
     float targetWidth;
+    float waterSpeed;
 
     // Start is called before the first frame update
     void Start()
@@ -516,7 +517,7 @@ public class ProjectileTask : BaseTask
         currentForce.forwardForce = currentWaterForceForward;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
-        debrisSpawner.speed = currentWaterForce/30;
+        debrisSpawner.speed = currentWaterForce/38.48f;
         debrisSpawnRate = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_debris_spawn_rate")[currBlock];
         debrisCount = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_debris_count")[currBlock];
         debrisSpawner.spawnRate = debrisSpawnRate;
@@ -531,8 +532,8 @@ public class ProjectileTask : BaseTask
             absTurning.x = float.MaxValue;
         }
 
-
-        water.GetComponent<Renderer>().material.SetFloat("_Speed", (float)(-0.2*(currentWaterForce/50)));
+        waterSpeed = currentWaterForce / 384.4f;
+        water.GetComponent<Renderer>().material.SetFloat("_Speed", waterSpeed);
 
         //Adjusted water audio based on current water force
         if (currentWaterForce > 0.0f || currentWaterForce < 0.0f)
@@ -689,6 +690,7 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["side_water_force"] = currentWaterForce;
         session.CurrentTrial.result["forward_water_force"] = currentWaterForceForward;
+        session.CurrentTrial.result["water_speed_m/s"] = waterSpeed * 38.48f;
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
