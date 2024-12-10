@@ -8,7 +8,10 @@
     "start_time",
     "end_time",
     "hand",
-    "cursor",
+    "cursor_active",
+    "tool_x_coordinates",
+    "tool_y_coordinates",
+    "tool_z_coordinates",
     "correct_target",
     "rotation",
     "tool_type",
@@ -20,5 +23,4 @@
     "step_0_time",
     "step_1_time",
     "step_2_time"
-]"total_score"
 ]

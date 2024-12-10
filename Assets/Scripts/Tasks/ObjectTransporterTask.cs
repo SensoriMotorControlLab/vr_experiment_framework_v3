@@ -7,6 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit.Transformers;
 using UXF;
 using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
+using System.Linq;
 
 public class ObjectTransporterTask : BaseTask
 {
@@ -83,7 +84,12 @@ public class ObjectTransporterTask : BaseTask
     TextMeshProUGUI TimeTXT;
 
 
-    private int session_count = 0; // var for counting the centering function each new block
+    private bool trial_active = false;
+    private string tool_x = ""; // String to store all X positions instead of list to solve log parameter issues 
+    private string tool_y = ""; 
+    private string tool_z = ""; 
+
+
 
     float startTime = 0.0f;
     float endTime = 0.0f;
@@ -129,6 +135,21 @@ public class ObjectTransporterTask : BaseTask
             Scoreboard.transform.eulerAngles = new Vector3(90f, Scoreboard.transform.eulerAngles.y, Scoreboard.transform.eulerAngles.z);
         }
 
+        if (trial_active)
+        {
+            if (grabbedObject != null)
+            {
+                tool_x += grabbedObject.transform.position.x + ",";
+                tool_y += grabbedObject.transform.position.y + ",";
+                tool_z += grabbedObject.transform.position.z + ",";
+
+                //Debug.Log(grabbedObject.transform.position.x + ", " + grabbedObject.transform.position.y + ", " + grabbedObject.transform.position.z);
+            }
+
+        }
+
+
+
         switch (currentStep)
         {
             //Check for initial grab, record time for start
@@ -136,6 +157,7 @@ public class ObjectTransporterTask : BaseTask
                 if (IsGrabbed())
                 {
                     startTime = Time.time;
+                    trial_active = true;
                     IncrementStep();
                     stepTime.Add(Time.time);
                 }
@@ -167,6 +189,7 @@ public class ObjectTransporterTask : BaseTask
                             //Check if correct
                             endTime = Time.time;
                             stepTime.Add(Time.time);
+                            trial_active = false;
 
                             //Get types of goal and check if same as tool
                             string valString = goalMeshesVal[(ExperimentController.Instance.Session.currentTrialNum - 1) % 4];
@@ -481,13 +504,18 @@ public class ObjectTransporterTask : BaseTask
         if (ExperimentController.Instance.UseVR)
         {
             session.CurrentTrial.result["hand"] = "r";
-            session.CurrentTrial.result["cursor"] = "N/A";
+            session.CurrentTrial.result["cursor_active"] = "N/A";
         }
         else
         {
             session.CurrentTrial.result["hand"] = "N/A";
-            session.CurrentTrial.result["cursor"] = "True";
+            session.CurrentTrial.result["cursor_active"] = "True";
         }
+
+        session.CurrentTrial.result["tool_x_coordinates"] = tool_x;
+        session.CurrentTrial.result["tool_y_coordinates"] = tool_y;
+        session.CurrentTrial.result["tool_z_coordinates"] = tool_z;
+
 
 
         session.CurrentTrial.result["correct_target"] = hitTarget;
