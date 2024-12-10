@@ -7,6 +7,7 @@
     "trial_num_in_block",
     "start_time",
     "end_time",
+    "total_time",
     "hand",
     "cursor",
     "correct_target",
@@ -14,11 +15,10 @@
     "tool_type",
     "goal_type",
     "total_score",
-    "total_time",
+    "start_grabbed_time",
+    "goal_hit_time",
     "step_0_time",
     "step_1_time",
     "step_2_time"
-]  "ball_time",
-    "distance_from_target",
-    "total_score"
+]"total_score"
 ]
