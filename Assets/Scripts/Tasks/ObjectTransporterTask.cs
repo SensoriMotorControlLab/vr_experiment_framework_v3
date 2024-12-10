@@ -488,10 +488,28 @@ public class ObjectTransporterTask : BaseTask
             session.CurrentTrial.result["hand"] = "N/A";
             session.CurrentTrial.result["cursor"] = "True";
         }
+
+
         session.CurrentTrial.result["correct_target"] = hitTarget;
         session.CurrentTrial.result["rotation"] = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
-        session.CurrentTrial.result["tool_type"] = toolType;
-        session.CurrentTrial.result["goal_type"] = goalType;
+
+        if (toolType == 1)
+        {
+            session.CurrentTrial.result["tool_type"] = "cube";
+        }
+        else
+        {
+            session.CurrentTrial.result["tool_type"] = "sphere";
+        }
+        
+        if (goalType == 1)
+        {
+            session.CurrentTrial.result["goal_type"] = "cube";
+        }
+        else
+        {
+            session.CurrentTrial.result["goal_type"] = "sphere";
+        }
         session.CurrentTrial.result["total_score"] = totalScore;
         session.CurrentTrial.result["start_grabbed_time"] = startTime;
         session.CurrentTrial.result["goal_hit_time"] = endTime;

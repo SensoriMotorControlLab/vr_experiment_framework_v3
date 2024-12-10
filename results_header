@@ -7,7 +7,6 @@
     "trial_num_in_block",
     "start_time",
     "end_time",
-    "total_time",
     "hand",
     "cursor",
     "correct_target",
@@ -17,6 +16,7 @@
     "total_score",
     "start_grabbed_time",
     "goal_hit_time",
+    "total_time",
     "step_0_time",
     "step_1_time",
     "step_2_time"
