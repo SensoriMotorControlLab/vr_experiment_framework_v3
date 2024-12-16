@@ -532,7 +532,7 @@ public class ProjectileTask : BaseTask
             absTurning.x = float.MaxValue;
         }
 
-        waterSpeed = currentWaterForce / 384.4f;
+        waterSpeed = currentWaterForce / -384.4f;
         water.GetComponent<Renderer>().material.SetFloat("_Speed", waterSpeed);
 
         //Adjusted water audio based on current water force
@@ -684,7 +684,10 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_hit"] = target.GetComponent<Target>().TargetHit;
         session.CurrentTrial.result["final_ball_state"] = finalBallState;
         session.CurrentTrial.result["type"] = currentType;
-        session.CurrentTrial.result["target_position"] = target.transform.position;
+        //session.CurrentTrial.result["target_position"] = target.transform.position;
+        session.CurrentTrial.result["target_position_x"] = target.transform.position.x;
+        session.CurrentTrial.result["target_position_y"] = target.transform.position.y;
+        session.CurrentTrial.result["target_position_z"] = target.transform.position.z;
         session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["launch_direction"] = launchVec;
 
@@ -698,12 +701,17 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
+        session.CurrentTrial.result["final_ball_pos_x"] = ballPos[ballPos.Count - 1].x;
+        session.CurrentTrial.result["final_ball_pos_z"] = ballPos[ballPos.Count - 1].z;
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
         session.CurrentTrial.result["absolute_x"] = absTurning;
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
-        session.CurrentTrial.result["min_distance_from_target"] = closestBallPosToTarget;
+        //session.CurrentTrial.result["min_distance_from_target"] = closestBallPosToTarget;
+        session.CurrentTrial.result["min_distance_from_target_x"] = closestBallPosToTarget.x;
+        session.CurrentTrial.result["min_distance_from_target_z"] = closestBallPosToTarget.y;
+
         session.CurrentTrial.result["total_score"] = totalScore;
 
         for(int i = 0; i < stepTime.Count; i++)
