@@ -245,6 +245,7 @@ public class ObjectTransporterTask : BaseTask
                         Debug.Log("Dock TargetHit: " + dockTarget.TargetHit);
                         Debug.Log("Dock IsColliding: " + dockTarget.IsColliding);
                         Destroy(grabbedObject);
+                        grabbedObjectVisable.SetActive(false);
                         stepTime.Add(Time.time);
                         IncrementStep();
                         audioSource.clip = buttonClickSFX;
@@ -303,6 +304,7 @@ public class ObjectTransporterTask : BaseTask
         grabbedObject.GetComponent<Rigidbody>().isKinematic = false;
         grabbedObject.transform.rotation = Quaternion.identity;
 
+        grabbedObjectVisable.SetActive(true);
         grabbedObjectVisable.transform.position = home.transform.position;
         grabbedObjectVisable.transform.rotation = grabbedObject.transform.rotation;
 
