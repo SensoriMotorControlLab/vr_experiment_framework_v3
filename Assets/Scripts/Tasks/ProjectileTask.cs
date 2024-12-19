@@ -184,6 +184,7 @@ public class ProjectileTask : BaseTask
             //Track cursor(hand position) and launch when certain distance from home
             case 1:
                 {
+                    //If the button is pressed again
                     if(Input.GetButtonDown(buttonCheck))
                     {
                         startPos = GetMousePos();
@@ -191,12 +192,13 @@ public class ProjectileTask : BaseTask
                         cursorPos = startPos;
                         handPos.Clear();
                     }
+                    //If button released early
                     else if (Input.GetButton(buttonCheck))
                     {
                         cursorPos = GetMousePos();
                         handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
                     }
-                    Debug.Log(Vector3.Distance(cursorPos, startPos));
+                    //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
 
                     if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST)
                     {
@@ -212,10 +214,12 @@ public class ProjectileTask : BaseTask
                         ballRB.isKinematic = false;
                         ballRB.useGravity = true;
 
-                        throwSpeed = InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec;
+                        //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
+                        throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec : launchVec * LAUNCH_FORCE;
                         throwSpeed.y = 0.0f;
 
                         launchForce = throwSpeed;
+                        Debug.Log("Launch vec " + launchVec);
 
                         if (launchForce.magnitude < MIN_MAG)
                         {
@@ -568,12 +572,12 @@ public class ProjectileTask : BaseTask
                 float forceDiff = 30.0f - Math.Abs(currentWaterForce);
                 float pitchAdjust = forceDiff / 50.0f;
 
-                Debug.Log("Force diff " + forceDiff);
-                Debug.Log("Pitch adjustment " + pitchAdjust);
+                //Debug.Log("Force diff " + forceDiff);
+                //Debug.Log("Pitch adjustment " + pitchAdjust);
 
                 waterAudio.pitch = 1.0f - pitchAdjust;
 
-                Debug.Log("Total diff " + (1.0f - pitchAdjust));
+                //Debug.Log("Total diff " + (1.0f - pitchAdjust));
             }
             else
             {
