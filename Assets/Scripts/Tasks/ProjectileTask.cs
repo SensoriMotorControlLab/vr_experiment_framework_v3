@@ -145,8 +145,11 @@ public class ProjectileTask : BaseTask
     Vector3 throwSpeed;
     Vector2 absTurning;
     string finalBallState;
-    float targetWidth;
+    float targetScale;
     float waterSpeed;
+    GameObject poleOne;
+    GameObject poleTwo;
+    float targetWidth;
 
     // Start is called before the first frame update
     void Start()
@@ -490,8 +493,20 @@ public class ProjectileTask : BaseTask
         {
             targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
         }
-        targetWidth = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_target_width")[currBlock];
-        target.transform.localScale = new Vector3(target.transform.localScale.x, targetWidth * target.transform.localScale.y, target.transform.localScale.z);
+        targetScale = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_target_width")[currBlock];
+        target.transform.localScale = new Vector3(target.transform.localScale.x, targetScale * target.transform.localScale.y, target.transform.localScale.z);
+
+        poleOne = GameObject.Find("PoleOne");
+        poleTwo = GameObject.Find("PoleTwo");
+
+        Vector3[] vertices = target.GetComponent<MeshFilter>().mesh.vertices;
+        poleOne.transform.position = target.transform.TransformPoint(vertices[0]);
+        poleTwo.transform.position = target.transform.TransformPoint(vertices[vertices.Length - 1]);
+
+        Vector2 poleOnePos = new Vector2(poleOne.transform.position.x, poleOne.transform.position.z);
+        Vector2 poleTwoPos = new Vector2(poleTwo.transform.position.x, poleTwo.transform.position.z);
+
+        targetWidth = Vector2.Distance(poleOnePos, poleTwoPos);
 
         if(ExperimentController.Instance.UseVR == true)
         {
@@ -672,8 +687,6 @@ public class ProjectileTask : BaseTask
     public override void TaskEnd()
     {
         base.TaskEnd();
-
-
     }
 
     public override void LogParameters()
@@ -689,6 +702,7 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_position_y"] = target.transform.position.y;
         session.CurrentTrial.result["target_position_z"] = target.transform.position.z;
         session.CurrentTrial.result["target_angle"] = currentAngle;
+        session.CurrentTrial.result["target_width"] = targetWidth;
         session.CurrentTrial.result["launch_direction"] = launchVec;
 
         session.CurrentTrial.result["side_water_force"] = currentWaterForce;
@@ -708,7 +722,8 @@ public class ProjectileTask : BaseTask
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
-        //session.CurrentTrial.result["min_distance_from_target"] = closestBallPosToTarget;
+        session.CurrentTrial.result["distance_from_right_pole"] = Vector2.Distance(new Vector2(poleOne.transform.position.x, poleOne.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
+        session.CurrentTrial.result["distance_from_left_pole"] = Vector2.Distance(new Vector2(poleTwo.transform.position.x, poleTwo.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
         session.CurrentTrial.result["min_distance_from_target_x"] = closestBallPosToTarget.x;
         session.CurrentTrial.result["min_distance_from_target_z"] = closestBallPosToTarget.y;
 
