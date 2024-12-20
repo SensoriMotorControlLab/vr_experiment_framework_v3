@@ -722,12 +722,12 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["final_ball_pos_x"] = ballPos[ballPos.Count - 1].x;
         session.CurrentTrial.result["final_ball_pos_z"] = ballPos[ballPos.Count - 1].z;
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
-        session.CurrentTrial.result["absolute_x"] = absTurning;
+        session.CurrentTrial.result["turning_absolute_x"] = absTurning;
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
-        session.CurrentTrial.result["distance_from_right_pole"] = Vector2.Distance(new Vector2(poleOne.transform.position.x, poleOne.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
-        session.CurrentTrial.result["distance_from_left_pole"] = Vector2.Distance(new Vector2(poleTwo.transform.position.x, poleTwo.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
+        session.CurrentTrial.result["rightPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleOne.transform.position.x, poleOne.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
+        session.CurrentTrial.result["leftPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleTwo.transform.position.x, poleTwo.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
         session.CurrentTrial.result["min_distance_from_target_x"] = closestBallPosToTarget.x;
         session.CurrentTrial.result["min_distance_from_target_z"] = closestBallPosToTarget.y;
 
