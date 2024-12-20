@@ -469,7 +469,7 @@ public class ProjectileTask : BaseTask
         if (distance < closestDistance)
         {
             closestDistance = distance;
-            closestBallPosToTarget = new Vector2(ball.transform.position.x, ball.transform.position.z);
+            closestBallPosToTarget = new Vector2(ball.transform.localPosition.x, ball.transform.localPosition.z);
         }
     }
 
@@ -728,8 +728,8 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
         session.CurrentTrial.result["rightPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleOne.transform.position.x, poleOne.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
         session.CurrentTrial.result["leftPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleTwo.transform.position.x, poleTwo.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
-        session.CurrentTrial.result["min_distance_from_target_x"] = closestBallPosToTarget.x;
-        session.CurrentTrial.result["min_distance_from_target_z"] = closestBallPosToTarget.y;
+        session.CurrentTrial.result["min_pos_from_target_x"] = closestBallPosToTarget.x;
+        session.CurrentTrial.result["min_pos_from_target_z"] = closestBallPosToTarget.y;
 
         session.CurrentTrial.result["total_score"] = totalScore;
 
