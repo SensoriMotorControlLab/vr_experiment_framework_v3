@@ -150,6 +150,7 @@ public class ProjectileTask : BaseTask
     GameObject poleOne;
     GameObject poleTwo;
     float targetWidth;
+    Vector3 finalBallPosWorld;
 
     // Start is called before the first frame update
     void Start()
@@ -260,7 +261,7 @@ public class ProjectileTask : BaseTask
                     Vector3 toBall = target.transform.position - ball.transform.position;
                     float dot = Vector3.Dot(toTarget, toBall);
                     */
-                    Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
+                    Vector3 skewedPos = new Vector3(ball.transform.localPosition.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.localPosition.z);
                     ballPos.Add(skewedPos);
                     ballTime.Add(Time.time);
                     string displayMsg = "";
@@ -290,6 +291,7 @@ public class ProjectileTask : BaseTask
                         IncrementStep();
 
                         stepTime.Add(Time.time);
+                        finalBallPosWorld = ball.transform.position;
                     }
                     #region Dot product check
                     // else if (dot <= 0.0f)
@@ -702,9 +704,9 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["final_ball_state"] = finalBallState;
         session.CurrentTrial.result["type"] = currentType;
         //session.CurrentTrial.result["target_position"] = target.transform.position;
-        session.CurrentTrial.result["target_position_x"] = target.transform.position.x;
-        session.CurrentTrial.result["target_position_y"] = target.transform.position.y;
-        session.CurrentTrial.result["target_position_z"] = target.transform.position.z;
+        session.CurrentTrial.result["target_position_x"] = target.transform.localPosition.x;
+        session.CurrentTrial.result["target_position_y"] = target.transform.localPosition.y;
+        session.CurrentTrial.result["target_position_z"] = target.transform.localPosition.z;
         session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["target_width"] = targetWidth;
         session.CurrentTrial.result["launch_direction"] = launchVec;
@@ -726,8 +728,10 @@ public class ProjectileTask : BaseTask
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
-        session.CurrentTrial.result["rightPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleOne.transform.position.x, poleOne.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
-        session.CurrentTrial.result["leftPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleTwo.transform.position.x, poleTwo.transform.position.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
+        poleOne.transform.parent = ball.transform.parent;
+        poleTwo.transform.parent = ball.transform.parent;
+        session.CurrentTrial.result["rightPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleOne.transform.localPosition.x, poleOne.transform.localPosition.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
+        session.CurrentTrial.result["leftPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleTwo.transform.localPosition.x, poleTwo.transform.localPosition.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
         session.CurrentTrial.result["min_pos_from_target_x"] = closestBallPosToTarget.x;
         session.CurrentTrial.result["min_pos_from_target_z"] = closestBallPosToTarget.y;
 
