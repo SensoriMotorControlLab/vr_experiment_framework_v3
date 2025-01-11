@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
 using System.Linq;
 
-public class ObjectTransporterTask : BaseTask
+public class BongoTask : BaseTask
 {
     [SerializeField]
     GameObject objectResetPlane;
