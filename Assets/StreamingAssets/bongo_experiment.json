@@ -1,0 +1,23 @@
+{
+  "session_1": {
+    "experiment_name": "Bongo",
+    "use_vr": true,
+    "optional_params": {
+    },
+    "per_block_input_name": [
+      "null",
+      "null",
+      "null"
+    ],
+    "trials_in_block": [
+      4,
+      4,
+      4
+    ],
+    "per_block_task": [
+      "Bongo",
+      "Bongo",
+      "Bongo"
+    ]
+  }
+}
