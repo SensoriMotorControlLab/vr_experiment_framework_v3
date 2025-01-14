@@ -733,7 +733,11 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
         poleOne.transform.parent = ball.transform.parent;
         poleTwo.transform.parent = ball.transform.parent;
+        session.CurrentTrial.result["rightPole_position_x"] = poleOne.transform.localPosition.x;
+        session.CurrentTrial.result["rightPole_position_z"] = poleOne.transform.localPosition.z;
         session.CurrentTrial.result["rightPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleOne.transform.localPosition.x, poleOne.transform.localPosition.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
+        session.CurrentTrial.result["leftPole_position_x"] = poleTwo.transform.localPosition.x;
+        session.CurrentTrial.result["leftPole_position_z"] = poleTwo.transform.localPosition.z;
         session.CurrentTrial.result["leftPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleTwo.transform.localPosition.x, poleTwo.transform.localPosition.z), new Vector2(ballPos[ballPos.Count - 1].x, ballPos[ballPos.Count - 1].z));
         session.CurrentTrial.result["min_pos_from_target_x"] = closestBallPosToTarget.x;
         session.CurrentTrial.result["min_pos_from_target_z"] = closestBallPosToTarget.y;
