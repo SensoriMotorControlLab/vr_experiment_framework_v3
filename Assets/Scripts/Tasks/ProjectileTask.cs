@@ -60,6 +60,7 @@ public class ProjectileTask : BaseTask
     /// Visible ball travel line
     /// </summary>
     LineRenderer visBallTravelPath;
+    List<Vector3> globalBallPos = new List<Vector3>();
     /// <summary>
     /// Color of the line renderer
     /// </summary>
@@ -108,7 +109,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Time in seconds to display a prompt
     /// </summary>
-    const float DISPLAY_TIME = 1.5f;
+    const float DISPLAY_TIME = 3.0f;
     /// <summary>
     /// Width of the line rendered visible ball path complete
     /// </summary>
@@ -262,6 +263,7 @@ public class ProjectileTask : BaseTask
                     float dot = Vector3.Dot(toTarget, toBall);
                     */
                     Vector3 skewedPos = new Vector3(ball.transform.localPosition.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.localPosition.z);
+                    globalBallPos.Add(new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z));
                     ballPos.Add(skewedPos);
                     ballTime.Add(Time.time);
                     string displayMsg = "";
@@ -399,8 +401,8 @@ public class ProjectileTask : BaseTask
     {
         float delayTime = 0.0f;
 
-        visBallTravelPath.positionCount = ballPos.Count;
-        visBallTravelPath.SetPositions(ballPos.ToArray());
+        visBallTravelPath.positionCount = globalBallPos.Count;
+        visBallTravelPath.SetPositions(globalBallPos.ToArray());
         visBallTravelPath.startColor = visBallTravelPath.endColor = lineColor;
 
         //Display feedback text here
@@ -620,6 +622,7 @@ public class ProjectileTask : BaseTask
 
         handPos.Clear();
         ballPos.Clear();
+        globalBallPos.Clear();
         ballTime.Clear();
         stepTime.Clear();
         lineColor = Color.white;
