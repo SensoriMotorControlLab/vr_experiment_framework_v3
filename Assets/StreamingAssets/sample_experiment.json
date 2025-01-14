@@ -19,9 +19,9 @@
       4
     ],
     "per_block_task": [
-      "slingShot",
-      "slingShot",
-      "slingShot"
+      "TaskName",
+      "TaskName",
+      "TaskName"
     ],
     "per_block_rotation": [
       30,
