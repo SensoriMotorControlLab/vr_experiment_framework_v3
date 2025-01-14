@@ -8,6 +8,7 @@ namespace UXF
     /// <summary>
     /// A set of trials, often used to group a number of consecutive Trial objects that share something in common.
     /// </summary>
+    [Serializable]
     public class Block : IExperimentUnit
     {
         /// <summary>
@@ -28,12 +29,12 @@ namespace UXF
         /// <summary>
         /// Returns the block number of this block, based on its position in the session.
         /// </summary>
-        public int number { get { return session.blocks.IndexOf(this) + 1; } }
+        public int number { get { return session.blocks.IndexOf(this) + 1; }}
 
         /// <summary>
         /// Block settings. These will be overridden by trial settings if set.
         /// </summary>
-        public Settings settings { get; protected set; }
+        public Settings settings { get; set; }
 
         /// <summary>
         /// The session associated with this block
