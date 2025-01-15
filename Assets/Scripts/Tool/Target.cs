@@ -31,7 +31,7 @@ public class Target : MonoBehaviour
         
     }
 
-    void SetProjectile(GameObject p)
+    public void SetProjectile(GameObject p)
     {
         projectile = p;
     }

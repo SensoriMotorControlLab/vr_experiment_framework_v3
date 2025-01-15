@@ -30,6 +30,8 @@ public class ExperimentController : MonoBehaviour
     /// The prefab to spawn if using VR
     /// </summary>
     public GameObject vrPrefab;
+
+    Vector3 prefabPosition = Vector3.zero;
     /// <summary>
     /// The active task
     /// </summary>
@@ -73,9 +75,9 @@ public class ExperimentController : MonoBehaviour
             }
 
 
-            if (Input.GetKey(KeyCode.J))
+            if (Input.GetKeyDown(KeyCode.J))
             {
-                CenterOVRPlayerController();
+                CentreOVRPlayerHand();
             }
 
             if (Input.GetKeyDown(KeyCode.N))
@@ -83,12 +85,12 @@ public class ExperimentController : MonoBehaviour
                 Session.EndCurrentTrial();
             }
 
-            if (Input.GetKey(KeyCode.DownArrow))
+            if (Input.GetKeyDown(KeyCode.DownArrow))
             {
                 Vector3 vec = vrCtlr.transform.position;
                 vrCtlr.transform.position = new Vector3(vec.x, vec.y - 0.05f, vec.z);
             }
-            if (Input.GetKey(KeyCode.UpArrow))
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 Vector3 vec = vrCtlr.transform.position;
                 vrCtlr.transform.position = new Vector3(vec.x, vec.y + 0.05f, vec.z);
@@ -186,7 +188,7 @@ public class ExperimentController : MonoBehaviour
         string prefabName = session.settings.GetString("experiment_name") + "prefab";
         GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName));
         currentTaskPrefab.name = prefabName;
-        currentTaskPrefab.transform.position = Vector3.zero;
+        currentTaskPrefab.transform.position = prefabPosition;
 
         currentTask = currentTaskPrefab.GetComponent<BaseTask>();
         currentTask.enabled = true;
@@ -214,12 +216,27 @@ public class ExperimentController : MonoBehaviour
 
         GameObject cameraOffset = GameObject.Find("Camera Offset");
         GameObject rotationAlignment = GameObject.Find("RotationAlignment");
+        if (rotationAlignment != null && cameraOffset != null)
+        {
+            rotationAlignment.transform.position = new Vector3(rotationAlignment.transform.position.x, cameraOffset.transform.position.y, rotationAlignment.transform.position.z);
+        
+            // get difference between the camera offset rotation and the rotation alignment
+            float angle = cameraOffset.transform.GetChild(0).transform.rotation.eulerAngles.y - rotationAlignment.transform.rotation.eulerAngles.y;
+            // rotate the camera offset by the difference
+            cameraOffset.transform.Rotate(0, -angle, 0);
+        }
+    }
 
-        rotationAlignment.transform.position = new Vector3(rotationAlignment.transform.position.x, cameraOffset.transform.position.y, rotationAlignment.transform.position.z);
-        // get difference between the camera offset rotation and the rotation alignment
-        float angle = cameraOffset.transform.GetChild(0).transform.rotation.eulerAngles.y - rotationAlignment.transform.rotation.eulerAngles.y;
-        // rotate the camera offset by the difference
-        cameraOffset.transform.Rotate(0, -angle, 0);
+    public void CentreOVRPlayerHand()
+    {
+        if(!useVR)
+        {
+            return;
+        }
+
+        Vector3 pos = new Vector3(0.0f, GameObject.Find("R_Wrist").transform.position.y, 0.0f);
+        currentTask.gameObject.transform.position = pos;
+        prefabPosition = pos;
     }
 
     /// <summary>
@@ -308,7 +325,7 @@ public class ExperimentController : MonoBehaviour
                 //move on to the next task and prepare it
                 GameObject currentTaskPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabName));
                 currentTaskPrefab.name = prefabName;
-                currentTaskPrefab.transform.position = Vector3.zero;
+                currentTaskPrefab.transform.position = prefabPosition;
 
                 currentTask = currentTaskPrefab.GetComponent<BaseTask>();
                 currentTask.enabled = true;
