@@ -1,7 +1,7 @@
 {
   "session_1": {
-    "experiment_name": "reach_to_target",
-    "use_vr": true,
+    "experiment_name": "Reach",
+    "use_vr": false,
     "optional_params": {
       "linkPseudoRandom": [
         "per_block_list_target_angle",
@@ -19,9 +19,9 @@
       4
     ],
     "per_block_task": [
-      "TaskName",
-      "TaskName",
-      "TaskName"
+      "Reach",
+      "Reach",
+      "Reach"
     ],
     "per_block_rotation": [
       30,
