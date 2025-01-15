@@ -653,11 +653,13 @@ public class InputHandler : MonoBehaviour
             string deviceString = "";
 
             //switch case for converting JSON strings into Unity InputDevices string
+            Debug.Log("device name: " + deviceName);
             switch (deviceName)
             {
                 case (JSON_VR):
                 foreach (InputDevice d in InputSystem.devices)
                 {
+                    Debug.Log(d.name);
                     if (d.name == TOUCH_PRO_CONTROLLER_NAME)
                         deviceString = TOUCH_PRO_CONTROLLER_NAME;
                     
@@ -669,7 +671,7 @@ public class InputHandler : MonoBehaviour
                     deviceString = deviceName;
                     break;
             }
-
+            Debug.Log("device string: "+deviceString);
             //Make the first letter upper case just in case
             //the name is written in camel case
             deviceString = deviceString.First().ToString().ToUpper() + deviceString.Substring(1);
