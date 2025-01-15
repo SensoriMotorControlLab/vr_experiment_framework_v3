@@ -57,13 +57,6 @@ public class CursorController : MonoBehaviour
             cursor.transform.position = InputHandler.Instance.GetSpatialPosition();
             cursor.transform.rotation = InputHandler.Instance.GetSpatialRotation();
         }
-
-
-        if (cursor)
-        {
-            ConvertCursorPosition();
-        }
-
     }
 
     private void LateUpdate()
