@@ -19,6 +19,10 @@ public class BongoTask: BaseTask
 
     [SerializeField]
     List<MeshFilter> goalMeshes = new List<MeshFilter>();
+    [SerializeField]
+    List<Material> targetMaterials = new List<Material>();
+    [SerializeField]
+    List<GameObject> spawnLocations = new List<GameObject>();
 
     List<float> stepTime = new List<float>();
     /*
@@ -30,7 +34,6 @@ public class BongoTask: BaseTask
     Target middleGoal;
     */
 
-
     [SerializeField]
     GameObject leftHand;
     [SerializeField]
@@ -39,6 +42,23 @@ public class BongoTask: BaseTask
     GameObject rightHand;
     [SerializeField]
     GameObject rightHandCtrl;
+    [SerializeField]
+    GameObject bongoTargetPrefab;
+    [SerializeField]
+    Target targetOutOfBounds;
+
+    Queue<GameObject> activeTargets = new Queue<GameObject>();
+    Queue<GameObject> spawnedObjects = new Queue<GameObject>();
+
+    GameObject leftOuterTarget;
+    GameObject leftInnerTarget;
+    GameObject rightInnerTarget;
+    GameObject rightOuterTarget;
+
+    List<string> jsonSpawnLocation = new List<string>();
+
+    float targetSpeed = 0.0003f;
+    float targetSpawnDelay = 1.0f;
 
     [SerializeField]
     GameObject PrefabCamera;
@@ -98,41 +118,38 @@ public class BongoTask: BaseTask
             Scoreboard.transform.eulerAngles = new Vector3(90f, Scoreboard.transform.eulerAngles.y, Scoreboard.transform.eulerAngles.z);
         }
 
-        
-
-
-
         switch (currentStep)
         {
-            //Check for initial grab, record time for start
+            //Check if all targets are active
             case 0:
-                
-                //startTime = Time.time;
-                //trial_active = true;
-                //IncrementStep();
-                //stepTime.Add(Time.time);
-                
-                break;
-            case 1:
                 {
-                    
-                    
-                    
+                    //Move targets into negative Z-axis
+                    foreach(GameObject g in activeTargets)
+                    {
+                        Vector3 pos = g.transform.position;
+                        g.transform.position = new Vector3(pos.x, pos.y, pos.z -= targetSpeed);
+                    }
+
+                    if (targetOutOfBounds.TargetHit || targetOutOfBounds.IsColliding)
+                    {
+                        GameObject o = activeTargets.Dequeue();
+                        Destroy(o);
+                        targetOutOfBounds.ResetTarget();
+                    }
+
+                    if(activeTargets.Count == 0 && spawnedObjects.Count == 0)
+                    {
+                        IncrementStep();
+                    }
                 }
                 break;
-
-            case 2:
-                {
-
-                    break;
-                }
         }
     }
 
     public override void SetUp()
     {
         base.SetUp();
-        maxSteps = 4;
+        maxSteps = 1;
 
         startTime = 0.0f;
         endTime = 0.0f;
@@ -157,45 +174,57 @@ public class BongoTask: BaseTask
         base.TaskBegin();
         //the task start
         stepTime.Clear();
-        
-
-       
-
-
         UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore, endTime - startTime);
 
         foreach (Target t in goals)
         {
             t.ResetTarget();
         }
-        
-        //If not rotated
+
+        targetOutOfBounds.ResetTarget();
         
         foreach (Target t in goals)
         {
             t.SetProjectile(null);
         }
+        if (jsonSpawnLocation.Count == 0)
+        {
+            jsonSpawnLocation = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("target_location");
+        }
 
-        
+        List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
+        int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
+        string currentBlockLoc = jsonSpawnLocation[(ExperimentController.Instance.Session.currentTrialNum - 1) % currentBlockTrials[currentBlockNum]];
 
-    
+        if(currentBlockLoc.Length != goals.Count)
+        {
+            Debug.LogError("The number of locations in the JSON is not the same as the number of goals");
+        }
+
+        //Spawn all the targets
+        foreach(char c in currentBlockLoc)
+        {
+            int val = int.Parse(c.ToString());
+
+            GameObject t = Instantiate(bongoTargetPrefab);
+            t.name = "Bongo Target " + c;
+            t.transform.position = spawnLocations[val - 1].transform.position;
+            t.GetComponent<MeshRenderer>().material = targetMaterials[val - 1];
+            t.GetComponent<MeshRenderer>().enabled = false;
+
+            spawnedObjects.Enqueue(t);
+        }
+
+        StartCoroutine(MoveTargets());
 
         /*
         leftGoal.ResetTarget();
         middleGoal.ResetTarget();
         rightGoal.ResetTarget();
         */
-
-        
-
-        
-
-        
         //if (ExperimentController.Instance.UseVR) {
         //    rhCollider = rightHand.transform.GetChild(1).gameObject;
         //}
-
-
     }
 
     IEnumerator PlayFeedback(float endDelayTime = 0.0f)
@@ -209,6 +238,27 @@ public class BongoTask: BaseTask
         }
 
         IncrementStep();
+        yield return new WaitForEndOfFrame();
+    }
+
+    IEnumerator MoveTargets()
+    {
+        float delayTime = 0.0f;
+
+        while (spawnedObjects.Count > 0)
+        {
+            while (delayTime <= targetSpawnDelay) 
+            {
+                delayTime += Time.deltaTime;
+                yield return null;
+            }
+
+            GameObject obj = spawnedObjects.Dequeue();
+            obj.GetComponent<MeshRenderer>().enabled = true;
+            activeTargets.Enqueue(obj);
+            delayTime = 0.0f;
+        }
+
         yield return new WaitForEndOfFrame();
     }
 
@@ -277,7 +327,6 @@ public class BongoTask: BaseTask
 
 
         session.CurrentTrial.result["correct_target"] = hitTarget;
-        session.CurrentTrial.result["rotation"] = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloat("rotation");
 
         if (toolType == 1)
         {

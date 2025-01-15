@@ -18,6 +18,27 @@
       "Bongo",
       "Bongo",
       "Bongo"
-    ]
+    ],
+	"per_block_speed":[
+		1.0,
+		5.0,
+		10.0
+	],
+	"per_block_spawn_delay":[
+		1.0,
+		0.5,
+		0.1
+	],
+	"per_block_list_target_location":[
+		"ta1",
+		"ta1",
+		"ta1"
+	],
+	"ta1" : [
+		"4123",
+		"1234",
+		"2341",
+		"3214"
+	],
   }
 }
