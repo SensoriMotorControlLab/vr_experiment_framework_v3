@@ -234,7 +234,7 @@ public class ExperimentController : MonoBehaviour
             return;
         }
 
-        Vector3 pos = new Vector3(0.0f, GameObject.Find("R_Wrist").transform.position.y, 0.0f);
+        Vector3 pos = new Vector3(0.0f, InputHandler.Instance.GetSpatialPosition().y, 0.0f);
         currentTask.gameObject.transform.position = pos;
         prefabPosition = pos;
     }

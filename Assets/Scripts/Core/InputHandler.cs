@@ -376,7 +376,6 @@ public class InputHandler : MonoBehaviour
     public string GetDominantHandString()
     {
         return domHand;
-        Debug.Log("domHand");
     }
 
     /// <summary>

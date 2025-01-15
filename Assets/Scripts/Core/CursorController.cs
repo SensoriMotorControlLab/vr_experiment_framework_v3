@@ -39,17 +39,17 @@ public class CursorController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //if not use vr and both a camera and a cursor object has been set
         if (ExperimentController.Instance.UseVR == false && Camera.main && cursor)
         {
-
-            //cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetPosition());
-            cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetRayPosition());
             if (ExperimentController.Instance.CurrentTask.Plane)
             {
                 Plane plane = new Plane(ExperimentController.Instance.CurrentTask.Plane.transform.up, planeOffset.y);
                 cursor.transform.position = InputHandler.Instance.GetRaycastPosition(plane);
+            }
+            else
+            {
+                cursor.transform.position = Camera.main.ScreenToWorldPoint(InputHandler.Instance.GetRayPosition());
             }
         }
         else if(ExperimentController.Instance.UseVR == true && Camera.main && cursor)
