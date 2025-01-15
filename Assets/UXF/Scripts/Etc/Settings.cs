@@ -9,6 +9,7 @@ namespace UXF
     /// <summary>
     /// Class which handles the cascading settings system. Wraps a Dictionary.
     /// </summary>
+    [Serializable]
     public class Settings
     {
         /// <summary>
@@ -21,7 +22,7 @@ namespace UXF
         /// The underlying dictionary
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, object> baseDict { get; private set; }
+        public Dictionary<string, object> baseDict { get; set; }
 
         /// <summary>
         /// The keys for the underlying dictionary

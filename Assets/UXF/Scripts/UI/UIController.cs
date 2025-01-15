@@ -393,12 +393,36 @@ namespace UXF.UI
                 Popup newPopup = new Popup()
                 {
                     message = string.Format(
-                        "{0} - {1} - Session #{2} already exists! Press OK to start the session anyway, data may be overwritten.",
+                        "{0} - {1} - Session #{2} already exists! Press OK to start the session anyway, data may be overwritten. Or chose to continue from the last saved trial or block.",
                         newExperimentName,
                         newPpid,
                         sessionNum
                     ),
                     messageType = MessageType.Warning,
+                    onTrialContinue = () => { 
+                        gameObject.SetActive(false);
+                        // BEGIN!
+                        session.isTrialContinue = true;
+                        session.Begin(
+                            newExperimentName,
+                            newPpid,
+                            sessionNum,
+                            newParticipantDetails,
+                            newSettings
+                        );
+                    },
+                    onBlockContinue = () => {
+                        gameObject.SetActive(false);
+                        // BEGIN!
+                        session.isBlockContinue = true;
+                        session.Begin(
+                            newExperimentName,
+                            newPpid,
+                            sessionNum,
+                            newParticipantDetails,
+                            newSettings
+                        );
+                    },
                     onOK = () => {
                         gameObject.SetActive(false);
                         // BEGIN!

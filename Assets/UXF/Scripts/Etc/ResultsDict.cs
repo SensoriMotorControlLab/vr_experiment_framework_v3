@@ -71,6 +71,11 @@ namespace UXF
             return baseDict.ContainsKey(key);
         }
 
+        public Dictionary<string, object> AsDictionary()
+        {
+            return baseDict;
+        }
+
     }
 
 }
