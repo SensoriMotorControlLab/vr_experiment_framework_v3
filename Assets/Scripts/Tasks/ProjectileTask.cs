@@ -92,7 +92,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 8.0f;
+    const float LAUNCH_FORCE = 1.0f;
     /// <summary>
     /// Magnitude to cap the launch force
     /// </summary>
@@ -109,7 +109,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Time in seconds to display a prompt
     /// </summary>
-    const float DISPLAY_TIME = 3.0f;
+    const float DISPLAY_TIME = 1.0f;
     /// <summary>
     /// Width of the line rendered visible ball path complete
     /// </summary>
@@ -703,6 +703,7 @@ public class ProjectileTask : BaseTask
         Session session = ExperimentController.Instance.Session;
 
         session.CurrentTrial.result["hand"] = "r";
+        // session.CurrentTrial.result["Head Position"]
         session.CurrentTrial.result["target_hit"] = target.GetComponent<Target>().TargetHit;
         session.CurrentTrial.result["final_ball_state"] = finalBallState;
         session.CurrentTrial.result["type"] = currentType;
