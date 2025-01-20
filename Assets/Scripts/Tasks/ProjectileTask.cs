@@ -247,13 +247,13 @@ public class ProjectileTask : BaseTask
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
-                    if(currentWaterForce >= 0 && absTurning.x < ball.transform.position.x)
+                    if(currentWaterForce >= 0 && absTurning.x < ball.transform.localPosition.x)
                     {
-                        absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
+                        absTurning = new Vector2 (ball.transform.localPosition.x, ball.transform.localPosition.z);
                     }
-                    else if(currentWaterForce < 0 && absTurning.x > ball.transform.position.x)
+                    else if(currentWaterForce < 0 && absTurning.x > ball.transform.localPosition.x)
                     {
-                        absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
+                        absTurning = new Vector2 (ball.transform.localPosition.x, ball.transform.localPosition.z);
                     }
                     DebugDrawLaunchVec();
                     ClosestPointToTarget(ball.transform.position);
@@ -728,7 +728,8 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["final_ball_pos_x"] = ballPos[ballPos.Count - 1].x;
         session.CurrentTrial.result["final_ball_pos_z"] = ballPos[ballPos.Count - 1].z;
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
-        session.CurrentTrial.result["turning_absolute_x"] = absTurning;
+        session.CurrentTrial.result["turning_absolute_x"] = absTurning.x;
+        session.CurrentTrial.result["turning_absolute_y"] = absTurning.y;
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
