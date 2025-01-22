@@ -8,6 +8,8 @@ using UXF;
 using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System;
 
 public class BongoTask: BaseTask
 {
@@ -67,12 +69,18 @@ public class BongoTask: BaseTask
     GameObject MainCamera;
 
     [SerializeField]
-    GameObject direct;
+    GameObject directRight;
+    [SerializeField]
+    GameObject directLeft;
 
     [SerializeField]
-    AudioClip correctSFX;
+    AudioClip LO_Bongo;
     [SerializeField]
-    AudioClip incorrectSFX;
+    AudioClip LI_Bongo;
+    [SerializeField]
+    AudioClip RI_Bongo;
+    [SerializeField]
+    AudioClip RO_Bongo;
     [SerializeField]
     AudioClip buttonClickSFX;
 
@@ -110,18 +118,39 @@ public class BongoTask: BaseTask
     // Update is called once per frame
     void Update()
     {
-        if (ExperimentController.Instance.UseVR)
-        {
-          
-        } else
-        {
-            Scoreboard.transform.eulerAngles = new Vector3(90f, Scoreboard.transform.eulerAngles.y, Scoreboard.transform.eulerAngles.z);
-        }
+
 
         switch (currentStep)
         {
-            //Check if all targets are active
             case 0:
+                {
+                    if (dock.GetComponent<Target>().TargetHit && dock.GetComponent<Target>().IsColliding)
+                    {
+                        dock.GetComponent<Target>().ResetTarget();
+                        audioSource.clip = buttonClickSFX;
+                        audioSource.Play();
+                        dock.GetComponent<Target>().enabled = false;
+                        dock.GetComponent<MeshCollider>().enabled = false;
+                        dock.SetActive(false);
+                        
+                        StartCoroutine(PlayFeedback(0.5f));
+
+                        SpawnTargets();
+                        
+                        Debug.Log("Button is pressed");
+                        
+
+                    }
+                }
+                break;
+            //Check if all targets are active
+            case 1:
+                {
+                    StartCoroutine(MoveTargets());
+                    IncrementStep();
+                }
+                break;
+            case 2:
                 {
                     //Move targets into negative Z-axis
                     foreach(GameObject g in activeTargets)
@@ -139,6 +168,7 @@ public class BongoTask: BaseTask
 
                     if(activeTargets.Count == 0 && spawnedObjects.Count == 0)
                     {
+                        //dock.SetActive(true);
                         IncrementStep();
                     }
                 }
@@ -149,17 +179,28 @@ public class BongoTask: BaseTask
     public override void SetUp()
     {
         base.SetUp();
-        maxSteps = 1;
+        maxSteps = 3;
 
         startTime = 0.0f;
         endTime = 0.0f;
 
         leftHand = GameObject.Find("Left Hand");
         rightHand = GameObject.Find("Right Hand");
-        direct = GameObject.Find("RH Direct Interactor");
+        directRight = GameObject.Find("RH Direct Interactor");
+        directLeft = GameObject.Find("LH Direct Interactor");
+
 
         leftHandCtrl = GameObject.Find("Left Controller");
         rightHandCtrl = GameObject.Find("Right Controller");
+
+        if (ExperimentController.Instance.UseVR)
+        {
+            dock.GetComponent<Target>().SetProjectile(directRight);
+        }
+        else
+        {
+            dock.GetComponent<Target>().SetProjectile(cursor);
+        }
 
         MainCamera = GameObject.Find("Main Camera");
 
@@ -175,6 +216,13 @@ public class BongoTask: BaseTask
         //the task start
         stepTime.Clear();
         UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore, endTime - startTime);
+
+        dock.SetActive(true);
+        dock.GetComponent<Target>().enabled = true;
+        dock.GetComponent<MeshCollider>().enabled = true;
+        dock.GetComponent<Target>().ResetTarget();
+
+
 
         foreach (Target t in goals)
         {
@@ -192,39 +240,35 @@ public class BongoTask: BaseTask
             jsonSpawnLocation = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("target_location");
         }
 
-        List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
-        int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
-        string currentBlockLoc = jsonSpawnLocation[(ExperimentController.Instance.Session.currentTrialNum - 1) % currentBlockTrials[currentBlockNum]];
+        //List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
+        //int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
+        //string currentBlockLoc = jsonSpawnLocation[(ExperimentController.Instance.Session.currentTrialNum - 1) % currentBlockTrials[currentBlockNum]];
 
-        if(currentBlockLoc.Length != goals.Count)
-        {
-            Debug.LogError("The number of locations in the JSON is not the same as the number of goals");
-        }
-
-        //Spawn all the targets
-        foreach(char c in currentBlockLoc)
-        {
-            int val = int.Parse(c.ToString());
-
-            GameObject t = Instantiate(bongoTargetPrefab);
-            t.name = "Bongo Target " + c;
-            t.transform.position = spawnLocations[val - 1].transform.position;
-            t.GetComponent<MeshRenderer>().material = targetMaterials[val - 1];
-            t.GetComponent<MeshRenderer>().enabled = false;
-
-            spawnedObjects.Enqueue(t);
-        }
-
-        StartCoroutine(MoveTargets());
-
-        /*
-        leftGoal.ResetTarget();
-        middleGoal.ResetTarget();
-        rightGoal.ResetTarget();
-        */
-        //if (ExperimentController.Instance.UseVR) {
-        //    rhCollider = rightHand.transform.GetChild(1).gameObject;
+        //if(currentBlockLoc.Length != goals.Count)
+        //{
+        //    Debug.LogError("The number of locations in the JSON is not the same as the number of goals");
         //}
+
+        ////Spawn all the targets
+        //foreach(char c in currentBlockLoc)
+        //{
+        //    int val = int.Parse(c.ToString());
+
+        //    GameObject t = Instantiate(bongoTargetPrefab);
+        //    t.name = "Bongo Target " + c;
+        //    t.transform.position = spawnLocations[val - 1].transform.position;
+        //    t.GetComponent<MeshRenderer>().material = targetMaterials[val - 1];
+        //    t.GetComponent<MeshRenderer>().enabled = false;
+
+        //    spawnedObjects.Enqueue(t);
+        //}
+
+
+
+        if (!ExperimentController.Instance.UseVR) // scoreboard direction
+        {
+            Scoreboard.transform.eulerAngles = new Vector3(90f, Scoreboard.transform.eulerAngles.y, Scoreboard.transform.eulerAngles.z);
+        }
     }
 
     IEnumerator PlayFeedback(float endDelayTime = 0.0f)
@@ -247,7 +291,7 @@ public class BongoTask: BaseTask
 
         while (spawnedObjects.Count > 0)
         {
-            while (delayTime <= targetSpawnDelay) 
+            while (delayTime <= targetSpawnDelay)
             {
                 delayTime += Time.deltaTime;
                 yield return null;
@@ -262,6 +306,33 @@ public class BongoTask: BaseTask
         yield return new WaitForEndOfFrame();
     }
 
+
+    private void SpawnTargets()
+    {
+        List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
+        int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
+        string currentBlockLoc = jsonSpawnLocation[(ExperimentController.Instance.Session.currentTrialNum - 1) % currentBlockTrials[currentBlockNum]];
+
+        if (currentBlockLoc.Length != goals.Count)
+        {
+            Debug.LogError("The number of locations in the JSON is not the same as the number of goals");
+        }
+
+        foreach (char c in currentBlockLoc)
+        {
+            int val = int.Parse(c.ToString());
+
+            GameObject t = Instantiate(bongoTargetPrefab);
+            t.name = "Bongo Target " + c;
+            t.transform.position = spawnLocations[val - 1].transform.position;
+            t.GetComponent<MeshRenderer>().material = targetMaterials[val - 1];
+            t.GetComponent<MeshRenderer>().enabled = false;
+
+            spawnedObjects.Enqueue(t);
+        }
+
+    }
+
     void SetupXR()
     {
         if (ExperimentController.Instance.UseVR)
@@ -269,11 +340,15 @@ public class BongoTask: BaseTask
             
             //rightHand = InputHandler.Instance.GetDominantHandGameObject();
             rightHand = GameObject.Find("Right Hand");
-            direct = GameObject.Find("RH Direct Interactor");
+            directRight = GameObject.Find("RH Direct Interactor");
+            leftHand = GameObject.Find("Left Hand");
+            directLeft = GameObject.Find("LH Direct Interactor");
             //dock.GetComponent<Target>().SetProjectile(direct);
 
             //Switch Camera to VR
             PrefabCamera.SetActive(false);
+
+            cursor.SetActive(false);
 
             // Centers player
             ExperimentController.Instance.CentreOVRPlayerHand();
