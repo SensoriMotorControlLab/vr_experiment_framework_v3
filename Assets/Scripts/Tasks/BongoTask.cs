@@ -49,9 +49,9 @@ public class BongoTask: BaseTask
     [SerializeField]
     GameObject bongoTargetPrefab;
     [SerializeField]
-    Target targetOutOfBounds;
+    MultipleTarget targetOutOfBounds;
 
-    Queue<GameObject> activeTargets = new Queue<GameObject>();
+    List<GameObject> activeTargets = new List<GameObject>();
     Queue<GameObject> spawnedObjects = new Queue<GameObject>();
 
     GameObject leftOuterTarget;
@@ -168,18 +168,20 @@ public class BongoTask: BaseTask
                         {
                             GameObject hitTarget = g.CollidingTarget;
                             g.targets.Remove(hitTarget);
+                            activeTargets.Remove(hitTarget);
                             Destroy(hitTarget);
                             g.ResetState();
-                            activeTargets.Dequeue();
                             //TODO tally score
                         }
                     }
 
-                    if (targetOutOfBounds.TargetHit || targetOutOfBounds.IsColliding)
+                    if (targetOutOfBounds.IsTargetCollding)
                     {
-                        GameObject o = activeTargets.Dequeue();
+                        GameObject o = targetOutOfBounds.CollidingTarget;
+                        targetOutOfBounds.targets.Remove(o);
+                        activeTargets.Remove(o);
                         Destroy(o);
-                        targetOutOfBounds.ResetTarget();
+                        targetOutOfBounds.ResetState();
                     }
 
                     if(activeTargets.Count == 0 && spawnedObjects.Count == 0)
@@ -251,7 +253,7 @@ public class BongoTask: BaseTask
             t.ResetState();
         }
 
-        targetOutOfBounds.ResetTarget();
+        targetOutOfBounds.ClearLists();
         
         foreach (MultipleTarget g in goals)
         {
@@ -321,7 +323,7 @@ public class BongoTask: BaseTask
 
             GameObject obj = spawnedObjects.Dequeue();
             obj.GetComponent<MeshRenderer>().enabled = true;
-            activeTargets.Enqueue(obj);
+            activeTargets.Add(obj);
             delayTime = 0.0f;
         }
 
@@ -350,7 +352,7 @@ public class BongoTask: BaseTask
             t.GetComponent<MeshRenderer>().material = targetMaterials[val - 1];
             t.GetComponent<MeshRenderer>().enabled = false;
             goals[val - 1].targets.Add(t);
-
+            targetOutOfBounds.targets.Add(t);
             spawnedObjects.Enqueue(t);
         }
     }
