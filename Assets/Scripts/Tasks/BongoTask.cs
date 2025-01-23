@@ -17,12 +17,14 @@ public class BongoTask: BaseTask
     AudioSource audioSource;
 
     [SerializeField]
-    List<Target> goals = new List<Target>();
+    List<MultipleTarget> goals = new List<MultipleTarget>();
 
     [SerializeField]
     List<MeshFilter> goalMeshes = new List<MeshFilter>();
     [SerializeField]
     List<Material> targetMaterials = new List<Material>();
+    [SerializeField]
+    GameObject spawnParent;
     [SerializeField]
     List<GameObject> spawnLocations = new List<GameObject>();
 
@@ -118,13 +120,13 @@ public class BongoTask: BaseTask
     // Update is called once per frame
     void Update()
     {
-
-
         switch (currentStep)
         {
+            //Check if dock is pressed to start trial
             case 0:
                 {
-                    if (dock.GetComponent<Target>().TargetHit && dock.GetComponent<Target>().IsColliding)
+                    if (dock.GetComponent<Target>().TargetHit && dock.GetComponent<Target>().IsColliding && 
+                        (ExperimentController.Instance.UseVR == true ? true : Input.GetMouseButtonDown(0)))
                     {
                         dock.GetComponent<Target>().ResetTarget();
                         audioSource.clip = buttonClickSFX;
@@ -132,24 +134,23 @@ public class BongoTask: BaseTask
                         dock.GetComponent<Target>().enabled = false;
                         dock.GetComponent<MeshCollider>().enabled = false;
                         dock.SetActive(false);
-                        
+
                         StartCoroutine(PlayFeedback(0.5f));
 
                         SpawnTargets();
-                        
-                        Debug.Log("Button is pressed");
-                        
 
+                        Debug.Log("Button is pressed");
                     }
                 }
                 break;
-            //Check if all targets are active
+            //Start moving objects
             case 1:
                 {
                     StartCoroutine(MoveTargets());
                     IncrementStep();
                 }
                 break;
+            //Check if all targets are active and for button click
             case 2:
                 {
                     //Move targets into negative Z-axis
@@ -157,6 +158,22 @@ public class BongoTask: BaseTask
                     {
                         Vector3 pos = g.transform.position;
                         g.transform.position = new Vector3(pos.x, pos.y, pos.z -= targetSpeed);
+                    }
+
+                    //Check if bongo is pressed
+                    foreach(MultipleTarget g in goals)
+                    {
+                        if(g.IsToolCollding && g.IsTargetCollding && 
+                            (ExperimentController.Instance.UseVR == true ? true : Input.GetMouseButtonDown(0)))
+                        {
+                            GameObject hitTarget = g.CollidingTarget;
+                            g.targets.Remove(hitTarget);
+                            Destroy(hitTarget);
+                            g.ResetState();
+                            activeTargets.Dequeue();
+
+                            //TODO tally score
+                        }
                     }
 
                     if (targetOutOfBounds.TargetHit || targetOutOfBounds.IsColliding)
@@ -196,17 +213,25 @@ public class BongoTask: BaseTask
         if (ExperimentController.Instance.UseVR)
         {
             dock.GetComponent<Target>().SetProjectile(directRight);
+
+            foreach(MultipleTarget g in goals)
+            {
+                g.tools.Add(directRight);
+                g.tools.Add(directLeft);
+            }
         }
         else
         {
             dock.GetComponent<Target>().SetProjectile(cursor);
+            CursorController.Instance.planeOffset = new Vector3(0.0f, -spawnParent.transform.position.y, 0.0f);
+
+            foreach (MultipleTarget g in goals)
+            {
+                g.tools.Add(cursor);
+            }
         }
 
         MainCamera = GameObject.Find("Main Camera");
-
-        CursorController.Instance.planeOffset = new Vector3(0.0f, plane.transform.position.y, 0.0f);
-
-
         SetupXR();
     }
 
@@ -222,18 +247,16 @@ public class BongoTask: BaseTask
         dock.GetComponent<MeshCollider>().enabled = true;
         dock.GetComponent<Target>().ResetTarget();
 
-
-
-        foreach (Target t in goals)
+        foreach (MultipleTarget t in goals)
         {
-            t.ResetTarget();
+            t.ResetState();
         }
 
         targetOutOfBounds.ResetTarget();
         
-        foreach (Target t in goals)
+        foreach (MultipleTarget g in goals)
         {
-            t.SetProjectile(null);
+            g.targets.Clear();
         }
         if (jsonSpawnLocation.Count == 0)
         {
@@ -322,15 +345,15 @@ public class BongoTask: BaseTask
         {
             int val = int.Parse(c.ToString());
 
-            GameObject t = Instantiate(bongoTargetPrefab);
+            GameObject t = Instantiate(bongoTargetPrefab,gameObject.transform);
             t.name = "Bongo Target " + c;
             t.transform.position = spawnLocations[val - 1].transform.position;
             t.GetComponent<MeshRenderer>().material = targetMaterials[val - 1];
             t.GetComponent<MeshRenderer>().enabled = false;
+            goals[val - 1].targets.Add(t);
 
             spawnedObjects.Enqueue(t);
         }
-
     }
 
     void SetupXR()
