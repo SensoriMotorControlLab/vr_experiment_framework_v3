@@ -236,6 +236,9 @@ public class MultipleTarget : MonoBehaviour
     {
         isColliding = false;
         isTriggered = false;
+
+        isTargetColliding = false;
+        isToolColliding = false;
     }
 
     public void ClearLists()

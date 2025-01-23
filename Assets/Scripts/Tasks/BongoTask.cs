@@ -171,7 +171,6 @@ public class BongoTask: BaseTask
                             Destroy(hitTarget);
                             g.ResetState();
                             activeTargets.Dequeue();
-
                             //TODO tally score
                         }
                     }
