@@ -92,7 +92,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 1.0f;
+    const float LAUNCH_FORCE = 1.5f;
     /// <summary>
     /// Magnitude to cap the launch force
     /// </summary>
@@ -153,10 +153,99 @@ public class ProjectileTask : BaseTask
     float targetWidth;
     Vector3 finalBallPosWorld;
 
+    private List<Vector3> handPositions = new List<Vector3>();
+    private int pointsToConsider = 4;
+
     // Start is called before the first frame update
     void Start()
     {
         trialsRemaining = ExperimentController.Instance.GetTotalTrials();
+    }
+
+    Vector3 CalculateThrowDirectionSimplified()
+    {
+        if (handPositions.Count < 2)
+            return Vector3.zero;
+
+        Vector3 directionSum = Vector3.zero;
+        int validPoints = Mathf.Min(pointsToConsider, handPositions.Count - 1);
+
+        // Average deltas of the last few points
+        for (int i = handPositions.Count - validPoints; i < handPositions.Count - 1; i++)
+        {
+            directionSum += handPositions[i + 1] - handPositions[i];
+        }
+
+        Vector3 direction = directionSum / validPoints;
+        return direction.normalized;
+    }
+
+    void FixedUpdate()
+    {
+        switch (currentStep)
+        {
+             case 1:
+                {
+                    //If the button is pressed again
+                    if(Input.GetButtonDown(buttonCheck))
+                    {
+                        startPos = GetMousePos();
+                        Debug.Log("start position: " + startPos);
+                        cursorPos = startPos;
+                        handPos.Clear();
+                        handPositions.Clear();
+                    }
+                    //If button released early
+                    else if (Input.GetButton(buttonCheck))
+                    {
+                        cursorPos = GetMousePos();
+                        handPositions.Add(cursorPos);
+                        handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
+                    }
+                    //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
+
+                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST)
+                    {
+                        //log step time
+                        endPos = GetMousePos();
+                        launchEndTime = Time.time;
+
+                        float totalTime = launchEndTime - launchStartTime;
+                        launchVec = endPos - startPos;
+                        launchVec.Normalize();
+                        //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
+
+                        ballRB.isKinematic = false;
+                        ballRB.useGravity = true;
+
+                        //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
+                        throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * CalculateThrowDirectionSimplified() * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
+                        throwSpeed.y = 0.0f;
+
+                        launchForce = throwSpeed;
+                        Debug.Log("Launch vec " + launchVec);
+
+                        if (launchForce.magnitude < MIN_MAG)
+                        {
+                            Debug.Log("The launch force was too small, applying a new force");
+                            Debug.Log("New force " + throwSpeed * 2.0f);
+                            Debug.Log("New force mag " + (throwSpeed * 2.0f).magnitude);
+
+                            launchForce = throwSpeed * 2.0f;
+                        }
+
+                        ballRB.velocity = launchForce;
+                        // Debug.Log("Launch force " + force);
+                        // Debug.Log("Launch mag " + force.magnitude);
+                        cursor.SetActive(false);
+
+                        IncrementStep();
+
+                        stepTime.Add(Time.time);
+                    }
+                }
+                break;
+        }
     }
 
     // Update is called once per frame
@@ -186,61 +275,63 @@ public class ProjectileTask : BaseTask
             //Track cursor(hand position) and launch when certain distance from home
             case 1:
                 {
-                    //If the button is pressed again
-                    if(Input.GetButtonDown(buttonCheck))
-                    {
-                        startPos = GetMousePos();
-                        Debug.Log("start position: " + startPos);
-                        cursorPos = startPos;
-                        handPos.Clear();
-                    }
-                    //If button released early
-                    else if (Input.GetButton(buttonCheck))
-                    {
-                        cursorPos = GetMousePos();
-                        handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
-                    }
-                    //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
+                    // //If the button is pressed again
+                    // if(Input.GetButtonDown(buttonCheck))
+                    // {
+                    //     startPos = GetMousePos();
+                    //     Debug.Log("start position: " + startPos);
+                    //     cursorPos = startPos;
+                    //     handPos.Clear();
+                    //     handPositions.Clear();
+                    // }
+                    // //If button released early
+                    // else if (Input.GetButton(buttonCheck))
+                    // {
+                    //     cursorPos = GetMousePos();
+                    //     handPositions.Add(cursorPos);
+                    //     handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
+                    // }
+                    // //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
 
-                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST)
-                    {
-                        //log step time
-                        endPos = GetMousePos();
-                        launchEndTime = Time.time;
+                    // if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST)
+                    // {
+                    //     //log step time
+                    //     endPos = GetMousePos();
+                    //     launchEndTime = Time.time;
 
-                        float totalTime = launchEndTime - launchStartTime;
-                        launchVec = endPos - startPos;
-                        launchVec.Normalize();
-                        //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
+                    //     float totalTime = launchEndTime - launchStartTime;
+                    //     launchVec = endPos - startPos;
+                    //     launchVec.Normalize();
+                    //     //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
 
-                        ballRB.isKinematic = false;
-                        ballRB.useGravity = true;
+                    //     ballRB.isKinematic = false;
+                    //     ballRB.useGravity = true;
 
-                        //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
-                        throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec : launchVec * LAUNCH_FORCE;
-                        throwSpeed.y = 0.0f;
+                    //     //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
+                    //     throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * CalculateThrowDirectionSimplified() * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
+                    //     throwSpeed.y = 0.0f;
 
-                        launchForce = throwSpeed;
-                        Debug.Log("Launch vec " + launchVec);
+                    //     launchForce = throwSpeed;
+                    //     Debug.Log("Launch vec " + launchVec);
 
-                        if (launchForce.magnitude < MIN_MAG)
-                        {
-                            Debug.Log("The launch force was too small, applying a new force");
-                            Debug.Log("New force " + throwSpeed * 2.0f);
-                            Debug.Log("New force mag " + (throwSpeed * 2.0f).magnitude);
+                    //     if (launchForce.magnitude < MIN_MAG)
+                    //     {
+                    //         Debug.Log("The launch force was too small, applying a new force");
+                    //         Debug.Log("New force " + throwSpeed * 2.0f);
+                    //         Debug.Log("New force mag " + (throwSpeed * 2.0f).magnitude);
 
-                            launchForce = throwSpeed * 2.0f;
-                        }
+                    //         launchForce = throwSpeed * 2.0f;
+                    //     }
 
-                        ballRB.velocity = launchForce;
-                        // Debug.Log("Launch force " + force);
-                        // Debug.Log("Launch mag " + force.magnitude);
-                        cursor.SetActive(false);
+                    //     ballRB.velocity = launchForce;
+                    //     // Debug.Log("Launch force " + force);
+                    //     // Debug.Log("Launch mag " + force.magnitude);
+                    //     cursor.SetActive(false);
 
-                        IncrementStep();
+                    //     IncrementStep();
 
-                        stepTime.Add(Time.time);
-                    }
+                    //     stepTime.Add(Time.time);
+                    // }
                 }
                 break;
             #endregion
@@ -621,6 +712,7 @@ public class ProjectileTask : BaseTask
         ball.transform.rotation = Quaternion.identity;
 
         handPos.Clear();
+        handPositions.Clear();
         ballPos.Clear();
         globalBallPos.Clear();
         ballTime.Clear();
