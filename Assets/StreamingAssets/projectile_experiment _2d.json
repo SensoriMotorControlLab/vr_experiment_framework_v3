@@ -25,14 +25,14 @@
       0
     ],
     "per_block_water_force": [
-      0,
+      60,
       0,
       0
     ],
-    "per_block_water_force_forward":[
-      30,
-      40,
-      50
+    "per_block_inertia":[
+      -40,
+      -40,
+      -50
     ],
     "per_block_debris_spawn_rate": [
       1,

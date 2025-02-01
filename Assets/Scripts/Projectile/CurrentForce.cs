@@ -46,6 +46,7 @@ public class CurrentForce : MonoBehaviour
 
                 // Apply Forward Force
                 rb.AddForce(Vector3.forward * forwardForce * rb.velocity.z);
+                rb.AddForce(Vector3.right * forwardForce * rb.velocity.x);
             }
         }
     }

@@ -627,7 +627,7 @@ public class ProjectileTask : BaseTask
         currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[currBlock];
         currentForce.sideForce = currentWaterForce;
 
-        currentWaterForceForward = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force_forward")[currBlock];
+        currentWaterForceForward = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_inertia")[currBlock];
         currentForce.forwardForce = currentWaterForceForward;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
