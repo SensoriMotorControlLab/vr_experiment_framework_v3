@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CurrentForce : MonoBehaviour
 {
-    public float forwardForce;
+    [SerializeField] GameObject ball;
+    public float inertia;
     public float sideForce;
     // Start is called before the first frame update
     void Start()
@@ -30,7 +31,7 @@ public class CurrentForce : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.tag == "Tool")
+        if (other.gameObject == ball)
         {
             Rigidbody rb = other.gameObject.GetComponent<Rigidbody>();
             if (rb != null)
@@ -44,9 +45,9 @@ public class CurrentForce : MonoBehaviour
                 // Apply side force
                 rb.AddForce(Vector3.left * sideForce);
 
-                // Apply Forward Force
-                rb.AddForce(Vector3.forward * forwardForce * rb.velocity.z);
-                rb.AddForce(Vector3.right * forwardForce * rb.velocity.x);
+                // Apply opposite force
+                rb.AddForce(Vector3.forward * inertia * rb.velocity.z);
+                rb.AddForce(Vector3.right * inertia * rb.velocity.x);
             }
         }
     }

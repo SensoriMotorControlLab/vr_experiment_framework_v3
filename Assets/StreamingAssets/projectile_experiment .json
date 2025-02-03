@@ -48,18 +48,40 @@
       0,
       0
     ],
-    "per_block_water_force": [
+    "per_block_water_speed": [
       0,
       0,
-      40,
-      40,
-      40,
-      40,
-      40,
+      4,
+      4,
+      4,
+      4,
+      4,
+      0,
+      0
+    ],
+    "per_block_otherBall_water_speed": [
+      4,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
       0,
       0
     ],
     "per_block_inertia": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "per_block_otherBall_inertia": [
       0,
       0,
       0,

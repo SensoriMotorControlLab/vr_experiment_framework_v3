@@ -21,17 +21,23 @@ public class ProjectileTask : BaseTask
     List<Vector3> ballPos = new List<Vector3>();
     List<float> ballTime = new List<float>();
     List<float> stepTime = new List<float>();
+    List<Vector3> otherBallPos = new List<Vector3>();
     /// <summary>
     /// True ball/tool object
     /// </summary>
     [SerializeField]
     GameObject ball;
     [SerializeField]
+    GameObject otherBall;
+    [SerializeField]
     GameObject water;
+    [SerializeField]
+    GameObject otherWater;
     /// <summary>
     /// Rigidboy of the actual ball
     /// </summary>
     Rigidbody ballRB;
+    Rigidbody otherBallRB;
     /// <summary>
     /// Collider to check if the pariticpant hit into the wrong area
     /// </summary>
@@ -128,9 +134,10 @@ public class ProjectileTask : BaseTask
     float currentAngle = 0.0f;
     string currentType = "";
 
-    float currentWaterForce = 0.0f;
-    float currentWaterForceForward = 0.0f;
-
+    float waterSpeedJson = 0.0f;
+    float waterInertia = 0.0f;
+    float otherWaterSpeed = 0.0f;
+    float otherWaterInertia = 0.0f;
     static int totalScore = 0;
     public TextMeshProUGUI scoreText;
 
@@ -235,6 +242,9 @@ public class ProjectileTask : BaseTask
                         }
 
                         ballRB.velocity = launchForce;
+                        otherBallRB.isKinematic = false;
+                        otherBallRB.useGravity = true;
+                        otherBallRB.velocity = launchForce;
                         // Debug.Log("Launch force " + force);
                         // Debug.Log("Launch mag " + force.magnitude);
                         cursor.SetActive(false);
@@ -338,11 +348,11 @@ public class ProjectileTask : BaseTask
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
-                    if(currentWaterForce >= 0 && absTurning.x < ball.transform.position.x)
+                    if(waterSpeedJson >= 0 && absTurning.x < ball.transform.position.x)
                     {
                         absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
                     }
-                    else if(currentWaterForce < 0 && absTurning.x > ball.transform.position.x)
+                    else if(waterSpeedJson < 0 && absTurning.x > ball.transform.position.x)
                     {
                         absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
                     }
@@ -354,8 +364,10 @@ public class ProjectileTask : BaseTask
                     float dot = Vector3.Dot(toTarget, toBall);
                     */
                     Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
+                    Vector3 otherSkewedPos = new Vector3(otherBall.transform.position.x, home.transform.position.y - otherBall.GetComponent<SphereCollider>().bounds.size.y * 3/4, otherBall.transform.position.z);
                     globalBallPos.Add(new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z));
                     ballPos.Add(skewedPos);
+                    otherBallPos.Add(otherSkewedPos);
                     ballTime.Add(Time.time);
                     string displayMsg = "";
                     int points = 0;
@@ -574,16 +586,24 @@ public class ProjectileTask : BaseTask
         maxSteps = 4;
         int currBlock = ExperimentController.Instance.Session.currentBlockNum - 1;
 
-        if (!ball)
+        if (!ball || !otherBall)
+        {
             ball = GameObject.Find("Ball");
+            otherBall = GameObject.Find("OtherBall");
+        }
+            
 
         if(outOfBoundsCollider.Count == 0)
             Debug.LogWarning("No out of bounds colliders set");
 
         ballRB = ball.GetComponent<Rigidbody>();
+        otherBallRB = otherBall.GetComponent<Rigidbody>();
         ballRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
+        otherBallRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
         CursorController.Instance.planeOffset = new Vector3(0.0f, -ball.transform.position.y, 0.0f);
         visBallTravelPath = GetComponent<LineRenderer>();
+
+        otherBall.transform.position = ball.transform.position;
 
         //Set the renderer for pinpall path
         visBallTravelPath.startWidth = visBallTravelPath.endWidth = LINE_SIZE;
@@ -619,25 +639,41 @@ public class ProjectileTask : BaseTask
             buttonCheck = "Fire1";
         }
 
-        if(!water)
+        if(!water || !otherWater)
+        {
             water = GameObject.Find("Water");
+            otherWater = GameObject.Find("OtherWater");
+        }
+            
 
         CurrentForce currentForce = water.GetComponent<CurrentForce>();
+        CurrentForce otherCurrentForce = otherWater.GetComponent<CurrentForce>();
         
-        currentWaterForce = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_force")[currBlock];
-        currentForce.sideForce = currentWaterForce;
+        float radius = ball.GetComponent<SphereCollider>().radius * ball.transform.lossyScale.x;
+        float objectArea = Mathf.PI * radius * radius;
+        waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
+        waterSpeedJson = ComputeWaterForce(waterSpeedJson, objectArea);
+        currentForce.sideForce = waterSpeedJson;
 
-        currentWaterForceForward = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_inertia")[currBlock];
-        currentForce.forwardForce = currentWaterForceForward;
+        radius = otherBall.GetComponent<SphereCollider>().radius * otherBall.transform.lossyScale.x;
+        objectArea = Mathf.PI * radius * radius;
+        otherWaterSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_otherBall_water_speed")[currBlock];
+        otherWaterSpeed = ComputeWaterForce(otherWaterSpeed, objectArea);
+        otherCurrentForce.sideForce = otherWaterSpeed;
+
+        waterInertia = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_inertia")[currBlock];
+        currentForce.inertia = waterInertia;
+        otherWaterInertia = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_otherBall_inertia")[currBlock];
+        otherCurrentForce.inertia = otherWaterInertia;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
-        debrisSpawner.speed = currentWaterForce/38.48f;
+        debrisSpawner.speed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
         debrisSpawnRate = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_debris_spawn_rate")[currBlock];
         debrisCount = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_debris_count")[currBlock];
         debrisSpawner.spawnRate = debrisSpawnRate;
         debrisSpawner.debrisCount = debrisCount;
 
-        if(currentWaterForce >= 0)
+        if(waterSpeedJson >= 0)
         {
             absTurning.x = float.MinValue;
         }
@@ -646,25 +682,26 @@ public class ProjectileTask : BaseTask
             absTurning.x = float.MaxValue;
         }
 
-        waterSpeed = currentWaterForce / -384.4f;
-        water.GetComponent<Renderer>().material.SetFloat("_Speed", waterSpeed);
+        waterSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
+        GameObject waterSurface = GameObject.Find("WaterSurface");
+        waterSurface.GetComponent<Renderer>().material.SetFloat("_Speed", -waterSpeed/10);
 
         //Adjusted water audio based on current water force
-        if (currentWaterForce > 0.0f || currentWaterForce < 0.0f)
+        if (waterSpeedJson > 0.0f || waterSpeedJson < 0.0f)
         {
             waterAudio.volume = 0.5f;
 
-            if (currentWaterForce > 30.0f)
+            if (waterSpeedJson > 30.0f)
             {
-                float forceDiff = Math.Abs(currentWaterForce) - 30.0f;
+                float forceDiff = Math.Abs(waterSpeedJson) - 30.0f;
                 float pitchAdjust = forceDiff / 50.0f;
 
                 waterAudio.pitch = 1.0f + pitchAdjust;
             }
-            else if (currentWaterForce < 30.0f)
+            else if (waterSpeedJson < 30.0f)
             {
                 
-                float forceDiff = 30.0f - Math.Abs(currentWaterForce);
+                float forceDiff = 30.0f - Math.Abs(waterSpeedJson);
                 float pitchAdjust = forceDiff / 50.0f;
 
                 //Debug.Log("Force diff " + forceDiff);
@@ -692,6 +729,11 @@ public class ProjectileTask : BaseTask
         }
     }
 
+    float ComputeWaterForce(float waterSpeed, float objectArea, float dragCoefficient = 0.47f, float waterDensity = 1000f)
+    {
+        return 0.5f * dragCoefficient * waterDensity * objectArea * (waterSpeed * waterSpeed);
+    }
+
     public override void TaskBegin()
     {
         base.TaskBegin();
@@ -707,9 +749,15 @@ public class ProjectileTask : BaseTask
         
         ballRB.isKinematic = true;
         ballRB.useGravity = false;
+
+        otherBallRB.isKinematic = true;
+        otherBallRB.useGravity = false;
         
         ball.transform.position = home.transform.position;
         ball.transform.rotation = Quaternion.identity;
+
+        otherBall.transform.position = home.transform.position;
+        otherBall.transform.rotation = Quaternion.identity;
 
         handPos.Clear();
         handPositions.Clear();
@@ -807,9 +855,12 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_width"] = targetWidth;
         session.CurrentTrial.result["launch_direction"] = launchVec;
 
-        session.CurrentTrial.result["side_water_force"] = currentWaterForce;
-        session.CurrentTrial.result["forward_water_force"] = currentWaterForceForward;
-        session.CurrentTrial.result["water_speed_m/s"] = waterSpeed * 38.48f;
+        session.CurrentTrial.result["current_force"] = waterSpeedJson;
+        session.CurrentTrial.result["water_inertia"] = waterInertia;
+        session.CurrentTrial.result["water_speed_m/s"] = waterSpeed;
+
+        session.CurrentTrial.result["otherBall_current_force"] = otherWaterSpeed;
+        session.CurrentTrial.result["otherBall_water_inertia"] = otherWaterInertia;
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
@@ -817,11 +868,17 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
+        session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
         session.CurrentTrial.result["final_ball_pos_x"] = ballPos[ballPos.Count - 1].x;
         session.CurrentTrial.result["final_ball_pos_z"] = ballPos[ballPos.Count - 1].z;
-        session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
         session.CurrentTrial.result["turning_absolute_x"] = absTurning.x;
         session.CurrentTrial.result["turning_absolute_y"] = absTurning.y;
+
+        session.CurrentTrial.result["otherBall_pos_x"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.x:F6}")));
+        session.CurrentTrial.result["otherBall_pos_z"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.z:F6}")));
+        session.CurrentTrial.result["otherBall_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
+        session.CurrentTrial.result["final_otherBall_pos_x"] = otherBallPos[otherBallPos.Count - 1].x;
+        session.CurrentTrial.result["final_otherBall_pos_z"] = otherBallPos[otherBallPos.Count - 1].z;
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
