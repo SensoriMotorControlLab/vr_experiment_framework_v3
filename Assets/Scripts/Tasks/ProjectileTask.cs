@@ -348,6 +348,7 @@ public class ProjectileTask : BaseTask
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
+                    
                     if(waterSpeedJson >= 0 && absTurning.x < ball.transform.position.x)
                     {
                         absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
@@ -737,6 +738,7 @@ public class ProjectileTask : BaseTask
     public override void TaskBegin()
     {
         base.TaskBegin();
+        ball.GetComponent<MeshRenderer>().enabled = true;
         closestDistance = float.MaxValue;
 
         launchStartTime = 0.0f;
@@ -760,6 +762,7 @@ public class ProjectileTask : BaseTask
         otherBall.transform.rotation = Quaternion.identity;
 
         handPos.Clear();
+        otherBallPos.Clear();
         handPositions.Clear();
         ballPos.Clear();
         globalBallPos.Clear();
@@ -827,6 +830,12 @@ public class ProjectileTask : BaseTask
         {
             // Decrement trialsRemaining here
             trialsRemaining--;
+        }
+
+        if(currentStep == 1 && taskType == "invisible")
+        {
+            Debug.Log("here");
+            ball.GetComponent<MeshRenderer>().enabled = false;
         }
 
 
