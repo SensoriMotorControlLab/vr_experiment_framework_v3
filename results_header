@@ -8,11 +8,13 @@
     "start_time",
     "end_time",
     "hand",
-    "cursor_active",
-    "tool_x_coordinates",
-    "tool_y_coordinates",
-    "tool_z_coordinates",
-    "correct_target",
+    "total_score",
+    "total_time",
+    "score_per_hit"
+]time",
+    "goal_hit_time",
+    "total_time"
+]rrect_target",
     "tool_type",
     "goal_type",
     "total_score",

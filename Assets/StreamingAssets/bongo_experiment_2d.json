@@ -19,11 +19,11 @@
       "Bongo",
       "Bongo"
     ],
-	"per_block_speed":[
-		1.0,
-		5.0,
-		10.0
-	],
+    "per_block_speed": [
+      0.001,
+      0.003,
+      0.005
+    ],
 	"per_block_spawn_delay":[
 		1.0,
 		0.5,

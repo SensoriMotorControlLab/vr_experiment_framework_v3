@@ -10,6 +10,7 @@ using UnityEngine.SocialPlatforms.Impl;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 public class BongoTask: BaseTask
 {
@@ -61,7 +62,7 @@ public class BongoTask: BaseTask
 
     List<string> jsonSpawnLocation = new List<string>();
 
-    float targetSpeed = 0.0003f;
+    float targetSpeed = 0.0f;
     float targetSpawnDelay = 1.0f;
 
     [SerializeField]
@@ -92,8 +93,9 @@ public class BongoTask: BaseTask
     TextMeshProUGUI ScoreTXT;
     [SerializeField]
     TextMeshProUGUI TrialTXT;
-    [SerializeField]
-    TextMeshProUGUI TimeTXT;
+
+    List<string> hittingHand = new List<string>();
+    List<int> scorePerHit = new List<int>();
 
 
     private bool trial_active = false;
@@ -128,6 +130,7 @@ public class BongoTask: BaseTask
                     if (dock.GetComponent<Target>().TargetHit && dock.GetComponent<Target>().IsColliding && 
                         (ExperimentController.Instance.UseVR == true ? true : Input.GetMouseButtonDown(0)))
                     {
+                        startTime = Time.time;
                         dock.GetComponent<Target>().ResetTarget();
                         audioSource.clip = buttonClickSFX;
                         audioSource.Play();
@@ -166,17 +169,49 @@ public class BongoTask: BaseTask
                         if(g.IsToolCollding && g.IsTargetCollding && 
                             (ExperimentController.Instance.UseVR == true ? true : Input.GetMouseButtonDown(0)))
                         {
+                            if (ExperimentController.Instance.UseVR == true)
+                            {
+                                if (g.CollidingTool == directLeft)
+                                {
+                                    hittingHand.Add("l");
+                                } 
+                                else
+                                {
+                                    hittingHand.Add("r");
+                                }
+                            }
+
+
                             GameObject hitTarget = g.CollidingTarget;
+                            CapsuleCollider capsul = g.GetComponent<CapsuleCollider>();
+                            float radius = capsul.bounds.extents.z;
+                            float dist = Vector3.Distance(g.transform.position, hitTarget.transform.position);
+                            if (dist < radius * 0.5)
+                            {
+                                totalScore += 5;
+                                scorePerHit.Add(5);
+                            }
+                            else
+                            {
+                                totalScore++;
+                                scorePerHit.Add(1);
+                            }
+                            Debug.Log(dist + " " + radius * 0.5);
+                            UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore);
+
                             g.targets.Remove(hitTarget);
                             activeTargets.Remove(hitTarget);
                             Destroy(hitTarget);
                             g.ResetState();
-                            //TODO tally score
+                            
+
                         }
                     }
 
                     if (targetOutOfBounds.IsTargetCollding)
                     {
+                        hittingHand.Add(" ");
+                        scorePerHit.Add(0);
                         GameObject o = targetOutOfBounds.CollidingTarget;
                         targetOutOfBounds.targets.Remove(o);
                         activeTargets.Remove(o);
@@ -187,6 +222,7 @@ public class BongoTask: BaseTask
                     if(activeTargets.Count == 0 && spawnedObjects.Count == 0)
                     {
                         //dock.SetActive(true);
+                        endTime = Time.time;
                         IncrementStep();
                     }
                 }
@@ -241,7 +277,14 @@ public class BongoTask: BaseTask
         base.TaskBegin();
         //the task start
         stepTime.Clear();
-        UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore, endTime - startTime);
+        UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore);
+
+        //List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
+        int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
+        targetSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_speed")[currentBlockNum];
+
+        hittingHand.Clear();
+        scorePerHit.Clear();
 
         dock.SetActive(true);
         dock.GetComponent<Target>().enabled = true;
@@ -263,29 +306,6 @@ public class BongoTask: BaseTask
         {
             jsonSpawnLocation = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("target_location");
         }
-
-        //List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
-        //int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
-        //string currentBlockLoc = jsonSpawnLocation[(ExperimentController.Instance.Session.currentTrialNum - 1) % currentBlockTrials[currentBlockNum]];
-
-        //if(currentBlockLoc.Length != goals.Count)
-        //{
-        //    Debug.LogError("The number of locations in the JSON is not the same as the number of goals");
-        //}
-
-        ////Spawn all the targets
-        //foreach(char c in currentBlockLoc)
-        //{
-        //    int val = int.Parse(c.ToString());
-
-        //    GameObject t = Instantiate(bongoTargetPrefab);
-        //    t.name = "Bongo Target " + c;
-        //    t.transform.position = spawnLocations[val - 1].transform.position;
-        //    t.GetComponent<MeshRenderer>().material = targetMaterials[val - 1];
-        //    t.GetComponent<MeshRenderer>().enabled = false;
-
-        //    spawnedObjects.Enqueue(t);
-        //}
 
 
 
@@ -406,47 +426,21 @@ public class BongoTask: BaseTask
     public override void LogParameters()
     {
         Session session = ExperimentController.Instance.Session;
-
+        
 
         if (ExperimentController.Instance.UseVR)
         {
-            session.CurrentTrial.result["hand"] = "r";
-            session.CurrentTrial.result["cursor_active"] = "N/A";
+            session.CurrentTrial.result["hand"] = string.Join(",", hittingHand.Select(i => string.Format($"{i}")));
         }
         else
         {
-            session.CurrentTrial.result["hand"] = "N/A";
-            session.CurrentTrial.result["cursor_active"] = "True";
+            session.CurrentTrial.result["hand"] = "mouse";
         }
 
-        session.CurrentTrial.result["tool_x_coordinates"] = tool_x;
-        session.CurrentTrial.result["tool_y_coordinates"] = tool_y;
-        session.CurrentTrial.result["tool_z_coordinates"] = tool_z;
 
-
-
-        session.CurrentTrial.result["correct_target"] = hitTarget;
-
-        if (toolType == 1)
-        {
-            session.CurrentTrial.result["tool_type"] = "cube";
-        }
-        else
-        {
-            session.CurrentTrial.result["tool_type"] = "sphere";
-        }
-        
-        if (goalType == 1)
-        {
-            session.CurrentTrial.result["goal_type"] = "cube";
-        }
-        else
-        {
-            session.CurrentTrial.result["goal_type"] = "sphere";
-        }
+        session.CurrentTrial.result["score_per_hit"] = string.Join(",", scorePerHit.Select(i => string.Format($"{i}")));
+        session.CurrentTrial.result["speed"] = targetSpeed;
         session.CurrentTrial.result["total_score"] = totalScore;
-        session.CurrentTrial.result["start_grabbed_time"] = startTime;
-        session.CurrentTrial.result["goal_hit_time"] = endTime;
         session.CurrentTrial.result["total_time"] = (endTime - startTime);
 
 
@@ -458,22 +452,15 @@ public class BongoTask: BaseTask
         }
     }
 
-    private void UpdateScoreboard(int trialNumber, int score, float totalTime)
+    private void UpdateScoreboard(int trialNumber, int score)
     {
-        int seconds = Mathf.FloorToInt(totalTime);
-        int milliseconds = Mathf.FloorToInt((totalTime - seconds) * 1000);
-
-        // Format the time as "Seconds:Milliseconds"
-        string formattedTime = $"{seconds:00}.{milliseconds:000}";
 
         // Find child objects (requires proper hierarchy structure)
         TextMeshProUGUI scoreText = Scoreboard.transform.Find("ScoreTXT").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI trialText = Scoreboard.transform.Find("TrialTXT").GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI timeText = Scoreboard.transform.Find("TimeTXT").GetComponent<TextMeshProUGUI>();
 
         // Update the Text fields
         scoreText.text = $"Score: {score}";
         trialText.text = $"Trial: {trialNumber}";
-        timeText.text = $"Time: {formattedTime}";
     }
 }
