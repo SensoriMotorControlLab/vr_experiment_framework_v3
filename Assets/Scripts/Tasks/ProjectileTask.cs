@@ -685,7 +685,7 @@ public class ProjectileTask : BaseTask
 
         waterSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
         GameObject waterSurface = GameObject.Find("WaterSurface");
-        waterSurface.GetComponent<Renderer>().material.SetFloat("_Speed", -waterSpeed/10);
+        waterSurface.GetComponent<Renderer>().material.SetFloat("_Speed", -waterSpeed/20);
 
         //Adjusted water audio based on current water force
         if (waterSpeedJson > 0.0f || waterSpeedJson < 0.0f)
