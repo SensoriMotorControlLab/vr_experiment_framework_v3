@@ -77,13 +77,13 @@ public class BongoTask: BaseTask
     GameObject directLeft;
 
     [SerializeField]
-    AudioClip LO_Bongo;
+    AudioClip LO_BongoCorrectSFX;
     [SerializeField]
-    AudioClip LI_Bongo;
+    AudioClip LI_BongoCorrectSFX;
     [SerializeField]
-    AudioClip RI_Bongo;
+    AudioClip RI_BongoCorrectSFX;
     [SerializeField]
-    AudioClip RO_Bongo;
+    AudioClip RO_BongoCorrectSFX;
     [SerializeField]
     AudioClip buttonClickSFX;
 
@@ -96,21 +96,20 @@ public class BongoTask: BaseTask
 
     List<string> hittingHand = new List<string>();
     List<int> scorePerHit = new List<int>();
-
-
-    private bool trial_active = false;
-    private string tool_x = ""; // String to store all X positions instead of list to solve log parameter issues 
-    private string tool_y = ""; 
-    private string tool_z = ""; 
-
-
+    List<Vector3> leftHandPos = new List<Vector3>();
+    List<Vector3> rightHandPos = new List<Vector3>();
 
     float startTime = 0.0f;
     float endTime = 0.0f;
 
+    string noteOrder = "";
+
     int toolType = 0;
     int goalType = 0;
     static int totalScore = 0;
+    static float totalTargets = 0.0f;
+    static float totalHit = 0.0f;
+    static float totalPerfect = 0.0f;
 
     bool hitTarget = false;
 
@@ -156,11 +155,27 @@ public class BongoTask: BaseTask
             //Check if all targets are active and for button click
             case 2:
                 {
+                    //Track hand position
+                    if (ExperimentController.Instance.UseVR)
+                    {
+                        leftHandPos.Add(directLeft.transform.position);
+                        rightHandPos.Add(directLeft.transform.position);
+                        //If above does not work try this
+                        //XR Rig is weird and the VR hands transform does not change although the objects are moving in the scene
+                        //leftHandPos.Add(InputHandler.Instance.GetHandPosition("LeftHand"));
+                        //rightHandPos.Add(InputHandler.Instance.GetHandPosition("RightHand"));
+                    }
+                    else
+                    {
+                        leftHandPos.Add(Input.mousePosition);
+                        rightHandPos.Add(Input.mousePosition);
+                    }
+
                     //Move targets into negative Z-axis
-                    foreach(GameObject g in activeTargets)
+                    foreach (GameObject g in activeTargets)
                     {
                         Vector3 pos = g.transform.position;
-                        g.transform.position = new Vector3(pos.x, pos.y, pos.z -= targetSpeed);
+                        g.transform.position = new Vector3(pos.x, pos.y, pos.z -= (targetSpeed * Time.deltaTime));
                     }
 
                     //Check if bongo is pressed
@@ -181,44 +196,54 @@ public class BongoTask: BaseTask
                                 }
                             }
 
+                            totalTargets++;
 
                             GameObject hitTarget = g.CollidingTarget;
                             CapsuleCollider capsul = g.GetComponent<CapsuleCollider>();
                             float radius = capsul.bounds.extents.z;
                             float dist = Vector3.Distance(g.transform.position, hitTarget.transform.position);
+
+                            //Check if distance is less than half the bounds of the collider
+                            //If true than it's a "perfect" hit
                             if (dist < radius * 0.5)
                             {
+                                totalPerfect++;
+                                totalHit++;
                                 totalScore += 5;
                                 scorePerHit.Add(5);
                             }
+                            //If not than it's a "normal" hit
                             else
                             {
+                                totalHit++;
                                 totalScore++;
                                 scorePerHit.Add(1);
                             }
-                            Debug.Log(dist + " " + radius * 0.5);
-                            UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore);
+
+                            //Update the scoreboard
+                            UpdateScoreboard();
 
                             g.targets.Remove(hitTarget);
                             activeTargets.Remove(hitTarget);
                             Destroy(hitTarget);
                             g.ResetState();
-                            
-
                         }
                     }
 
                     if (targetOutOfBounds.IsTargetCollding)
                     {
                         hittingHand.Add(" ");
+                        totalTargets++;
                         scorePerHit.Add(0);
                         GameObject o = targetOutOfBounds.CollidingTarget;
                         targetOutOfBounds.targets.Remove(o);
                         activeTargets.Remove(o);
                         Destroy(o);
                         targetOutOfBounds.ResetState();
+                        UpdateScoreboard();
                     }
 
+                    //If no more targets increment step
                     if(activeTargets.Count == 0 && spawnedObjects.Count == 0)
                     {
                         //dock.SetActive(true);
@@ -277,14 +302,17 @@ public class BongoTask: BaseTask
         base.TaskBegin();
         //the task start
         stepTime.Clear();
-        UpdateScoreboard(ExperimentController.Instance.Session.currentTrialNum, totalScore);
+        UpdateScoreboard();
 
         //List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
         int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
+        //For some reason just speed was not getting the right list for some reason so we use per_block_speed
         targetSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_speed")[currentBlockNum];
 
         hittingHand.Clear();
         scorePerHit.Clear();
+        leftHandPos.Clear();
+        rightHandPos.Clear();
 
         dock.SetActive(true);
         dock.GetComponent<Target>().enabled = true;
@@ -306,8 +334,6 @@ public class BongoTask: BaseTask
         {
             jsonSpawnLocation = ExperimentController.Instance.Session.CurrentBlock.settings.GetStringList("target_location");
         }
-
-
 
         if (!ExperimentController.Instance.UseVR) // scoreboard direction
         {
@@ -356,6 +382,7 @@ public class BongoTask: BaseTask
         List<int> currentBlockTrials = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("trials_in_block");
         int currentBlockNum = ExperimentController.Instance.Session.currentBlockNum - 1;
         string currentBlockLoc = jsonSpawnLocation[(ExperimentController.Instance.Session.currentTrialNum - 1) % currentBlockTrials[currentBlockNum]];
+        noteOrder = currentBlockLoc;
 
         if (currentBlockLoc.Length != goals.Count)
         {
@@ -436,31 +463,61 @@ public class BongoTask: BaseTask
         {
             session.CurrentTrial.result["hand"] = "mouse";
         }
-
-
+        session.CurrentTrial.result["note_order"] = noteOrder;
         session.CurrentTrial.result["score_per_hit"] = string.Join(",", scorePerHit.Select(i => string.Format($"{i}")));
+        session.CurrentTrial.result["hit_percentage"] = totalHit / totalTargets;
+        session.CurrentTrial.result["perfect_percentage"] = totalPerfect / totalTargets;
+
         session.CurrentTrial.result["speed"] = targetSpeed;
         session.CurrentTrial.result["total_score"] = totalScore;
         session.CurrentTrial.result["total_time"] = (endTime - startTime);
-
-
-
 
         for (int i = 0; i < stepTime.Count; i++)
         {
             session.CurrentTrial.result["step_" + i + "_time"] = stepTime[i];
         }
+
+        session.CurrentTrial.result["left_hand_pos_x"] = string.Join(",", leftHandPos.Select(i => string.Format($"{i.x}")));
+        session.CurrentTrial.result["left_hand_pos_y"] = string.Join(",", leftHandPos.Select(i => string.Format($"{i.y}")));
+        session.CurrentTrial.result["left_hand_pos_z"] = string.Join(",", leftHandPos.Select(i => string.Format($" {i.z}")));
+
+        session.CurrentTrial.result["right_hand_pos_x"] = string.Join(",", rightHandPos.Select(i => string.Format($"{i.x}")));
+        session.CurrentTrial.result["right_hand_pos_y"] = string.Join(",", rightHandPos.Select(i => string.Format($"{i.y}")));
+        session.CurrentTrial.result["right_hand_pos_z"] = string.Join(",", rightHandPos.Select(i => string.Format($"{i.z}")));
+
+        session.CurrentTrial.result["red_pos_x"] = goalMeshes[0].gameObject.transform.position.x;
+        session.CurrentTrial.result["red_pos_y"] = goalMeshes[0].gameObject.transform.position.y;
+        session.CurrentTrial.result["red_pos_z"] = goalMeshes[0].gameObject.transform.position.z;
+
+        session.CurrentTrial.result["blue_pos_x"] = goalMeshes[1].gameObject.transform.position.x;
+        session.CurrentTrial.result["blue_pos_y"] = goalMeshes[1].gameObject.transform.position.y;
+        session.CurrentTrial.result["blue_pos_z"] = goalMeshes[1].gameObject.transform.position.z;
+
+        session.CurrentTrial.result["yellow_pos_x"] = goalMeshes[2].gameObject.transform.position.x;
+        session.CurrentTrial.result["yellow_pos_y"] = goalMeshes[2].gameObject.transform.position.y;
+        session.CurrentTrial.result["yellow_pos_z"] = goalMeshes[2].gameObject.transform.position.z;
+
+        session.CurrentTrial.result["purple_pos_x"] = goalMeshes[3].gameObject.transform.position.x;
+        session.CurrentTrial.result["purple_pos_y"] = goalMeshes[3].gameObject.transform.position.y;
+        session.CurrentTrial.result["purple_pos_z"] = goalMeshes[3].gameObject.transform.position.z;
+
     }
 
-    private void UpdateScoreboard(int trialNumber, int score)
+    private void UpdateScoreboard()
     {
 
         // Find child objects (requires proper hierarchy structure)
         TextMeshProUGUI scoreText = Scoreboard.transform.Find("ScoreTXT").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI trialText = Scoreboard.transform.Find("TrialTXT").GetComponent<TextMeshProUGUI>();
 
+        int hitPerc = totalTargets > 0 ? (int)((totalHit / totalTargets) * 100) : 0;
+        int perfectPerc = totalTargets > 0 ? (int)((totalPerfect / totalTargets) * 100) : 0;
+
+
         // Update the Text fields
-        scoreText.text = $"Score: {score}";
-        trialText.text = $"Trial: {trialNumber}";
+        scoreText.text = $"Score: {totalScore}";
+        trialText.text = $"Trial: {ExperimentController.Instance.Session.currentTrialNum}\n" +
+                         $"Hit % {hitPerc}\n" +
+                         $"Perfect %{perfectPerc}";
     }
 }
