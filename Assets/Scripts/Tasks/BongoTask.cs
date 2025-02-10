@@ -518,6 +518,6 @@ public class BongoTask: BaseTask
         scoreText.text = $"Score: {totalScore}";
         trialText.text = $"Trial: {ExperimentController.Instance.Session.currentTrialNum}\n" +
                          $"Hit % {hitPerc}\n" +
-                         $"Perfect %{perfectPerc}";
+                         $"Perfect % {perfectPerc}";
     }
 }
