@@ -6,8 +6,8 @@
     "block_num",
     "trial_num_in_block",
     "start_time",
-    "end_time",
-    "hand",
+    "end_time"
+]    "hand",
     "note_order",
     "score_per_hit",
     "hit_percentage",
