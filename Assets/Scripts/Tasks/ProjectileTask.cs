@@ -121,14 +121,6 @@ public class ProjectileTask : BaseTask
     /// </summary>
     const float LINE_SIZE = 0.025f;
     const float BALL_MAX_ANGULAR_VEL = 240.0f;
-    /// <summary>
-    /// Time the button is pressed
-    /// </summary>
-    float launchStartTime = 0.0f;
-    /// <summary>
-    /// Time the button was released or distance was greater than a certain amount
-    /// </summary>
-    float launchEndTime = 0.0f;
     bool hitTarget = false;
 
     float currentAngle = 0.0f;
@@ -162,6 +154,10 @@ public class ProjectileTask : BaseTask
 
     private List<Vector3> handPositions = new List<Vector3>();
     private int pointsToConsider = 4;
+    private float timeToWait = 0.0f;
+    private Coroutine coroutine;
+    private bool isFisrtInvisible = true;
+    private GameObject invisibleTrailCard;
 
     // Start is called before the first frame update
     void Start()
@@ -201,6 +197,8 @@ public class ProjectileTask : BaseTask
                         cursorPos = startPos;
                         handPos.Clear();
                         handPositions.Clear();
+                        handPositions.Add(cursorPos);
+                        handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
                     }
                     //If button released early
                     else if (Input.GetButton(buttonCheck))
@@ -215,9 +213,7 @@ public class ProjectileTask : BaseTask
                     {
                         //log step time
                         endPos = GetMousePos();
-                        launchEndTime = Time.time;
 
-                        float totalTime = launchEndTime - launchStartTime;
                         launchVec = endPos - startPos;
                         launchVec.Normalize();
                         //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
@@ -258,6 +254,27 @@ public class ProjectileTask : BaseTask
         }
     }
 
+    IEnumerator DelayStart()
+    {
+        yield return new WaitForSeconds(timeToWait); 
+
+        if(invisibleTrailCard.activeInHierarchy)
+        {
+            invisibleTrailCard.SetActive(false);
+        }
+
+        //If we are using VR use the VR hand position else get the
+        //converted mouse position
+        startPos = GetMousePos();
+        cursorPos = startPos;
+
+        IncrementStep();
+
+        //increment step time
+        stepTime.Add(Time.time);
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -265,83 +282,17 @@ public class ProjectileTask : BaseTask
         {
             //Participant returns to home
             case 0:
-                if (/*Vector3.Distance(cursor.transform.position,home.transform.position) <= PRE_LAUNCH_DIST && */Input.GetButtonDown(buttonCheck))
+                if(coroutine == null)
                 {
-                    // Debug.Log("Button held");
-                    //If we are using VR use the VR hand position else get the
-                    //converted mouse position
-                    startPos = GetMousePos();
-                    cursorPos = startPos;
-
-                    launchStartTime = Time.time;
-                    IncrementStep();
-
-                    //increment step time
-                    stepTime.Add(Time.time);
-                } 
+                    coroutine = StartCoroutine(DelayStart());
+                }
 
                 break;
             #region Launch ball
             //Track cursor(hand position) and launch when certain distance from home
             case 1:
                 {
-                    // //If the button is pressed again
-                    // if(Input.GetButtonDown(buttonCheck))
-                    // {
-                    //     startPos = GetMousePos();
-                    //     Debug.Log("start position: " + startPos);
-                    //     cursorPos = startPos;
-                    //     handPos.Clear();
-                    //     handPositions.Clear();
-                    // }
-                    // //If button released early
-                    // else if (Input.GetButton(buttonCheck))
-                    // {
-                    //     cursorPos = GetMousePos();
-                    //     handPositions.Add(cursorPos);
-                    //     handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
-                    // }
-                    // //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
-
-                    // if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST)
-                    // {
-                    //     //log step time
-                    //     endPos = GetMousePos();
-                    //     launchEndTime = Time.time;
-
-                    //     float totalTime = launchEndTime - launchStartTime;
-                    //     launchVec = endPos - startPos;
-                    //     launchVec.Normalize();
-                    //     //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
-
-                    //     ballRB.isKinematic = false;
-                    //     ballRB.useGravity = true;
-
-                    //     //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
-                    //     throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * CalculateThrowDirectionSimplified() * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
-                    //     throwSpeed.y = 0.0f;
-
-                    //     launchForce = throwSpeed;
-                    //     Debug.Log("Launch vec " + launchVec);
-
-                    //     if (launchForce.magnitude < MIN_MAG)
-                    //     {
-                    //         Debug.Log("The launch force was too small, applying a new force");
-                    //         Debug.Log("New force " + throwSpeed * 2.0f);
-                    //         Debug.Log("New force mag " + (throwSpeed * 2.0f).magnitude);
-
-                    //         launchForce = throwSpeed * 2.0f;
-                    //     }
-
-                    //     ballRB.velocity = launchForce;
-                    //     // Debug.Log("Launch force " + force);
-                    //     // Debug.Log("Launch mag " + force.magnitude);
-                    //     cursor.SetActive(false);
-
-                    //     IncrementStep();
-
-                    //     stepTime.Add(Time.time);
-                    // }
+                    
                 }
                 break;
             #endregion
@@ -705,12 +656,7 @@ public class ProjectileTask : BaseTask
                 float forceDiff = 30.0f - Math.Abs(waterSpeedJson);
                 float pitchAdjust = forceDiff / 50.0f;
 
-                //Debug.Log("Force diff " + forceDiff);
-                //Debug.Log("Pitch adjustment " + pitchAdjust);
-
                 waterAudio.pitch = 1.0f - pitchAdjust;
-
-                //Debug.Log("Total diff " + (1.0f - pitchAdjust));
             }
             else
             {
@@ -728,6 +674,7 @@ public class ProjectileTask : BaseTask
             GameObject plane = GameObject.Find("Plane");
             plane.transform.position = new Vector3(plane.transform.position.x, plane.transform.position.y - 0.075f, plane.transform.position.z);
         }
+        invisibleTrailCard = GameObject.Find("InvisibleTrialCard");
     }
 
     float ComputeWaterForce(float waterSpeed, float objectArea, float dragCoefficient = 0.47f, float waterDensity = 1000f)
@@ -741,8 +688,26 @@ public class ProjectileTask : BaseTask
         ball.GetComponent<MeshRenderer>().enabled = true;
         closestDistance = float.MaxValue;
 
-        launchStartTime = 0.0f;
-        launchEndTime = 0.0f;
+        if(taskType == "invisible")
+        {
+            if(isFisrtInvisible)
+            {
+                invisibleTrailCard.SetActive(true);
+                timeToWait = 3.0f;
+                isFisrtInvisible = false;
+            }
+            else
+            {
+                invisibleTrailCard.SetActive(false);
+                timeToWait = 0;
+            }
+        }
+        else
+        {
+            invisibleTrailCard.SetActive(false);
+            isFisrtInvisible = true;
+            timeToWait = 0;
+        }
 
         startPos = Vector3.zero;
         endPos = Vector3.zero;
@@ -761,6 +726,7 @@ public class ProjectileTask : BaseTask
         otherBall.transform.position = home.transform.position;
         otherBall.transform.rotation = Quaternion.identity;
 
+        coroutine = null;
         handPos.Clear();
         otherBallPos.Clear();
         handPositions.Clear();
@@ -834,7 +800,6 @@ public class ProjectileTask : BaseTask
 
         if(currentStep == 1 && taskType == "invisible")
         {
-            Debug.Log("here");
             ball.GetComponent<MeshRenderer>().enabled = false;
         }
 
