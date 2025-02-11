@@ -11,6 +11,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
+using UXF.UI;
+using UnityEngine.UIElements;
 
 public class BongoTask: BaseTask
 {
@@ -98,6 +100,8 @@ public class BongoTask: BaseTask
     List<int> scorePerHit = new List<int>();
     List<Vector3> leftHandPos = new List<Vector3>();
     List<Vector3> rightHandPos = new List<Vector3>();
+
+    List<Vector3> noteOnHitPos = new List<Vector3>();
 
     float startTime = 0.0f;
     float endTime = 0.0f;
@@ -203,6 +207,8 @@ public class BongoTask: BaseTask
                             float radius = capsul.bounds.extents.z;
                             float dist = Vector3.Distance(g.transform.position, hitTarget.transform.position);
 
+                            noteOnHitPos[goals.IndexOf(g)] = g.transform.position;
+
                             //Check if distance is less than half the bounds of the collider
                             //If true than it's a "perfect" hit
                             if (dist < radius * 0.5)
@@ -232,6 +238,7 @@ public class BongoTask: BaseTask
 
                     if (targetOutOfBounds.IsTargetCollding)
                     {
+                        noteOnHitPos.Add(Vector3.zero);
                         hittingHand.Add(" ");
                         totalTargets++;
                         scorePerHit.Add(0);
@@ -313,6 +320,15 @@ public class BongoTask: BaseTask
         scorePerHit.Clear();
         leftHandPos.Clear();
         rightHandPos.Clear();
+        noteOnHitPos.Clear();
+
+        noteOnHitPos.Capacity = 4;
+        for (int i = 0; i < noteOnHitPos.Capacity; i++)
+        {
+            noteOnHitPos.Add(Vector3.zero);
+        }
+        
+
 
         dock.SetActive(true);
         dock.GetComponent<Target>().enabled = true;
@@ -458,13 +474,74 @@ public class BongoTask: BaseTask
         if (ExperimentController.Instance.UseVR)
         {
             session.CurrentTrial.result["hand"] = string.Join(",", hittingHand.Select(i => string.Format($"{i}")));
+            session.CurrentTrial.result["controller_type"] = "vr";
+            session.CurrentTrial.result["participant_spawn_location_x"] = vrPos.transform.position.x;
+            session.CurrentTrial.result["participant_spawn_location_y"] = vrPos.transform.position.y;
+            session.CurrentTrial.result["participant_spawn_location_z"] = vrPos.transform.position.z;
         }
         else
         {
             session.CurrentTrial.result["hand"] = "mouse";
+            session.CurrentTrial.result["controller_type"] = "mouse";
         }
-        session.CurrentTrial.result["note_order"] = noteOrder;
+
+        string colourNotes = "";
+
+        foreach (char n in noteOrder)
+        {
+            
+            if (n == '1') // red
+            {
+                colourNotes+= "red";
+            } 
+            else if (n == '2') // blue
+            {
+                colourNotes += "blue";
+            }
+            else if (n == '3') // yellow
+            {
+                colourNotes += "yellow";
+            }
+            else if (n == '4') // purple
+            {
+                colourNotes += "purple";
+            }
+
+            if (!(n == noteOrder[noteOrder.Length-1]))
+            {
+                colourNotes += "_";
+            }
+        }
+        session.CurrentTrial.result["note_order"] = colourNotes;
+
+        string successPerHit = "";
+        for (int n = 0; n < scorePerHit.Count; n++)
+        {
+
+            if (scorePerHit[n] == 0) // miss
+            {
+                successPerHit += "miss";
+            }
+            else if (scorePerHit[n] == 1) // miss
+            {
+                successPerHit += "ok";
+            }
+            else if(scorePerHit[n] == 5) // miss
+            {
+                successPerHit += "great";
+            
+            }
+
+
+            if (n+1 < scorePerHit.Count)
+            {
+                successPerHit += "_";
+            }
+        }
+
+        session.CurrentTrial.result["success_per_hit"] = successPerHit;
         session.CurrentTrial.result["score_per_hit"] = string.Join(",", scorePerHit.Select(i => string.Format($"{i}")));
+
         session.CurrentTrial.result["hit_percentage"] = totalHit / totalTargets;
         session.CurrentTrial.result["perfect_percentage"] = totalPerfect / totalTargets;
 
@@ -477,6 +554,7 @@ public class BongoTask: BaseTask
             session.CurrentTrial.result["step_" + i + "_time"] = stepTime[i];
         }
 
+        // All Bongo positions
         session.CurrentTrial.result["left_hand_pos_x"] = string.Join(",", leftHandPos.Select(i => string.Format($"{i.x}")));
         session.CurrentTrial.result["left_hand_pos_y"] = string.Join(",", leftHandPos.Select(i => string.Format($"{i.y}")));
         session.CurrentTrial.result["left_hand_pos_z"] = string.Join(",", leftHandPos.Select(i => string.Format($" {i.z}")));
@@ -485,22 +563,35 @@ public class BongoTask: BaseTask
         session.CurrentTrial.result["right_hand_pos_y"] = string.Join(",", rightHandPos.Select(i => string.Format($"{i.y}")));
         session.CurrentTrial.result["right_hand_pos_z"] = string.Join(",", rightHandPos.Select(i => string.Format($"{i.z}")));
 
-        session.CurrentTrial.result["red_pos_x"] = goalMeshes[0].gameObject.transform.position.x;
-        session.CurrentTrial.result["red_pos_y"] = goalMeshes[0].gameObject.transform.position.y;
-        session.CurrentTrial.result["red_pos_z"] = goalMeshes[0].gameObject.transform.position.z;
+        session.CurrentTrial.result["bongo_red_pos_x"] = goalMeshes[0].gameObject.transform.position.x;
+        //session.CurrentTrial.result["red_pos_y"] = goalMeshes[0].gameObject.transform.position.y;
+        session.CurrentTrial.result["bongo_red_pos_z"] = goalMeshes[0].gameObject.transform.position.z;
 
-        session.CurrentTrial.result["blue_pos_x"] = goalMeshes[1].gameObject.transform.position.x;
-        session.CurrentTrial.result["blue_pos_y"] = goalMeshes[1].gameObject.transform.position.y;
-        session.CurrentTrial.result["blue_pos_z"] = goalMeshes[1].gameObject.transform.position.z;
+        session.CurrentTrial.result["bongo_blue_pos_x"] = goalMeshes[1].gameObject.transform.position.x;
+        //session.CurrentTrial.result["blue_pos_y"] = goalMeshes[1].gameObject.transform.position.y;
+        session.CurrentTrial.result["bongo_blue_pos_z"] = goalMeshes[1].gameObject.transform.position.z;
 
-        session.CurrentTrial.result["yellow_pos_x"] = goalMeshes[2].gameObject.transform.position.x;
-        session.CurrentTrial.result["yellow_pos_y"] = goalMeshes[2].gameObject.transform.position.y;
-        session.CurrentTrial.result["yellow_pos_z"] = goalMeshes[2].gameObject.transform.position.z;
+        session.CurrentTrial.result["bongo_yellow_pos_x"] = goalMeshes[2].gameObject.transform.position.x;
+        //session.CurrentTrial.result["yellow_pos_y"] = goalMeshes[2].gameObject.transform.position.y;
+        session.CurrentTrial.result["bongo_yellow_pos_z"] = goalMeshes[2].gameObject.transform.position.z;
 
-        session.CurrentTrial.result["purple_pos_x"] = goalMeshes[3].gameObject.transform.position.x;
-        session.CurrentTrial.result["purple_pos_y"] = goalMeshes[3].gameObject.transform.position.y;
-        session.CurrentTrial.result["purple_pos_z"] = goalMeshes[3].gameObject.transform.position.z;
+        session.CurrentTrial.result["bongo_purple_pos_x"] = goalMeshes[3].gameObject.transform.position.x;
+        //session.CurrentTrial.result["purple_pos_y"] = goalMeshes[3].gameObject.transform.position.y;
+        session.CurrentTrial.result["bongo_purple_pos_z"] = goalMeshes[3].gameObject.transform.position.z;
 
+
+        // All Note positions
+        session.CurrentTrial.result["note_red_pos_x"] = noteOnHitPos[0].x;
+        session.CurrentTrial.result["note_red_pos_z"] = noteOnHitPos[0].z;
+
+        session.CurrentTrial.result["note_blue_pos_x"] = noteOnHitPos[1].x;
+        session.CurrentTrial.result["note_blue_pos_z"] = noteOnHitPos[1].z;
+
+        session.CurrentTrial.result["note_yellow_pos_x"] = noteOnHitPos[2].x;
+        session.CurrentTrial.result["note_yellow_pos_z"] = noteOnHitPos[2].z;
+
+        session.CurrentTrial.result["note_purple_pos_x"] = noteOnHitPos[3].x;
+        session.CurrentTrial.result["note_purple_pos_z"] = noteOnHitPos[3].z;
     }
 
     private void UpdateScoreboard()
