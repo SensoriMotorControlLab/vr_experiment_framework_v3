@@ -155,11 +155,13 @@ public class ProjectileTask : BaseTask
     private GameObject invisibleTrailCard;
     bool isMainBallComplete = false;
     bool isInviBallComplete = false;
+    Target targetScript;
 
     // Start is called before the first frame update
     void Start()
     {
         trialsRemaining = ExperimentController.Instance.GetTotalTrials();
+        targetScript = target.transform.GetChild(0).GetComponent<Target>();
     }
 
     Vector3 CalculateThrowDirectionSimplified()
@@ -310,7 +312,7 @@ public class ProjectileTask : BaseTask
                     int points = 0;
 
                     //Ball hit the target
-                    if (target.GetComponent<Target>().TargetHit)
+                    if (targetScript.TargetHit)
                     {
                         isMainBallComplete = true;
                         ballRB.isKinematic = true;
@@ -379,7 +381,7 @@ public class ProjectileTask : BaseTask
                         }
                     }
 
-                    if(target.GetComponent<Target>().OtherTargetHit)
+                    if(targetScript.OtherTargetHit)
                     {
                         isInviBallComplete = true;
                         otherBallRB.isKinematic = true;
@@ -522,7 +524,7 @@ public class ProjectileTask : BaseTask
 
     private void ClosestPointToTarget(Vector3 location)
     {
-        Collider targetCollider = target.GetComponent<Collider>();
+        Collider targetCollider = target.transform.GetChild(0).GetComponent<Collider>();
         Vector3 closestPoint = targetCollider.ClosestPoint(location);
         float distance = Vector3.Distance(location, closestPoint);
         
@@ -560,6 +562,8 @@ public class ProjectileTask : BaseTask
 
         //Set the renderer for pinpall path
         visBallTravelPath.startWidth = visBallTravelPath.endWidth = LINE_SIZE;
+
+        targetScript = target.transform.GetChild(0).GetComponent<Target>();
 
         if (targetAngles.Count == 0)
         {
@@ -740,8 +744,10 @@ public class ProjectileTask : BaseTask
         visBallTravelPath.positionCount = 0;
         visBallTravelPath.SetPositions(ballPos.ToArray());
 
+        targetScript = target.transform.GetChild(0).GetComponent<Target>();
+
         //Setup target position
-        target.GetComponent<Target>().ResetTarget();
+        targetScript.ResetTarget();
 
         foreach (Target t in outOfBoundsCollider)
             t.ResetTarget();
@@ -819,8 +825,8 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["hand"] = "r";
         // session.CurrentTrial.result["Head Position"]
-        session.CurrentTrial.result["target_hit"] = target.GetComponent<Target>().TargetHit;
-        session.CurrentTrial.result["invisibleBall_target_hit"] = target.GetComponent<Target>().OtherTargetHit;
+        session.CurrentTrial.result["target_hit"] = targetScript.TargetHit;
+        session.CurrentTrial.result["invisibleBall_target_hit"] = targetScript.OtherTargetHit;
         session.CurrentTrial.result["final_ball_state"] = finalBallState;
         session.CurrentTrial.result["type"] = currentType;
         //session.CurrentTrial.result["target_position"] = target.transform.position;
