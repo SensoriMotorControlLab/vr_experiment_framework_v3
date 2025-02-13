@@ -20,6 +20,7 @@ public class ProjectileTask : BaseTask
     /// </summary>
     List<Vector3> ballPos = new List<Vector3>();
     List<float> ballTime = new List<float>();
+    List<float> invisBallTime = new List<float>();
     List<float> stepTime = new List<float>();
     List<Vector3> otherBallPos = new List<Vector3>();
     /// <summary>
@@ -100,18 +101,13 @@ public class ProjectileTask : BaseTask
     /// </summary>
     const float LAUNCH_FORCE = 1.5f;
     /// <summary>
-    /// Magnitude to cap the launch force
-    /// </summary>
-    const float LAUNCH_MAG = 0.5f;
-    /// <summary>
     /// Minimum magnitude to be considered a launch
     /// </summary>
     const float MIN_MAG = 0.3f;
     /// <summary>
     /// Distance to determine the participant is flicking the ball
     /// </summary>
-    const float FLICK_DIST = 0.1f;
-    const float TARGET_DIST = 1f;
+    const float FLICK_DIST = 0.3f;
     /// <summary>
     /// Time in seconds to display a prompt
     /// </summary>
@@ -150,7 +146,6 @@ public class ProjectileTask : BaseTask
     GameObject poleOne;
     GameObject poleTwo;
     float targetWidth;
-    Vector3 finalBallPosWorld;
 
     private List<Vector3> handPositions = new List<Vector3>();
     private int pointsToConsider = 4;
@@ -158,6 +153,8 @@ public class ProjectileTask : BaseTask
     private Coroutine coroutine;
     private bool isFisrtInvisible = true;
     private GameObject invisibleTrailCard;
+    bool isMainBallComplete = false;
+    bool isInviBallComplete = false;
 
     // Start is called before the first frame update
     void Start()
@@ -193,7 +190,6 @@ public class ProjectileTask : BaseTask
                     if(Input.GetButtonDown(buttonCheck))
                     {
                         startPos = GetMousePos();
-                        Debug.Log("start position: " + startPos);
                         cursorPos = startPos;
                         handPos.Clear();
                         handPositions.Clear();
@@ -209,24 +205,17 @@ public class ProjectileTask : BaseTask
                     }
                     //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
 
-                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST)
+                    launchVec = CalculateThrowDirectionSimplified();
+                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
                     {
-                        //log step time
-                        endPos = GetMousePos();
-
-                        launchVec = endPos - startPos;
-                        launchVec.Normalize();
-                        //launchVec = ExperimentController.Instance.UseVR ? launchVec : Quaternion.Euler(90, 0, 0) * launchVec;
-
                         ballRB.isKinematic = false;
                         ballRB.useGravity = true;
 
                         //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
-                        throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * CalculateThrowDirectionSimplified() * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
+                        throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
                         throwSpeed.y = 0.0f;
 
                         launchForce = throwSpeed;
-                        Debug.Log("Launch vec " + launchVec);
 
                         if (launchForce.magnitude < MIN_MAG)
                         {
@@ -241,8 +230,6 @@ public class ProjectileTask : BaseTask
                         otherBallRB.isKinematic = false;
                         otherBallRB.useGravity = true;
                         otherBallRB.velocity = launchForce;
-                        // Debug.Log("Launch force " + force);
-                        // Debug.Log("Launch mag " + force.magnitude);
                         cursor.SetActive(false);
 
                         IncrementStep();
@@ -318,15 +305,14 @@ public class ProjectileTask : BaseTask
                     Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
                     Vector3 otherSkewedPos = new Vector3(otherBall.transform.position.x, home.transform.position.y - otherBall.GetComponent<SphereCollider>().bounds.size.y * 3/4, otherBall.transform.position.z);
                     globalBallPos.Add(new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z));
-                    ballPos.Add(skewedPos);
-                    otherBallPos.Add(otherSkewedPos);
-                    ballTime.Add(Time.time);
+                    
                     string displayMsg = "";
                     int points = 0;
 
                     //Ball hit the target
                     if (target.GetComponent<Target>().TargetHit)
                     {
+                        isMainBallComplete = true;
                         ballRB.isKinematic = true;
 
                         finalBallState = "Hit";
@@ -340,29 +326,13 @@ public class ProjectileTask : BaseTask
                         displayMsg = "Target hit\n" + points + " points";
 
                         prefabAudio.clip = correctAudioClip;
-                        //prefabAudio.Play();
-                        ballAudio.Stop();
 
                         closestDistance = 0.0f;
-                        ShowFeedback(points, displayMsg);
-                        IncrementStep();
-
-                        stepTime.Add(Time.time);
-                        finalBallPosWorld = ball.transform.position;
                     }
-                    #region Dot product check
-                    // else if (dot <= 0.0f)
-                    // {
-                    //     ballRB.isKinematic = true;
-
-                    //     lineColor = Color.white;
-                    //     StartCoroutine(DisplayMessage("Missed target"));
-                    //     IncrementStep();
-                    // }
-                    #endregion
                     //Ball slowed down
                     else if (ballRB.velocity.magnitude <= END_SPEED)
                     {
+                        isMainBallComplete = true;
                         ballRB.isKinematic = true;
 
                         if(ball.transform.position.x > target.transform.position.x)
@@ -383,13 +353,6 @@ public class ProjectileTask : BaseTask
                         displayMsg = "Ball came to a stop\n" + points + " points";
 
                         prefabAudio.clip = incorrectAudioClip;
-                        //prefabAudio.Play();
-                        ballAudio.Stop();
-
-                        ShowFeedback(points, displayMsg);
-                        IncrementStep();
-
-                        stepTime.Add(Time.time);
                     }
                     //Ball went out of bounds
                     else
@@ -398,6 +361,7 @@ public class ProjectileTask : BaseTask
                         {
                             if (t.TargetHit)
                             {
+                                isMainBallComplete = true;
                                 ballRB.isKinematic = true;
 
                                 finalBallState = "Missed";
@@ -409,17 +373,57 @@ public class ProjectileTask : BaseTask
                                 displayMsg = "Ball out of bounds\n0 points";
 
                                 prefabAudio.clip = incorrectAudioClip;
-                                //prefabAudio.Play();
-                                ballAudio.Stop();
-
-                                ShowFeedback(points, displayMsg);
-                                IncrementStep();
-
-                                stepTime.Add(Time.time);
 
                                 break;
                             }
                         }
+                    }
+
+                    if(target.GetComponent<Target>().OtherTargetHit)
+                    {
+                        isInviBallComplete = true;
+                        otherBallRB.isKinematic = true;
+                    }
+
+                    else if(otherBallRB.velocity.magnitude <= END_SPEED)
+                    {
+                        isInviBallComplete = true;
+                        otherBallRB.isKinematic = true;
+                    }
+
+                    else
+                    {
+                        foreach (Target t in outOfBoundsCollider)
+                        {
+                            if(t.OtherTargetHit)
+                            {
+                                isInviBallComplete = true;
+                                otherBallRB.isKinematic = true;
+                            }
+                        }
+                    }
+
+                    if(!isMainBallComplete)
+                    {
+                        ballPos.Add(skewedPos);
+                        ballTime.Add(Time.time);
+                    }
+                    if(!isInviBallComplete)
+                    {
+                        otherBallPos.Add(otherSkewedPos);
+                        invisBallTime.Add(Time.time);
+                    }
+
+                    if(isMainBallComplete && isInviBallComplete)
+                    {
+                        ballAudio.Stop();
+                        ShowFeedback(points, displayMsg);
+                        IncrementStep();
+
+                        stepTime.Add(Time.time);
+
+                        isMainBallComplete = false;
+                        isInviBallComplete = false;
                     }
                 }
                 break;
@@ -463,7 +467,6 @@ public class ProjectileTask : BaseTask
         //Display feedback text here
         if (displayMessage.Length > 0)
         {
-            // Debug.Log(displayMessage);
             displayText.text = displayMessage;
         }
 
@@ -497,7 +500,6 @@ public class ProjectileTask : BaseTask
     private int CalculatePoints()
     {
         float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
-        // Debug.Log("The distance from target is " + distanceFromTarget + " units");
         int points = 0;
 
         if (hitTarget)
@@ -507,7 +509,6 @@ public class ProjectileTask : BaseTask
         else
         {
             float targetWidth = target.GetComponent<MeshRenderer>().bounds.size.x;
-            // Debug.Log("Target width " + targetWidth);
 
             if (distanceFromTarget > targetWidth)
                 points = 0;
@@ -733,6 +734,7 @@ public class ProjectileTask : BaseTask
         ballPos.Clear();
         globalBallPos.Clear();
         ballTime.Clear();
+        invisBallTime.Clear();
         stepTime.Clear();
         lineColor = Color.white;
         visBallTravelPath.positionCount = 0;
@@ -747,7 +749,6 @@ public class ProjectileTask : BaseTask
         displayText.text = "";
         ballDisplayText.text = "";;
 
-        //Debug.Log("target angle: " + targetAngles[currentTrial]);
         // target.transform.position = Vector3.zero;
         // target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
         float z = target.transform.position.z;
@@ -819,6 +820,7 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["hand"] = "r";
         // session.CurrentTrial.result["Head Position"]
         session.CurrentTrial.result["target_hit"] = target.GetComponent<Target>().TargetHit;
+        session.CurrentTrial.result["invisibleBall_target_hit"] = target.GetComponent<Target>().OtherTargetHit;
         session.CurrentTrial.result["final_ball_state"] = finalBallState;
         session.CurrentTrial.result["type"] = currentType;
         //session.CurrentTrial.result["target_position"] = target.transform.position;
@@ -833,8 +835,8 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["water_inertia"] = waterInertia;
         session.CurrentTrial.result["water_speed_m/s"] = waterSpeed;
 
-        session.CurrentTrial.result["otherBall_current_force"] = otherWaterSpeed;
-        session.CurrentTrial.result["otherBall_water_inertia"] = otherWaterInertia;
+        session.CurrentTrial.result["invisibleBall_current_force"] = otherWaterSpeed;
+        session.CurrentTrial.result["invisibleBall_water_inertia"] = otherWaterInertia;
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
@@ -848,11 +850,11 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["turning_absolute_x"] = absTurning.x;
         session.CurrentTrial.result["turning_absolute_y"] = absTurning.y;
 
-        session.CurrentTrial.result["otherBall_pos_x"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.x:F6}")));
-        session.CurrentTrial.result["otherBall_pos_z"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.z:F6}")));
-        session.CurrentTrial.result["otherBall_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
-        session.CurrentTrial.result["final_otherBall_pos_x"] = otherBallPos[otherBallPos.Count - 1].x;
-        session.CurrentTrial.result["final_otherBall_pos_z"] = otherBallPos[otherBallPos.Count - 1].z;
+        session.CurrentTrial.result["invisibleBall_pos_x"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.x:F6}")));
+        session.CurrentTrial.result["invisibleBall_pos_z"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.z:F6}")));
+        session.CurrentTrial.result["invisibleBall_time"] = string.Join(",", invisBallTime.Select(i => string.Format($"{i:F6}")));
+        session.CurrentTrial.result["final_invisibleBall_pos_x"] = otherBallPos[otherBallPos.Count - 1].x;
+        session.CurrentTrial.result["final_invisibleBall_pos_z"] = otherBallPos[otherBallPos.Count - 1].z;
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
