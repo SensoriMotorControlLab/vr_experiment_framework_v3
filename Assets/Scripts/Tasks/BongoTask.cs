@@ -279,10 +279,10 @@ public class BongoTask: BaseTask
                     //If the target hits the out of bounds
                     if (targetOutOfBounds.IsTargetCollding)
                     {
-                        noteOnHitPos.Add(Vector3.zero);
                         hittingHand.Add(" ");
 
                         GameObject o = targetOutOfBounds.CollidingTarget;
+                        noteOnHitPos.Add(o.transform.position);
                         targetOutOfBounds.targets.Remove(o);
                         activeTargets.Remove(o);
                         Destroy(o);
@@ -545,7 +545,7 @@ public class BongoTask: BaseTask
         if (ExperimentController.Instance.UseVR)
         {
             session.CurrentTrial.result["hand"] = string.Join(",", hittingHand.Select(i => string.Format($"{i}")));
-            session.CurrentTrial.result["controller_type"] = "vr";
+            session.CurrentTrial.result["controller_type"] = "vr_controller";
             session.CurrentTrial.result["participant_spawn_location_x"] = vrPos.transform.position.x;
             session.CurrentTrial.result["participant_spawn_location_y"] = vrPos.transform.position.y;
             session.CurrentTrial.result["participant_spawn_location_z"] = vrPos.transform.position.z;
