@@ -9,9 +9,6 @@
     "end_time",
     "hand",
     "controller_type",
-    "participant_spawn_location_x",
-    "participant_spawn_location_y",
-    "participant_spawn_location_z",
     "note_order",
     "success_per_hit",
     "score_per_hit",
@@ -20,6 +17,8 @@
     "speed",
     "total_score",
     "total_time",
+    "step_0_time",
+    "step_1_time",
     "left_hand_pos_x",
     "left_hand_pos_y",
     "left_hand_pos_z",
@@ -40,6 +39,9 @@
     "note_blue_pos_z",
     "note_yellow_pos_x",
     "note_yellow_pos_z",
+    "note_purple_pos_x",
+    "note_purple_pos_z"
+]te_yellow_pos_z",
     "note_purple_pos_x",
     "note_purple_pos_z"
 ]

@@ -17,6 +17,9 @@ public class MultipleTarget : MonoBehaviour
     bool isToolColliding = false;
     bool isTargetColliding = false;
 
+    bool isHitCollide = false;
+    bool isHitTrigger = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +35,7 @@ public class MultipleTarget : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         isColliding = true;
+        isHitCollide = true;
 
         //Check if object is tool
         foreach (GameObject g in tools)
@@ -56,6 +60,7 @@ public class MultipleTarget : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
+        isHitCollide = false;
         /*
         isColliding = true;
 
@@ -90,7 +95,7 @@ public class MultipleTarget : MonoBehaviour
         {
             if (g == collision.gameObject)
             {
-                collidingTool = g;
+                collidingTool = null;
                 isToolColliding = false;
             }
         }
@@ -100,7 +105,7 @@ public class MultipleTarget : MonoBehaviour
         {
             if (g == collision.gameObject)
             {
-                collidingTarget = g;
+                collidingTarget = null;
                 isTargetColliding = false;
             }
         }
@@ -109,6 +114,7 @@ public class MultipleTarget : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         isTriggered = true;
+        isHitTrigger = true;
 
         //Check if object is tool
         foreach (GameObject g in tools)
@@ -133,6 +139,7 @@ public class MultipleTarget : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        isHitTrigger = false;
         /*
         isTriggered = true;
 
@@ -168,7 +175,7 @@ public class MultipleTarget : MonoBehaviour
         {
             if (g == other.gameObject)
             {
-                collidingTool = g;
+                collidingTool = null;
                 isToolColliding = false;
             }
         }
@@ -178,7 +185,7 @@ public class MultipleTarget : MonoBehaviour
         {
             if (g == other.gameObject)
             {
-                collidingTarget = g;
+                collidingTarget = null;
                 isTargetColliding = false;
             }
         }
@@ -192,11 +199,27 @@ public class MultipleTarget : MonoBehaviour
         }
     }
 
+    public bool IsHitCollide
+    {
+        get
+        {
+            return isHitCollide;
+        }
+    }
+
     public bool IsTriggered
     {
         get
         {
             return isTriggered;
+        }
+    }
+
+    public bool IsHitTrigger
+    {
+        get
+        {
+            return isHitTrigger;
         }
     }
 
@@ -239,6 +262,9 @@ public class MultipleTarget : MonoBehaviour
 
         isTargetColliding = false;
         isToolColliding = false;
+
+        isHitCollide = false;
+        isHitTrigger = false;
     }
 
     public void ClearLists()

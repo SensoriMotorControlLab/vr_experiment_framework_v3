@@ -79,13 +79,16 @@ public class BongoTask: BaseTask
     GameObject directLeft;
 
     [SerializeField]
-    AudioClip LO_BongoCorrectSFX;
+    AudioSource LO_BongoAudio;
     [SerializeField]
-    AudioClip LI_BongoCorrectSFX;
+    AudioSource LI_BongoAudio;
     [SerializeField]
-    AudioClip RI_BongoCorrectSFX;
+    AudioSource RI_BongoAudio;
     [SerializeField]
-    AudioClip RO_BongoCorrectSFX;
+    AudioSource RO_BongoAudio;
+
+    [SerializeField]
+    AudioClip bongoHitSFX;
     [SerializeField]
     AudioClip buttonClickSFX;
 
@@ -134,6 +137,8 @@ public class BongoTask: BaseTask
                         (ExperimentController.Instance.UseVR == true ? true : Input.GetMouseButtonDown(0)))
                     {
                         startTime = Time.time;
+                        stepTime.Add(Time.deltaTime);
+
                         dock.GetComponent<Target>().ResetTarget();
                         audioSource.clip = buttonClickSFX;
                         audioSource.Play();
@@ -141,7 +146,7 @@ public class BongoTask: BaseTask
                         dock.GetComponent<MeshCollider>().enabled = false;
                         dock.SetActive(false);
 
-                        StartCoroutine(PlayFeedback(0.5f));
+                        StartCoroutine(DelayedIncrementStep(0.5f));
 
                         SpawnTargets();
 
@@ -185,6 +190,7 @@ public class BongoTask: BaseTask
                     //Check if bongo is pressed
                     foreach(MultipleTarget g in goals)
                     {
+                        //If a bongo is hit and a target is colliding with the bongo
                         if(g.IsToolCollding && g.IsTargetCollding && 
                             (ExperimentController.Instance.UseVR == true ? true : Input.GetMouseButtonDown(0)))
                         {
@@ -207,7 +213,36 @@ public class BongoTask: BaseTask
                             float radius = capsul.bounds.extents.z;
                             float dist = Vector3.Distance(g.transform.position, hitTarget.transform.position);
 
-                            noteOnHitPos[goals.IndexOf(g)] = g.transform.position;
+                            int goalIndex = goals.IndexOf(g);
+
+                            noteOnHitPos[goalIndex] = g.transform.position;
+
+                            //Play audio vfx
+                            //Left outer
+                            if(goalIndex == 0)
+                            {
+                                LO_BongoAudio.Play();
+                            }
+                            //Left inner
+                            else if(goalIndex == 1)
+                            {
+                                LI_BongoAudio.Play();
+                            }
+                            //Right inner
+                            else if(goalIndex == 2)
+                            {
+                                RI_BongoAudio.Play();
+                            }
+                            //Right outer
+                            else if(goalIndex == 3)
+                            {
+                                RO_BongoAudio.Play();
+                            }
+
+                            //Play visual feedback
+                            GameObject bongoHit = goalMeshes[goalIndex].gameObject;
+                            Vector3 movePos = new Vector3(bongoHit.transform.localPosition.x, bongoHit.transform.localPosition.y - 0.05f, bongoHit.transform.localPosition.z);
+                            StartCoroutine(LerpBongo(bongoHit, movePos, 20.0f, 0.0125f));
 
                             //Check if distance is less than half the bounds of the collider
                             //If true than it's a "perfect" hit
@@ -234,19 +269,27 @@ public class BongoTask: BaseTask
                             Destroy(hitTarget);
                             g.ResetState();
                         }
+                        //Bongo is hit but there is no target colliding with the bongo
+                        else
+                        {
+                            //TODO add some form of other feedback
+                        }
                     }
 
+                    //If the target hits the out of bounds
                     if (targetOutOfBounds.IsTargetCollding)
                     {
                         noteOnHitPos.Add(Vector3.zero);
                         hittingHand.Add(" ");
-                        totalTargets++;
-                        scorePerHit.Add(0);
+
                         GameObject o = targetOutOfBounds.CollidingTarget;
                         targetOutOfBounds.targets.Remove(o);
                         activeTargets.Remove(o);
                         Destroy(o);
                         targetOutOfBounds.ResetState();
+
+                        totalTargets++;
+                        scorePerHit.Add(0);
                         UpdateScoreboard();
                     }
 
@@ -254,6 +297,7 @@ public class BongoTask: BaseTask
                     if(activeTargets.Count == 0 && spawnedObjects.Count == 0)
                     {
                         //dock.SetActive(true);
+                        stepTime.Add(Time.deltaTime);
                         endTime = Time.time;
                         IncrementStep();
                     }
@@ -357,7 +401,7 @@ public class BongoTask: BaseTask
         }
     }
 
-    IEnumerator PlayFeedback(float endDelayTime = 0.0f)
+    IEnumerator DelayedIncrementStep(float endDelayTime = 0.0f)
     {
         float delayTime = 0.0f;
 
@@ -387,6 +431,36 @@ public class BongoTask: BaseTask
             obj.GetComponent<MeshRenderer>().enabled = true;
             activeTargets.Add(obj);
             delayTime = 0.0f;
+        }
+
+        yield return new WaitForEndOfFrame();
+    }
+
+    IEnumerator LerpBongo(GameObject toMove, Vector3 pos, float speed, float holdTime)
+    {
+        Vector3 orgPos = toMove.transform.localPosition;
+        float delayTime = 0.0f;
+
+        while(Vector3.Distance(toMove.transform.localPosition, pos) > 0.001f)
+        {
+            Vector3 direction = pos - toMove.transform.localPosition;
+            toMove.transform.localPosition += direction * speed * Time.deltaTime;
+
+            yield return null;
+        }
+
+        while(delayTime <= holdTime)
+        {
+            delayTime += Time.deltaTime;
+            yield return null;
+        }
+
+        while (Vector3.Distance(toMove.transform.localPosition, orgPos) > 0.001f)
+        {
+            Vector3 direction = orgPos - toMove.transform.localPosition;
+            toMove.transform.localPosition += direction * speed * Time.deltaTime;
+
+            yield return null;
         }
 
         yield return new WaitForEndOfFrame();
@@ -438,15 +512,12 @@ public class BongoTask: BaseTask
             cursor.SetActive(false);
 
             // Centers player
-            ExperimentController.Instance.CentreOVRPlayerHand();
+            //ExperimentController.Instance.CentreOVRPlayerHand();
         }
         else
         {
             
             cursor.SetActive(true);
-            //dock.GetComponent<Target>().SetProjectile(cursor);
-
-
             //dock.GetComponent<Target>().SetProjectile(cursor);
 
             //Switch Camera to 2D
@@ -554,7 +625,7 @@ public class BongoTask: BaseTask
             session.CurrentTrial.result["step_" + i + "_time"] = stepTime[i];
         }
 
-        // All Bongo positions
+        //Hand position
         session.CurrentTrial.result["left_hand_pos_x"] = string.Join(",", leftHandPos.Select(i => string.Format($"{i.x}")));
         session.CurrentTrial.result["left_hand_pos_y"] = string.Join(",", leftHandPos.Select(i => string.Format($"{i.y}")));
         session.CurrentTrial.result["left_hand_pos_z"] = string.Join(",", leftHandPos.Select(i => string.Format($" {i.z}")));
@@ -563,6 +634,7 @@ public class BongoTask: BaseTask
         session.CurrentTrial.result["right_hand_pos_y"] = string.Join(",", rightHandPos.Select(i => string.Format($"{i.y}")));
         session.CurrentTrial.result["right_hand_pos_z"] = string.Join(",", rightHandPos.Select(i => string.Format($"{i.z}")));
 
+        //Bongo positions
         session.CurrentTrial.result["bongo_red_pos_x"] = goalMeshes[0].gameObject.transform.position.x;
         //session.CurrentTrial.result["red_pos_y"] = goalMeshes[0].gameObject.transform.position.y;
         session.CurrentTrial.result["bongo_red_pos_z"] = goalMeshes[0].gameObject.transform.position.z;
@@ -603,7 +675,6 @@ public class BongoTask: BaseTask
 
         int hitPerc = totalTargets > 0 ? (int)((totalHit / totalTargets) * 100) : 0;
         int perfectPerc = totalTargets > 0 ? (int)((totalPerfect / totalTargets) * 100) : 0;
-
 
         // Update the Text fields
         scoreText.text = $"Score: {totalScore}";
