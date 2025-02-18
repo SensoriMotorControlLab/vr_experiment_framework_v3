@@ -37,7 +37,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Rigidboy of the actual ball
     /// </summary>
-    Rigidbody ballRB;
+    // Rigidbody ballRB;
     Rigidbody otherBallRB;
     /// <summary>
     /// Collider to check if the pariticpant hit into the wrong area
@@ -87,7 +87,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// The vector the ball will launch
     /// </summary>
-    Vector3 launchForce;
+    Vector3 launchVel;
     /// <summary>
     /// Which button to look for to check for button held
     /// </summary>
@@ -95,11 +95,11 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Speed to determine the ball came to a stop
     /// </summary>
-    const float END_SPEED = 0.06f;
+    const float END_SPEED = 0.1f;
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 1.5f;
+    const float LAUNCH_FORCE = 2.5f;
     /// <summary>
     /// Minimum magnitude to be considered a launch
     /// </summary>
@@ -138,7 +138,7 @@ public class ProjectileTask : BaseTask
     int debrisCount;
     DebrisSpawner debrisSpawner;
     Vector3 cursorPos;
-    Vector3 throwSpeed;
+    Vector3 throwVel;
     Vector2 absTurning;
     string finalBallState;
     float targetScale;
@@ -156,6 +156,7 @@ public class ProjectileTask : BaseTask
     bool isMainBallComplete = false;
     bool isInviBallComplete = false;
     Target targetScript;
+    BallMovement ballMovement;
 
     // Start is called before the first frame update
     void Start()
@@ -210,28 +211,28 @@ public class ProjectileTask : BaseTask
                     launchVec = CalculateThrowDirectionSimplified();
                     if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
                     {
-                        ballRB.isKinematic = false;
-                        ballRB.useGravity = true;
+                        // ballRB.isKinematic = false;
+                        // ballRB.useGravity = true;
 
                         //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
-                        throwSpeed = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
-                        throwSpeed.y = 0.0f;
+                        throwVel = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
+                        throwVel.y = 0.0f;
 
-                        launchForce = throwSpeed;
+                        launchVel = throwVel;
 
-                        if (launchForce.magnitude < MIN_MAG)
+                        if (launchVel.magnitude < MIN_MAG)
                         {
                             Debug.Log("The launch force was too small, applying a new force");
-                            Debug.Log("New force " + throwSpeed * 2.0f);
-                            Debug.Log("New force mag " + (throwSpeed * 2.0f).magnitude);
+                            Debug.Log("New force " + throwVel * 2.0f);
+                            Debug.Log("New force mag " + (throwVel * 2.0f).magnitude);
 
-                            launchForce = throwSpeed * 2.0f;
+                            launchVel = throwVel * 2.0f;
                         }
-
-                        ballRB.velocity = launchForce;
+                        ballMovement.velocity = launchVel;
+                        // ballRB.velocity = launchForce;
                         otherBallRB.isKinematic = false;
                         otherBallRB.useGravity = true;
-                        otherBallRB.velocity = launchForce;
+                        otherBallRB.velocity = launchVel;
                         cursor.SetActive(false);
 
                         IncrementStep();
@@ -315,7 +316,7 @@ public class ProjectileTask : BaseTask
                     if (targetScript.TargetHit)
                     {
                         isMainBallComplete = true;
-                        ballRB.isKinematic = true;
+                        // ballRB.isKinematic = true;
 
                         finalBallState = "Hit";
 
@@ -332,10 +333,10 @@ public class ProjectileTask : BaseTask
                         closestDistance = 0.0f;
                     }
                     //Ball slowed down
-                    else if (ballRB.velocity.magnitude <= END_SPEED)
+                    else if (ballMovement.velocity.magnitude <= END_SPEED)
                     {
                         isMainBallComplete = true;
-                        ballRB.isKinematic = true;
+                        // ballRB.isKinematic = true;
 
                         if(ball.transform.position.x > target.transform.position.x)
                         {
@@ -364,7 +365,7 @@ public class ProjectileTask : BaseTask
                             if (t.TargetHit)
                             {
                                 isMainBallComplete = true;
-                                ballRB.isKinematic = true;
+                                // ballRB.isKinematic = true;
 
                                 finalBallState = "Missed";
 
@@ -546,14 +547,15 @@ public class ProjectileTask : BaseTask
             ball = GameObject.Find("Ball");
             otherBall = GameObject.Find("OtherBall");
         }
-            
+        ballMovement = ball.GetComponent<BallMovement>();  
+        ballMovement.Reset();  
 
         if(outOfBoundsCollider.Count == 0)
             Debug.LogWarning("No out of bounds colliders set");
 
-        ballRB = ball.GetComponent<Rigidbody>();
+        // ballRB = ball.GetComponent<Rigidbody>();
         otherBallRB = otherBall.GetComponent<Rigidbody>();
-        ballRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
+        // ballRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
         otherBallRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
         CursorController.Instance.planeOffset = new Vector3(0.0f, -ball.transform.position.y, 0.0f);
         visBallTravelPath = GetComponent<LineRenderer>();
@@ -719,8 +721,8 @@ public class ProjectileTask : BaseTask
 
         hitTarget = false;
         
-        ballRB.isKinematic = true;
-        ballRB.useGravity = false;
+        // ballRB.isKinematic = true;
+        // ballRB.useGravity = false;
 
         otherBallRB.isKinematic = true;
         otherBallRB.useGravity = false;
@@ -732,6 +734,7 @@ public class ProjectileTask : BaseTask
         otherBall.transform.rotation = Quaternion.identity;
 
         coroutine = null;
+        ballMovement.Reset(); 
         handPos.Clear();
         otherBallPos.Clear();
         handPositions.Clear();
@@ -846,7 +849,7 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
-        session.CurrentTrial.result["launch_Speed"] = throwSpeed.magnitude;
+        session.CurrentTrial.result["launch_Speed"] = throwVel.magnitude;
 
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
