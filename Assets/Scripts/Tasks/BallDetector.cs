@@ -11,6 +11,7 @@ public class BallDetector : MonoBehaviour
         if(bm)
         {
             bm.velocity = Vector3.zero;
+            bm.canSimulate = false;
             return;
         }
 
@@ -28,6 +29,7 @@ public class BallDetector : MonoBehaviour
         if(bm)
         {
             bm.velocity = Vector3.zero;
+            bm.canSimulate = false;
             return;
         }
 

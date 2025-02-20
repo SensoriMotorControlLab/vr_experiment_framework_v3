@@ -99,7 +99,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 2.5f;
+    const float LAUNCH_FORCE = 1.0f;
     /// <summary>
     /// Minimum magnitude to be considered a launch
     /// </summary>
@@ -611,7 +611,7 @@ public class ProjectileTask : BaseTask
         float radius = ball.GetComponent<SphereCollider>().radius * ball.transform.lossyScale.x;
         float objectArea = Mathf.PI * radius * radius;
         waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
-        waterSpeedJson = ComputeWaterForce(waterSpeedJson, objectArea);
+        ballMovement.waterSpeed = waterSpeedJson;
         currentForce.sideForce = waterSpeedJson;
 
         radius = otherBall.GetComponent<SphereCollider>().radius * otherBall.transform.lossyScale.x;

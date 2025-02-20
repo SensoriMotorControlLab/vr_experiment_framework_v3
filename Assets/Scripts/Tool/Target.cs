@@ -57,6 +57,7 @@ public class Target : MonoBehaviour
             if(bm)
             {
                 bm.velocity = Vector3.zero;
+                bm.canSimulate = false;
             }
         }
         if (collision.gameObject == invisProjectile)
@@ -93,6 +94,7 @@ public class Target : MonoBehaviour
             if(bm)
             {
                 bm.velocity = Vector3.zero;
+                bm.canSimulate = false;
             }
         }
         if (other.gameObject == invisProjectile)

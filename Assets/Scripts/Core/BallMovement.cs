@@ -11,12 +11,14 @@ public class BallMovement : MonoBehaviour
     float rhoAir = 1.225f;   // Air density (kg/m^3)
     float rhoWater = 1000f;  // Water density (kg/m^3)
     float mass = 1.0f;  // Mass of the ball (kg)
-    float velocityMagnitude;
-    float radius;
-    float area;
-    SphereCollider col;
+    float velocityMagnitude; // Magnitude of the velocity vector
+    float radius;  // Radius of the ball
+    float area; // Cross-sectional area of the ball
+    SphereCollider col; // Sphere collider component
+    public float waterSpeed;    // Speed of the water current
 
-    public Vector3 velocity = Vector3.zero;
+    public Vector3 velocity = Vector3.zero; // Velocity of the ball
+    public bool canSimulate = true;  // Flag to enable/disable simulation
 
     void Start()
     {
@@ -27,6 +29,7 @@ public class BallMovement : MonoBehaviour
     {
         f = 0;
         velocity = Vector3.zero;
+        canSimulate = true;
         col = GetComponent<SphereCollider>();
         radius = col.radius * transform.lossyScale.x;
         area = Mathf.PI * radius * radius;
@@ -34,10 +37,18 @@ public class BallMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Check if simulation is enabled
+        if(!canSimulate)
+        {
+            return;
+        }
+        f = FractionInWater();
+        ApplyWaterCurrentForce(f);
         transform.position += velocity * Time.fixedDeltaTime;
+
         if(velocity.magnitude > 0)
         {
-            CalculateDeceleration();
+            CalculateDeceleration(f);
             if(velocity.magnitude < 0)
             {
                 velocity = Vector3.zero;
@@ -54,31 +65,53 @@ public class BallMovement : MonoBehaviour
             
         }
     }
-
-    void CalculateDeceleration()
+    // Calculate the deceleration of the ball based on the drag forces in air and water
+    void CalculateDeceleration(float fraction)
     {
         // Compute drag forces for each medium:
         velocityMagnitude = velocity.magnitude;
-        float dragAir = 0.5f * CdAir * rhoAir * area * velocityMagnitude * velocityMagnitude;
-        float dragWater = 0.5f * CdWater * rhoWater * area * velocityMagnitude * velocityMagnitude;
-        float y = transform.position.y - radius;
-        if(y < -0.05f)
-        {
-            Debug.Log("fraction of ball in Water: " + f);
-            f = Mathf.Lerp(0, 0.5f, transform.position.y/ -0.05f);
-        }
+        float dragAir = ComputeForce(velocityMagnitude, area, CdAir, rhoAir);
+        float dragWater = ComputeForce(velocityMagnitude, area, CdWater, rhoWater);
         
-
         // Weighted total drag:
-        float totalDragForce = (1 - f) * dragAir + (f * dragWater);
+        float totalDragForce = (1 - fraction) * dragAir + (fraction * dragWater);
 
         // Deceleration (a scalar value; ensure you maintain the vector direction):
         float deceleration = totalDragForce / mass;
 
         // Calculate the change in speed over the frame:
-        float deltaSpeed = deceleration * Time.deltaTime;
+        float deltaSpeed = deceleration * Time.fixedDeltaTime;
         // Ensure we don't reverse the velocity if deltaSpeed is larger than the current speed:
         float newSpeed = Mathf.Max(velocityMagnitude - deltaSpeed, 0);
         velocity = velocity.normalized * newSpeed;
+    }
+    // Apply the force of the water current on the ball
+    private void ApplyWaterCurrentForce(float fraction)
+    {
+        // Compute the drag force in water and apply it to the ball
+        float waterForce = ComputeForce(waterSpeed, area, CdWater, rhoWater);
+        // Compute the total force based on the fraction of the ball in water
+        float totalForce = fraction * waterForce;
+        float acc = totalForce / mass;
+        float dealtaSpeed = acc * Time.fixedDeltaTime;
+        // Apply the force in the direction of the water current
+        velocity.x += dealtaSpeed * -1;
+    }
+    // Compute the drag force based on the speed, object area, drag coefficient, and medium density
+    private float ComputeForce(float speed, float objectArea, float dragCoefficient, float mediumDensity)
+    {
+        return 0.5f * dragCoefficient * mediumDensity * objectArea * (speed * speed);
+    }
+    // Compute the fraction of the ball that is submerged in water
+    private float FractionInWater()
+    {
+        float height = transform.position.y - radius;
+        float fraction = 0;
+        if(height < -0.05f)
+        {
+            fraction = Mathf.Lerp(0, 0.5f, transform.position.y/ -0.05f);
+        }
+
+        return fraction;
     }
 }
