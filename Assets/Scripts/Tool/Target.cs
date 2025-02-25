@@ -53,6 +53,12 @@ public class Target : MonoBehaviour
         {
             //Debug.Log("Projectile collided with " + name);
             targetHit = true;
+            BallMovement bm = collision.gameObject.GetComponent<BallMovement>();
+            if(bm)
+            {
+                bm.velocity = Vector3.zero;
+                bm.canSimulate = false;
+            }
         }
         if (collision.gameObject == invisProjectile)
         {
@@ -82,8 +88,14 @@ public class Target : MonoBehaviour
     {
         if (other.gameObject.tag == "Projectile" || other.gameObject == projectile)
         {
-            //Debug.Log("Projectile triggered " + name);
+            Debug.Log("Projectile triggered " + name);
             targetHit = true;
+            BallMovement bm = other.GetComponent<BallMovement>();
+            if(bm)
+            {
+                bm.velocity = Vector3.zero;
+                bm.canSimulate = false;
+            }
         }
         if (other.gameObject == invisProjectile)
         {
