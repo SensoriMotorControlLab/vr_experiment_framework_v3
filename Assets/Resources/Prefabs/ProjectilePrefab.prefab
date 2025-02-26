@@ -1261,8 +1261,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2965745536704717473}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.246, y: -0.05, z: 1.17}
-  m_LocalScale: {x: 2.5, y: 0.001, z: 20}
+  m_LocalPosition: {x: 0.246, y: -0.05, z: 1.309}
+  m_LocalScale: {x: 2.658, y: 0.001, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9092739823578475913}
@@ -2803,6 +2803,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waterSpeed: 0
   velocity: {x: 0, y: 0, z: 0}
+  canSimulate: 1
 --- !u!1 &6983346364055366383
 GameObject:
   m_ObjectHideFlags: 0
@@ -3809,6 +3810,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: grate
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5026272778f2a884fa8da8bdbfc332d3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3917,6 +3923,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: -8.28
+      objectReference: {fileID: 0}
+    - target: {fileID: -5236771382847015824, guid: baed0a7f1b83a64439a334e631f8eec6,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: -5236771382847015824, guid: baed0a7f1b83a64439a334e631f8eec6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: -5236771382847015824, guid: baed0a7f1b83a64439a334e631f8eec6,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -2484921068739079471, guid: baed0a7f1b83a64439a334e631f8eec6,
         type: 3}
@@ -4413,6 +4434,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a7cdf25cb0ae10248939b32a5098ee47,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4542,7 +4568,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 24fd70d88dbaa7d45b1982a5e58520f7,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 24fd70d88dbaa7d45b1982a5e58520f7,
         type: 3}
