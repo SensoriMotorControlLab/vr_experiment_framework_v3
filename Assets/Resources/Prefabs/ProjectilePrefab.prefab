@@ -2816,8 +2816,8 @@ GameObject:
   - component: {fileID: 1466588068931715106}
   - component: {fileID: 953405058667937205}
   - component: {fileID: 4474931241107976432}
-  - component: {fileID: 8646995243441364284}
   - component: {fileID: 6635945378585442347}
+  - component: {fileID: 3092646095007662741}
   m_Layer: 0
   m_Name: OtherBall
   m_TagString: Tool
@@ -2911,33 +2911,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &8646995243441364284
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6983346364055366383}
-  serializedVersion: 4
-  m_Mass: 10
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 256
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 2
 --- !u!82 &6635945378585442347
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3043,6 +3016,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3092646095007662741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6983346364055366383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5ab09270f6a8234cbbb8afe1ec0140d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterSpeed: 0
+  velocity: {x: 0, y: 0, z: 0}
+  canSimulate: 1
 --- !u!1 &7122579574351461332
 GameObject:
   m_ObjectHideFlags: 0

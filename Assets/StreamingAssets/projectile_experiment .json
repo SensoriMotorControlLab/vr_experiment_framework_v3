@@ -70,28 +70,6 @@
       4,
       4
     ],
-    "per_block_inertia": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "per_block_otherBall_inertia": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
     "per_block_debris_spawn_rate": [
       1,
       2,

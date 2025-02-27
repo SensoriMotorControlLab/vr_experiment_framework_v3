@@ -62,7 +62,12 @@ public class Target : MonoBehaviour
         }
         if (collision.gameObject == invisProjectile)
         {
-            Debug.Log("Projectile collided with " + name);
+            BallMovement bm = collision.gameObject.GetComponent<BallMovement>();
+            if(bm)
+            {
+                bm.velocity = Vector3.zero;
+                bm.canSimulate = false;
+            }
             otherTargetHit = true;
         }
     }
@@ -99,7 +104,12 @@ public class Target : MonoBehaviour
         }
         if (other.gameObject == invisProjectile)
         {
-            Debug.Log("Projectile collided with " + name);
+            BallMovement bm = other.GetComponent<BallMovement>();
+            if(bm)
+            {
+                bm.velocity = Vector3.zero;
+                bm.canSimulate = false;
+            }
             otherTargetHit = true;
         }
     }

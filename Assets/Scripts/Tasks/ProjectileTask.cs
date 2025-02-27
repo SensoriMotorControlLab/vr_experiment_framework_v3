@@ -35,11 +35,6 @@ public class ProjectileTask : BaseTask
     [SerializeField]
     GameObject otherWater;
     /// <summary>
-    /// Rigidboy of the actual ball
-    /// </summary>
-    // Rigidbody ballRB;
-    Rigidbody otherBallRB;
-    /// <summary>
     /// Collider to check if the pariticpant hit into the wrong area
     /// </summary>
     [SerializeField]
@@ -157,6 +152,7 @@ public class ProjectileTask : BaseTask
     bool isInviBallComplete = false;
     Target targetScript;
     BallMovement ballMovement;
+    BallMovement invisibleBallMovement;
 
     // Start is called before the first frame update
     void Start()
@@ -229,10 +225,7 @@ public class ProjectileTask : BaseTask
                             launchVel = throwVel * 2.0f;
                         }
                         ballMovement.velocity = launchVel;
-                        // ballRB.velocity = launchForce;
-                        otherBallRB.isKinematic = false;
-                        otherBallRB.useGravity = true;
-                        otherBallRB.velocity = launchVel;
+                        invisibleBallMovement.velocity = launchVel;
                         cursor.SetActive(false);
 
                         IncrementStep();
@@ -385,13 +378,11 @@ public class ProjectileTask : BaseTask
                     if(targetScript.OtherTargetHit)
                     {
                         isInviBallComplete = true;
-                        otherBallRB.isKinematic = true;
                     }
 
-                    else if(otherBallRB.velocity.magnitude <= END_SPEED)
+                    else if(invisibleBallMovement.velocity.magnitude <= END_SPEED)
                     {
                         isInviBallComplete = true;
-                        otherBallRB.isKinematic = true;
                     }
 
                     else
@@ -401,7 +392,6 @@ public class ProjectileTask : BaseTask
                             if(t.OtherTargetHit)
                             {
                                 isInviBallComplete = true;
-                                otherBallRB.isKinematic = true;
                             }
                         }
                     }
@@ -548,15 +538,14 @@ public class ProjectileTask : BaseTask
             otherBall = GameObject.Find("OtherBall");
         }
         ballMovement = ball.GetComponent<BallMovement>();  
-        ballMovement.Reset();  
+        ballMovement.Reset();
+        invisibleBallMovement = otherBall.GetComponent<BallMovement>();
+        invisibleBallMovement.Reset();  
 
         if(outOfBoundsCollider.Count == 0)
             Debug.LogWarning("No out of bounds colliders set");
 
-        // ballRB = ball.GetComponent<Rigidbody>();
-        otherBallRB = otherBall.GetComponent<Rigidbody>();
-        // ballRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
-        otherBallRB.maxAngularVelocity = BALL_MAX_ANGULAR_VEL;
+
         CursorController.Instance.planeOffset = new Vector3(0.0f, -ball.transform.position.y, 0.0f);
         visBallTravelPath = GetComponent<LineRenderer>();
 
@@ -608,22 +597,15 @@ public class ProjectileTask : BaseTask
         CurrentForce currentForce = water.GetComponent<CurrentForce>();
         CurrentForce otherCurrentForce = otherWater.GetComponent<CurrentForce>();
         
-        float radius = ball.GetComponent<SphereCollider>().radius * ball.transform.lossyScale.x;
-        float objectArea = Mathf.PI * radius * radius;
+
         waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
         ballMovement.waterSpeed = waterSpeedJson;
         currentForce.sideForce = waterSpeedJson;
 
-        radius = otherBall.GetComponent<SphereCollider>().radius * otherBall.transform.lossyScale.x;
-        objectArea = Mathf.PI * radius * radius;
-        otherWaterSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_otherBall_water_speed")[currBlock];
-        otherWaterSpeed = ComputeWaterForce(otherWaterSpeed, objectArea);
-        otherCurrentForce.sideForce = otherWaterSpeed;
 
-        waterInertia = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_inertia")[currBlock];
-        currentForce.inertia = waterInertia;
-        otherWaterInertia = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_otherBall_inertia")[currBlock];
-        otherCurrentForce.inertia = otherWaterInertia;
+        otherWaterSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_otherBall_water_speed")[currBlock];
+        invisibleBallMovement.waterSpeed = otherWaterSpeed;
+        otherCurrentForce.sideForce = otherWaterSpeed;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
         debrisSpawner.speed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
@@ -721,12 +703,6 @@ public class ProjectileTask : BaseTask
 
         hitTarget = false;
         
-        // ballRB.isKinematic = true;
-        // ballRB.useGravity = false;
-
-        otherBallRB.isKinematic = true;
-        otherBallRB.useGravity = false;
-        
         ball.transform.position = home.transform.position;
         ball.transform.rotation = Quaternion.identity;
 
@@ -735,6 +711,7 @@ public class ProjectileTask : BaseTask
 
         coroutine = null;
         ballMovement.Reset(); 
+        invisibleBallMovement.Reset();
         handPos.Clear();
         otherBallPos.Clear();
         handPositions.Clear();
