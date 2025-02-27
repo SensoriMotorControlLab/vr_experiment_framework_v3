@@ -572,7 +572,7 @@ public class ProjectileTask : BaseTask
             targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
         }
         targetScale = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_target_width")[currBlock];
-        target.transform.localScale = new Vector3(target.transform.localScale.x, targetScale * target.transform.localScale.y, target.transform.localScale.z);
+        target.transform.localScale = new Vector3(targetScale * target.transform.localScale.x, targetScale * target.transform.localScale.y, target.transform.localScale.z);
 
         poleOne = GameObject.Find("PoleOne");
         poleTwo = GameObject.Find("PoleTwo");
@@ -848,7 +848,6 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["invisibleBall_water_inertia"] = otherWaterInertia;
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
-        session.CurrentTrial.result["launch_angle_error"] = Vector3.Angle(Vector3.right, launchVec) - Mathf.Abs(currentAngle);
         session.CurrentTrial.result["launch_Speed"] = throwVel.magnitude;
 
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
@@ -867,12 +866,6 @@ public class ProjectileTask : BaseTask
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
-        session.CurrentTrial.result["leftPole_position_x"] = poleOne.transform.position.x;
-        session.CurrentTrial.result["leftPole_position_z"] = poleOne.transform.position.z;
-        session.CurrentTrial.result["leftPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleOne.transform.position.x, poleOne.transform.position.z), new Vector2(ball.transform.position.x, ball.transform.position.z));
-        session.CurrentTrial.result["rightPole_position_x"] = poleTwo.transform.position.x;
-        session.CurrentTrial.result["rightPole_position_z"] = poleTwo.transform.position.z;
-        session.CurrentTrial.result["rightPole_distance_from_ball"] = Vector2.Distance(new Vector2(poleTwo.transform.position.x, poleTwo.transform.position.z), new Vector2(ball.transform.position.x, ball.transform.position.z));
         session.CurrentTrial.result["min_pos_from_target_x"] = closestBallPosToTarget.x;
         session.CurrentTrial.result["min_pos_from_target_z"] = closestBallPosToTarget.y;
 

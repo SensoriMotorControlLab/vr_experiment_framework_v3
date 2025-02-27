@@ -69,7 +69,7 @@
       0.25,
       1
     ],
-    "ta1": [0, 0, 0],
+    "ta1": [20, -20, 0],
     "ins1": "Toss the ball to the target."
   }
 }
