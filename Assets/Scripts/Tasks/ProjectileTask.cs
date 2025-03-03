@@ -211,7 +211,7 @@ public class ProjectileTask : BaseTask
                         // ballRB.useGravity = true;
 
                         //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
-                        throwVel = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
+                        throwVel = ExperimentController.Instance.UseVR ? launchVec.magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE * launchVec.magnitude;
                         throwVel.y = 0.0f;
 
                         launchVel = throwVel;
