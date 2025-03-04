@@ -364,7 +364,6 @@ public class InputHandler : MonoBehaviour
     public string GetDominantHandString()
     {
         return domHand;
-        Debug.Log("domHand");
     }
 
     /// <summary>
@@ -631,6 +630,38 @@ public class InputHandler : MonoBehaviour
 
 
         yield return new WaitForEndOfFrame();
+    }
+
+    public bool SendHapticFeedback(string deviceName,float amplitude, float duration, uint channel = 0u)
+    {
+        string deviceToGet = deviceName.Length > 0 ? deviceName : domHand;
+
+        UnityEngine.XR.InputDevice hapticDevice;
+
+        if (deviceToGet == "LeftHand")
+        {
+            hapticDevice = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+
+        }
+        else if(deviceToGet == "RightHand")
+        {
+            hapticDevice = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        }
+        else
+        {
+            hapticDevice = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        }
+
+        if (hapticDevice.TryGetHapticCapabilities(out var capabilities) && capabilities.supportsImpulse)
+        {
+            Debug.Log(deviceName + " trying to send haptic feedback");
+            return hapticDevice.SendHapticImpulse(channel, amplitude, duration);
+        }
+        else
+        {
+            Debug.LogError(deviceName + " had issues with haptic feedback");
+            return false;
+        }
     }
 
     /// <summary>
