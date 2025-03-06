@@ -306,7 +306,7 @@ public class ProjectileTask : BaseTask
                     int points = 0;
 
                     //Ball hit the target
-                    if (targetScript.TargetHit)
+                    if (targetScript.TargetHit && isMainBallComplete == false)
                     {
                         isMainBallComplete = true;
                         // ballRB.isKinematic = true;
@@ -326,7 +326,7 @@ public class ProjectileTask : BaseTask
                         closestDistance = 0.0f;
                     }
                     //Ball slowed down
-                    else if (ballMovement.velocity.magnitude <= END_SPEED)
+                    else if (ballMovement.velocity.magnitude <= END_SPEED && isMainBallComplete == false)
                     {
                         isMainBallComplete = true;
                         // ballRB.isKinematic = true;
@@ -628,7 +628,7 @@ public class ProjectileTask : BaseTask
         waterSurface.GetComponent<Renderer>().material.SetFloat("_Speed", -waterSpeed/20);
 
         //Adjusted water audio based on current water force
-        if (waterSpeedJson > 0.0f || waterSpeedJson < 0.0f)
+        if (waterSpeedJson != 0.0f)
         {
             waterAudio.volume = 0.5f;
 
