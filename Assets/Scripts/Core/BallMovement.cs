@@ -19,10 +19,13 @@ public class BallMovement : MonoBehaviour
 
     public Vector3 velocity = Vector3.zero; // Velocity of the ball
     public bool canSimulate = true;  // Flag to enable/disable simulation
+    float startingHeight = 0;   // Starting height of the ball
+    float distToReachWater = 0.1f;  // Distance to reach the water surface
 
     void Start()
     {
         Reset();
+        startingHeight = transform.position.y;
     }
 
     public void Reset()
@@ -33,6 +36,7 @@ public class BallMovement : MonoBehaviour
         col = GetComponent<SphereCollider>();
         radius = col.radius * transform.lossyScale.x;
         area = Mathf.PI * radius * radius;
+        startingHeight = transform.position.y;
     }
 
     void FixedUpdate()
@@ -48,6 +52,7 @@ public class BallMovement : MonoBehaviour
 
         if(velocity.magnitude > 0)
         {
+            float y = transform.position.y;
             CalculateDeceleration(f);
             if(velocity.magnitude < 0)
             {
@@ -55,13 +60,16 @@ public class BallMovement : MonoBehaviour
             }
             if(transform.position.y > -0.05f)
             {
-                velocity.y += -9.81f * Time.fixedDeltaTime;
+                // velocity.y += -9.81f * Time.fixedDeltaTime;
+                y = Mathf.Lerp(startingHeight, -0.05f, Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(0, 0)) / distToReachWater );
             }
             else
             {
-                velocity.y = 0;
-                transform.position = new Vector3(transform.position.x, -0.05f, transform.position.z);
+                // velocity.y = 0;
+                y = -0.05f;
             }
+
+            transform.position = new Vector3(transform.position.x, y, transform.position.z);
             
         }
     }

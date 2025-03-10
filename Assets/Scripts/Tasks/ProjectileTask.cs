@@ -94,7 +94,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Force to launch the ball
     /// </summary>
-    const float LAUNCH_FORCE = 4.0f;
+    const float LAUNCH_FORCE = 1.0f;
     /// <summary>
     /// Minimum magnitude to be considered a launch
     /// </summary>
