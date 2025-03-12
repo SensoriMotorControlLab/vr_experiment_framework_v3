@@ -98,7 +98,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Minimum magnitude to be considered a launch
     /// </summary>
-    const float MIN_MAG = 0.3f;
+    const float MIN_MAG = 0.5f;
     /// <summary>
     /// Distance to determine the participant is flicking the ball
     /// </summary>
@@ -153,6 +153,7 @@ public class ProjectileTask : BaseTask
     Target targetScript;
     BallMovement ballMovement;
     BallMovement invisibleBallMovement;
+    public GameObject throwWarning;
 
     // Start is called before the first frame update
     void Start()
@@ -179,6 +180,20 @@ public class ProjectileTask : BaseTask
         return direction.normalized;
     }
 
+    void ShowThrowWarning()
+    {
+        throwWarning.SetActive(true);
+        prefabAudio.clip = incorrectAudioClip;
+        prefabAudio.Play();
+        StartCoroutine(HideThrowWarning());
+    }
+
+    IEnumerator HideThrowWarning()
+    {
+        yield return new WaitForSeconds(1.0f);
+        throwWarning.SetActive(false);
+    }
+
     void FixedUpdate()
     {
         switch (currentStep)
@@ -195,7 +210,7 @@ public class ProjectileTask : BaseTask
                         handPositions.Add(cursorPos);
                         handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
                     }
-                    //If button released early
+                    
                     else if (Input.GetButton(buttonCheck))
                     {
                         cursorPos = GetMousePos();
@@ -207,22 +222,21 @@ public class ProjectileTask : BaseTask
                     launchVec = CalculateThrowDirectionSimplified();
                     if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
                     {
+                        Debug.Log("here");
                         // ballRB.isKinematic = false;
                         // ballRB.useGravity = true;
 
                         //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
-                        throwVel = ExperimentController.Instance.UseVR ? launchVec.magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE * launchVec.magnitude;
+                        throwVel = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
                         throwVel.y = 0.0f;
 
                         launchVel = throwVel;
 
-                        if (launchVel.magnitude < MIN_MAG)
-                        {
-                            Debug.Log("The launch force was too small, applying a new force");
-                            Debug.Log("New force " + throwVel * 2.0f);
-                            Debug.Log("New force mag " + (throwVel * 2.0f).magnitude);
+                        Debug.Log("Launch velocity: " + throwVel.magnitude);
 
-                            launchVel = throwVel * 2.0f;
+                        if (throwVel.magnitude < MIN_MAG)
+                        {
+                            return;
                         }
                         ballMovement.velocity = launchVel;
                         invisibleBallMovement.velocity = launchVel;
@@ -231,6 +245,14 @@ public class ProjectileTask : BaseTask
                         IncrementStep();
 
                         stepTime.Add(Time.time);
+                    }
+                    if(Input.GetButtonUp(buttonCheck) && throwVel.magnitude < MIN_MAG)
+                    {
+                        Debug.Log("The throw was too weak, try again");
+                        handPos.Clear();
+                        handPositions.Clear();
+                        launchVec = Vector3.zero;
+                        ShowThrowWarning();
                     }
                 }
                 break;
@@ -664,6 +686,8 @@ public class ProjectileTask : BaseTask
             plane.transform.position = new Vector3(plane.transform.position.x, plane.transform.position.y - 0.075f, plane.transform.position.z);
         }
         invisibleTrailCard = GameObject.Find("InvisibleTrialCard");
+
+        throwWarning.SetActive(false);
     }
 
     float ComputeWaterForce(float waterSpeed, float objectArea, float dragCoefficient = 0.47f, float waterDensity = 1000f)
@@ -743,6 +767,8 @@ public class ProjectileTask : BaseTask
         target.transform.position = new Vector3(x, target.transform.position.y, z);
         currentAngle = targetAngles[currentTrial];
         currentType = ExperimentController.Instance.Session.CurrentTrial.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
+
+        throwWarning.SetActive(false);
     }
 
     private Vector3 GetMousePos()
