@@ -154,6 +154,7 @@ public class ProjectileTask : BaseTask
     BallMovement ballMovement;
     BallMovement invisibleBallMovement;
     public GameObject throwWarning;
+    int slowCounter = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -252,6 +253,7 @@ public class ProjectileTask : BaseTask
                         handPos.Clear();
                         handPositions.Clear();
                         launchVec = Vector3.zero;
+                        slowCounter++;
                         ShowThrowWarning();
                     }
                 }
@@ -747,6 +749,7 @@ public class ProjectileTask : BaseTask
         lineColor = Color.white;
         visBallTravelPath.positionCount = 0;
         visBallTravelPath.SetPositions(ballPos.ToArray());
+        slowCounter = 0;
 
         targetScript = target.transform.GetChild(0).GetComponent<Target>();
 
@@ -852,6 +855,7 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_Speed"] = throwVel.magnitude;
+        session.CurrentTrial.result["slow_counter"] = slowCounter;
 
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
