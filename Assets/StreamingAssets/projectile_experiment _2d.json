@@ -54,12 +54,24 @@
       "ta1",
       "ta1"
     ],
+	"per_block_list_target_pos_x": [
+      "x1",
+      "x1",
+      "x1"
+    ],
+	"per_block_list_target_pos_z": [
+      "z1",
+      "z1",
+      "z1"
+    ],
     "per_block_target_width": [
       0.5,
       0.25,
-      1
+      1.00
     ],
     "ta1": [20, -20, 0],
+	"x1": [-0.5, 0.0, 0.5],
+	"z1":[0.5, 1.0, 0.75],
     "ins1": "Toss the ball to the target."
   }
 }
