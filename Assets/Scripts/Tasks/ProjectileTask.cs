@@ -155,6 +155,9 @@ public class ProjectileTask : BaseTask
     BallMovement invisibleBallMovement;
     public GameObject throwWarning;
     int slowCounter = 0;
+    List<Vector2> launchVelocityTracker = new List<Vector2>();
+    List<float> launchSpeedTracker = new List<float>();
+    List<float> launchAngleTracker = new List<float>();
 
     // Start is called before the first frame update
     void Start()
@@ -206,10 +209,18 @@ public class ProjectileTask : BaseTask
                     {
                         startPos = GetMousePos();
                         cursorPos = startPos;
+                        launchVelocityTracker.Clear();
+                        launchSpeedTracker.Clear();
+                        launchAngleTracker.Clear();
                         handPos.Clear();
                         handPositions.Clear();
                         handPositions.Add(cursorPos);
                         handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
+                        launchVec = CalculateThrowDirectionSimplified();
+                        launchVec.y = 0.0f;
+                        launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
+                        launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
+                        launchAngleTracker.Add(Vector3.Angle(Vector3.right, launchVec));
                     }
                     
                     else if (Input.GetButton(buttonCheck))
@@ -217,10 +228,20 @@ public class ProjectileTask : BaseTask
                         cursorPos = GetMousePos();
                         handPositions.Add(cursorPos);
                         handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
+                        launchVec = CalculateThrowDirectionSimplified();
+                        launchVec.y = 0.0f;
+                        launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
+                        launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
+                        launchAngleTracker.Add(Vector3.Angle(Vector3.right, launchVec));
                     }
+                    // else if (Input.GetButtonUp(buttonCheck))
+                    // {
+                    //     startPos = Vector3.zero;
+                    //     cursorPos = Vector3.zero;
+                    // }
                     //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
 
-                    launchVec = CalculateThrowDirectionSimplified();
+                    
                     if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
                     {
                         Debug.Log("here");
@@ -229,7 +250,6 @@ public class ProjectileTask : BaseTask
 
                         //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
                         throwVel = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
-                        throwVel.y = 0.0f;
 
                         launchVel = throwVel;
 
@@ -741,6 +761,9 @@ public class ProjectileTask : BaseTask
         handPos.Clear();
         otherBallPos.Clear();
         handPositions.Clear();
+        launchVelocityTracker.Clear();
+        launchSpeedTracker.Clear();
+        launchAngleTracker.Clear();
         ballPos.Clear();
         globalBallPos.Clear();
         ballTime.Clear();
@@ -845,6 +868,10 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["target_width"] = targetWidth;
         session.CurrentTrial.result["launch_direction"] = launchVec;
+        session.CurrentTrial.result["before_launch_velocity_x"] = string.Join(",", launchVelocityTracker.Select(i => string.Format($"{i.x:F6}")));
+        session.CurrentTrial.result["before_launch_velocity_z"] = string.Join(",", launchVelocityTracker.Select(i => string.Format($"{i.y:F6}")));
+        session.CurrentTrial.result["before_launch_speed"] = string.Join(",", launchSpeedTracker.Select(i => string.Format($"{i:F6}")));
+        session.CurrentTrial.result["before_launch_angle"] = string.Join(",", launchAngleTracker.Select(i => string.Format($"{i:F6}")));
 
         session.CurrentTrial.result["current_force"] = waterSpeedJson;
         session.CurrentTrial.result["water_inertia"] = waterInertia;
