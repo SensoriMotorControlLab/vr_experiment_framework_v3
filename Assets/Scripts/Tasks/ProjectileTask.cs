@@ -23,6 +23,9 @@ public class ProjectileTask : BaseTask
     List<float> invisBallTime = new List<float>();
     List<float> stepTime = new List<float>();
     List<Vector3> otherBallPos = new List<Vector3>();
+
+    List<float> targetPosX = new List<float>();
+    List<float> targetPosZ = new List<float>();
     /// <summary>
     /// True ball/tool object
     /// </summary>
@@ -583,6 +586,8 @@ public class ProjectileTask : BaseTask
         if (targetAngles.Count == 0)
         {
             targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
+            targetPosX = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_pos_x");
+            targetPosZ = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_pos_z");
         }
         targetScale = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_target_width")[currBlock];
         target.transform.localScale = new Vector3(targetScale * target.transform.localScale.x, targetScale * target.transform.localScale.y, target.transform.localScale.z);
@@ -767,7 +772,7 @@ public class ProjectileTask : BaseTask
         float z = target.transform.position.z;
         // calculate x position based on angle
         float x = Mathf.Tan(targetAngles[currentTrial] * Mathf.Deg2Rad) * z;    
-        target.transform.position = new Vector3(x, target.transform.position.y, z);
+        target.transform.position = new Vector3(targetPosX[currentTrial], target.transform.position.y, targetPosZ[currentTrial]);
         currentAngle = targetAngles[currentTrial];
         currentType = ExperimentController.Instance.Session.CurrentTrial.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
 
