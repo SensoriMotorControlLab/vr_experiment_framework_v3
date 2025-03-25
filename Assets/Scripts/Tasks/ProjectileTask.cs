@@ -20,7 +20,6 @@ public class ProjectileTask : BaseTask
     /// </summary>
     List<Vector3> ballPos = new List<Vector3>();
     List<float> ballTime = new List<float>();
-    List<float> invisBallTime = new List<float>();
     List<float> stepTime = new List<float>();
     List<Vector3> otherBallPos = new List<Vector3>();
 
@@ -31,8 +30,6 @@ public class ProjectileTask : BaseTask
     /// </summary>
     [SerializeField]
     GameObject ball;
-    [SerializeField]
-    GameObject otherBall;
     [SerializeField]
     GameObject water;
     [SerializeField]
@@ -122,8 +119,6 @@ public class ProjectileTask : BaseTask
 
     float waterSpeedJson = 0.0f;
     float waterInertia = 0.0f;
-    float otherWaterSpeed = 0.0f;
-    float otherWaterInertia = 0.0f;
     static int totalScore = 0;
     public TextMeshProUGUI scoreText;
 
@@ -152,10 +147,8 @@ public class ProjectileTask : BaseTask
     private bool isFisrtInvisible = true;
     private GameObject invisibleTrailCard;
     bool isMainBallComplete = false;
-    bool isInviBallComplete = false;
     Target targetScript;
     BallMovement ballMovement;
-    BallMovement invisibleBallMovement;
     public GameObject throwWarning;
     int slowCounter = 0;
     List<Vector2> launchVelocityTracker = new List<Vector2>();
@@ -263,7 +256,6 @@ public class ProjectileTask : BaseTask
                             return;
                         }
                         ballMovement.velocity = launchVel;
-                        invisibleBallMovement.velocity = launchVel;
                         cursor.SetActive(false);
 
                         IncrementStep();
@@ -329,7 +321,7 @@ public class ProjectileTask : BaseTask
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
-                    
+                    ballMovement.canSimulate = true;
                     if(waterSpeedJson >= 0 && absTurning.x < ball.transform.position.x)
                     {
                         absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
@@ -346,7 +338,6 @@ public class ProjectileTask : BaseTask
                     float dot = Vector3.Dot(toTarget, toBall);
                     */
                     Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
-                    Vector3 otherSkewedPos = new Vector3(otherBall.transform.position.x, home.transform.position.y - otherBall.GetComponent<SphereCollider>().bounds.size.y * 3/4, otherBall.transform.position.z);
                     globalBallPos.Add(new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z));
                     
                     string displayMsg = "";
@@ -422,39 +413,13 @@ public class ProjectileTask : BaseTask
                         }
                     }
 
-                    if(targetScript.OtherTargetHit)
-                    {
-                        isInviBallComplete = true;
-                    }
-
-                    else if(invisibleBallMovement.velocity.magnitude <= END_SPEED)
-                    {
-                        isInviBallComplete = true;
-                    }
-
-                    else
-                    {
-                        foreach (Target t in outOfBoundsCollider)
-                        {
-                            if(t.OtherTargetHit)
-                            {
-                                isInviBallComplete = true;
-                            }
-                        }
-                    }
-
                     if(!isMainBallComplete)
                     {
                         ballPos.Add(skewedPos);
                         ballTime.Add(Time.time);
                     }
-                    if(!isInviBallComplete)
-                    {
-                        otherBallPos.Add(otherSkewedPos);
-                        invisBallTime.Add(Time.time);
-                    }
 
-                    if(isMainBallComplete && isInviBallComplete)
+                    if(isMainBallComplete)
                     {
                         ballAudio.Stop();
                         ShowFeedback(points, displayMsg);
@@ -463,7 +428,6 @@ public class ProjectileTask : BaseTask
                         stepTime.Add(Time.time);
 
                         isMainBallComplete = false;
-                        isInviBallComplete = false;
                     }
                 }
                 break;
@@ -579,15 +543,12 @@ public class ProjectileTask : BaseTask
         maxSteps = 4;
         int currBlock = ExperimentController.Instance.Session.currentBlockNum - 1;
 
-        if (!ball || !otherBall)
+        if (!ball)
         {
             ball = GameObject.Find("Ball");
-            otherBall = GameObject.Find("OtherBall");
         }
         ballMovement = ball.GetComponent<BallMovement>();  
         ballMovement.Reset();
-        invisibleBallMovement = otherBall.GetComponent<BallMovement>();
-        invisibleBallMovement.Reset();  
 
         if(outOfBoundsCollider.Count == 0)
             Debug.LogWarning("No out of bounds colliders set");
@@ -595,8 +556,6 @@ public class ProjectileTask : BaseTask
 
         CursorController.Instance.planeOffset = new Vector3(0.0f, -ball.transform.position.y, 0.0f);
         visBallTravelPath = GetComponent<LineRenderer>();
-
-        otherBall.transform.position = ball.transform.position;
 
         //Set the renderer for pinpall path
         visBallTravelPath.startWidth = visBallTravelPath.endWidth = LINE_SIZE;
@@ -644,17 +603,11 @@ public class ProjectileTask : BaseTask
             
 
         CurrentForce currentForce = water.GetComponent<CurrentForce>();
-        CurrentForce otherCurrentForce = otherWater.GetComponent<CurrentForce>();
         
 
         waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
         ballMovement.waterSpeed = waterSpeedJson;
         currentForce.sideForce = waterSpeedJson;
-
-
-        otherWaterSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_otherBall_water_speed")[currBlock];
-        invisibleBallMovement.waterSpeed = otherWaterSpeed;
-        otherCurrentForce.sideForce = otherWaterSpeed;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
         debrisSpawner.speed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
@@ -757,14 +710,9 @@ public class ProjectileTask : BaseTask
         ball.transform.position = home.transform.position;
         ball.transform.rotation = Quaternion.identity;
 
-        otherBall.transform.position = home.transform.position;
-        otherBall.transform.rotation = Quaternion.identity;
-
         coroutine = null;
         ballMovement.Reset(); 
-        invisibleBallMovement.Reset();
         handPos.Clear();
-        otherBallPos.Clear();
         handPositions.Clear();
         launchVelocityTracker.Clear();
         launchSpeedTracker.Clear();
@@ -772,7 +720,6 @@ public class ProjectileTask : BaseTask
         ballPos.Clear();
         globalBallPos.Clear();
         ballTime.Clear();
-        invisBallTime.Clear();
         stepTime.Clear();
         lineColor = Color.white;
         visBallTravelPath.positionCount = 0;
@@ -882,9 +829,6 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["water_inertia"] = waterInertia;
         session.CurrentTrial.result["water_speed_m/s"] = waterSpeed;
 
-        session.CurrentTrial.result["invisibleBall_current_force"] = otherWaterSpeed;
-        session.CurrentTrial.result["invisibleBall_water_inertia"] = otherWaterInertia;
-
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_Speed"] = throwVel.magnitude;
         session.CurrentTrial.result["slow_counter"] = slowCounter;
@@ -896,12 +840,6 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["final_ball_pos_z"] = ballPos[ballPos.Count - 1].z;
         session.CurrentTrial.result["turning_absolute_x"] = absTurning.x;
         session.CurrentTrial.result["turning_absolute_y"] = absTurning.y;
-
-        session.CurrentTrial.result["invisibleBall_pos_x"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.x:F6}")));
-        session.CurrentTrial.result["invisibleBall_pos_z"] = string.Join(",", otherBallPos.Select(i => string.Format($"{i.z:F6}")));
-        session.CurrentTrial.result["invisibleBall_time"] = string.Join(",", invisBallTime.Select(i => string.Format($"{i:F6}")));
-        session.CurrentTrial.result["final_invisibleBall_pos_x"] = otherBallPos[otherBallPos.Count - 1].x;
-        session.CurrentTrial.result["final_invisibleBall_pos_z"] = otherBallPos[otherBallPos.Count - 1].z;
 
 
         session.CurrentTrial.result["distance_from_target"] = closestDistance;
