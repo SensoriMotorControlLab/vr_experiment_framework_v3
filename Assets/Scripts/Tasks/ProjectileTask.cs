@@ -240,16 +240,10 @@ public class ProjectileTask : BaseTask
                     
                     if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
                     {
-                        Debug.Log("here");
-                        // ballRB.isKinematic = false;
-                        // ballRB.useGravity = true;
-
                         //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
                         throwVel = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
 
                         launchVel = throwVel;
-
-                        Debug.Log("Launch velocity: " + throwVel.magnitude);
 
                         if (throwVel.magnitude < MIN_MAG)
                         {
@@ -257,8 +251,9 @@ public class ProjectileTask : BaseTask
                         }
                         ballMovement.velocity = launchVel;
                         cursor.SetActive(false);
-
+                        InputHandler.Instance.SendHapticFeedback("RightHand", 0.9f, 1.0f);
                         IncrementStep();
+                        
 
                         stepTime.Add(Time.time);
                     }

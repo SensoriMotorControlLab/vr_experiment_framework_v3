@@ -251,6 +251,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5056660077732047907, guid: 5899de6eee158cd4cbc3e43193b50e3f,
         type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5056660077732047907, guid: 5899de6eee158cd4cbc3e43193b50e3f,
+        type: 3}
       propertyPath: m_InteractionManager
       value: 
       objectReference: {fileID: 1576985805}
@@ -258,6 +263,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: XR Origin
+      objectReference: {fileID: 0}
+    - target: {fileID: 8983997219684821856, guid: 5899de6eee158cd4cbc3e43193b50e3f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8983997219684821856, guid: 5899de6eee158cd4cbc3e43193b50e3f,
         type: 3}
