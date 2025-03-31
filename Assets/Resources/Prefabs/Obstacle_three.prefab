@@ -126,11 +126,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: faf99328541021f429ce12ed77248612,
         type: 3}
       propertyPath: m_LocalRotation.w
-<<<<<<< HEAD
-      value: -0.8433914
-=======
       value: -0.9816272
->>>>>>> origin/projectile_start_in_water
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: faf99328541021f429ce12ed77248612,
         type: 3}
@@ -140,11 +136,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: faf99328541021f429ce12ed77248612,
         type: 3}
       propertyPath: m_LocalRotation.y
-<<<<<<< HEAD
-      value: 0.53729963
-=======
       value: 0.19080903
->>>>>>> origin/projectile_start_in_water
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: faf99328541021f429ce12ed77248612,
         type: 3}

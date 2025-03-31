@@ -251,7 +251,10 @@ public class ProjectileTask : BaseTask
                         }
                         ballMovement.velocity = launchVel;
                         cursor.SetActive(false);
-                        InputHandler.Instance.SendHapticFeedback("RightHand", 0.9f, 1.0f);
+
+                        if(ExperimentController.Instance.UseVR)
+                            InputHandler.Instance.SendHapticFeedback("RightHand", 0.9f, 1.0f);
+
                         IncrementStep();
                         
 

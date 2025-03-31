@@ -126,38 +126,22 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d0e38724778c3ec43964657048f68bf9,
         type: 3}
       propertyPath: m_LocalRotation.w
-<<<<<<< HEAD
-      value: -0.66014105
-=======
       value: 0.39540905
->>>>>>> origin/projectile_start_in_water
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d0e38724778c3ec43964657048f68bf9,
         type: 3}
       propertyPath: m_LocalRotation.x
-<<<<<<< HEAD
-      value: 0.66014105
-=======
       value: -0.39540905
->>>>>>> origin/projectile_start_in_water
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d0e38724778c3ec43964657048f68bf9,
         type: 3}
       propertyPath: m_LocalRotation.y
-<<<<<<< HEAD
-      value: -0.25340444
-=======
       value: -0.5862181
->>>>>>> origin/projectile_start_in_water
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d0e38724778c3ec43964657048f68bf9,
         type: 3}
       propertyPath: m_LocalRotation.z
-<<<<<<< HEAD
-      value: -0.25340444
-=======
       value: -0.5862181
->>>>>>> origin/projectile_start_in_water
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d0e38724778c3ec43964657048f68bf9,
         type: 3}
