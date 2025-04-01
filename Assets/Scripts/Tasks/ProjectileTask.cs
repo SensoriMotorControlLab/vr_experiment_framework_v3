@@ -8,6 +8,7 @@ using System.Text;
 using UXF;
 using TMPro;
 using UnityEditor;
+using System.Diagnostics.Eventing.Reader;
 
 public class ProjectileTask : BaseTask
 {
@@ -154,6 +155,7 @@ public class ProjectileTask : BaseTask
     List<Vector2> launchVelocityTracker = new List<Vector2>();
     List<float> launchSpeedTracker = new List<float>();
     List<float> launchAngleTracker = new List<float>();
+    float targetDistance = 0.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -363,6 +365,30 @@ public class ProjectileTask : BaseTask
                     }
                     //Ball slowed down
                     else if (ballMovement.velocity.magnitude <= END_SPEED && isMainBallComplete == false)
+                    {
+                        isMainBallComplete = true;
+                        // ballRB.isKinematic = true;
+
+                        if(ball.transform.position.x > target.transform.position.x)
+                        {
+                            finalBallState = "To the right";
+                        }
+                        else
+                        {
+                            finalBallState = "To the left";
+                        }
+
+                        lineColor = Color.yellow;
+                        hitTarget = false;
+
+                        points = CalculatePoints();
+                        totalScore += points;
+
+                        displayMsg = "Ball came to a stop\n" + points + " points";
+
+                        prefabAudio.clip = incorrectAudioClip;
+                    }
+                    else if((targetDistance < Vector3.Distance(Vector3.zero, ball.transform.position) || ball.transform.position.z > targetPosZ[currentTrial]) && waterSpeed == 0)
                     {
                         isMainBallComplete = true;
                         // ballRB.isKinematic = true;
@@ -743,6 +769,7 @@ public class ProjectileTask : BaseTask
         target.transform.position = new Vector3(targetPosX[currentTrial], target.transform.position.y, targetPosZ[currentTrial]);
         currentAngle = targetAngles[currentTrial];
         currentType = ExperimentController.Instance.Session.CurrentTrial.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
+        targetDistance = Vector3.Distance(target.transform.position, ball.transform.position);
 
         throwWarning.SetActive(false);
     }
