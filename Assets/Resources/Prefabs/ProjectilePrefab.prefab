@@ -4336,12 +4336,12 @@ PrefabInstance:
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
       propertyPath: spawnAreaWidth
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
       propertyPath: spawnAreaHeight
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}
