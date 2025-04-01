@@ -806,12 +806,9 @@ public class ProjectileTask : BaseTask
         Session session = ExperimentController.Instance.Session;
 
         session.CurrentTrial.result["hand"] = "r";
-        // session.CurrentTrial.result["Head Position"]
         session.CurrentTrial.result["target_hit"] = targetScript.TargetHit;
-        session.CurrentTrial.result["invisibleBall_target_hit"] = targetScript.OtherTargetHit;
         session.CurrentTrial.result["final_ball_state"] = finalBallState;
         session.CurrentTrial.result["type"] = currentType;
-        //session.CurrentTrial.result["target_position"] = target.transform.position;
         session.CurrentTrial.result["target_position_x"] = target.transform.position.x;
         session.CurrentTrial.result["target_position_y"] = target.transform.position.y;
         session.CurrentTrial.result["target_position_z"] = target.transform.position.z;
