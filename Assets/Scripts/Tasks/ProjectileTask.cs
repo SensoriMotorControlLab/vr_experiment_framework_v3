@@ -20,9 +20,9 @@ public class ProjectileTask : BaseTask
     /// Visible ball travel position
     /// </summary>
     List<Vector3> ballPos = new List<Vector3>();
+    List<Vector3> ballPosInTarget = new List<Vector3>();
     List<float> ballTime = new List<float>();
     List<float> stepTime = new List<float>();
-    List<Vector3> otherBallPos = new List<Vector3>();
 
     List<float> targetPosX = new List<float>();
     List<float> targetPosZ = new List<float>();
@@ -77,6 +77,10 @@ public class ProjectileTask : BaseTask
     /// </summary>
     Vector3 endPos;
     /// <summary>
+    /// The position the ball was closest to the center of the target
+    /// </summary>
+    Vector3 closestToCenter;
+    /// <summary>
     /// The normalized vector the ball will launch
     /// </summary>
     Vector3 launchVec;
@@ -96,6 +100,10 @@ public class ProjectileTask : BaseTask
     /// Force to launch the ball
     /// </summary>
     const float LAUNCH_FORCE = 1.0f;
+    /// <summary>
+    /// Distance for ball to be from target before incrementing step
+    /// </summary>
+    const float PAST_TARGET_DIST = 0.05f;
     /// <summary>
     /// Minimum magnitude to be considered a launch
     /// </summary>
@@ -297,6 +305,13 @@ public class ProjectileTask : BaseTask
         
     }
 
+    IEnumerator DelayedIncrementStep(float timeInSeconds)
+    {
+        yield return new WaitForSeconds(timeInSeconds);
+
+        IncrementStep();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -447,6 +462,7 @@ public class ProjectileTask : BaseTask
                     {
                         ballAudio.Stop();
                         ShowFeedback(points, displayMsg);
+                        UpdateScoreboardUI();
                         IncrementStep();
 
                         stepTime.Add(Time.time);
@@ -455,14 +471,53 @@ public class ProjectileTask : BaseTask
                     }
                 }
                 break;
-            //Displaying feedback
+            //Let the ball move until a certain condition
             case 3:
                 {
-                    DebugDrawLaunchVec();
+                    if (targetScript.IsColliding)
+                    {
+                        ballMovement.canSimulate = true;
+
+                        Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3 / 4, ball.transform.position.z);
+
+                        ballPosInTarget.Add(skewedPos);
+                    }
+                    //Ball has exited the target or has not hit the target
+                    else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST)
+                    {
+                        ballMovement.velocity = Vector3.zero;
+                        ballMovement.canSimulate = false;
+
+                        if (ballPosInTarget.Count == 0)
+                        {
+                            ballPosInTarget.Add(new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3 / 4, ball.transform.position.z));
+                        }
+
+                        closestToCenter = ballPosInTarget[0];
+
+                        for(int i = 1; i < ballPosInTarget.Count; i++)
+                        {
+                            Vector3 v = ballPosInTarget[i];
+                            float smallestDist = Vector3.Distance(target.transform.position, closestToCenter);
+                            float dist = Vector3.Distance(target.transform.position, v);
+
+                            if(dist < smallestDist)
+                            {
+                                closestToCenter = v;
+                            }
+                        }
+
+                        IncrementStep();
+                    }
+                }
+                break;
+            //Displaying feedback
+            case 4:
+                {
+
                 }
                 break;
         }
-        UpdateScoreboardUI();
     }
 
     private void ShowFeedback(int points, string feedbackMsg)
@@ -479,7 +534,7 @@ public class ProjectileTask : BaseTask
         {
             ballCanvas.transform.position = new Vector3(0.0f, -100.0f, 0.0f);
             ballDisplayText.text = "";
-            IncrementStep();
+            //IncrementStep();
         }
     }
 
@@ -504,7 +559,7 @@ public class ProjectileTask : BaseTask
             yield return null;
         }
 
-        IncrementStep();
+        //IncrementStep();
         yield return new WaitForEndOfFrame();
     }
 
@@ -728,6 +783,7 @@ public class ProjectileTask : BaseTask
 
         startPos = Vector3.zero;
         endPos = Vector3.zero;
+        closestToCenter = Vector3.zero;
 
         hitTarget = false;
         
@@ -742,6 +798,7 @@ public class ProjectileTask : BaseTask
         launchSpeedTracker.Clear();
         launchAngleTracker.Clear();
         ballPos.Clear();
+        ballPosInTarget.Clear();
         globalBallPos.Clear();
         ballTime.Clear();
         stepTime.Clear();
@@ -772,6 +829,7 @@ public class ProjectileTask : BaseTask
         targetDistance = Vector3.Distance(target.transform.position, ball.transform.position);
 
         throwWarning.SetActive(false);
+        UpdateScoreboardUI();
     }
 
     private Vector3 GetMousePos()
@@ -858,6 +916,8 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
+        session.CurrentTrial.result["closest_center_ball_pos_x"] = closestToCenter.x;
+        session.CurrentTrial.result["closest_center_ball_pos_z"] = closestToCenter.z;
         session.CurrentTrial.result["final_ball_pos_x"] = ballPos[ballPos.Count - 1].x;
         session.CurrentTrial.result["final_ball_pos_z"] = ballPos[ballPos.Count - 1].z;
         session.CurrentTrial.result["turning_absolute_x"] = absTurning.x;

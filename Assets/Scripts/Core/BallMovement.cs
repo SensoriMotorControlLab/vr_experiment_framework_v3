@@ -51,14 +51,16 @@ public class BallMovement : MonoBehaviour
         ApplyWaterCurrentForce();
         transform.position += velocity * Time.fixedDeltaTime;
 
-        if(velocity.magnitude > 0)
+        if(velocity.magnitude > 0.0f)
         {
             float y = transform.position.y;
             CalculateDeceleration();
+            
             if(velocity.magnitude < 0)
             {
                 velocity = Vector3.zero;
             }
+            
             // if(transform.position.y > -0.05f)
             // {
             //     // velocity.y += -9.81f * Time.fixedDeltaTime;
