@@ -115,7 +115,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Time in seconds to display a prompt
     /// </summary>
-    const float DISPLAY_TIME = 0.5f;
+    const float DISPLAY_TIME = 1.5f;
     /// <summary>
     /// Width of the line rendered visible ball path complete
     /// </summary>
@@ -337,7 +337,10 @@ public class ProjectileTask : BaseTask
             case 2:
                 {
                     ballMovement.canSimulate = true;
-                    if(waterSpeedJson >= 0 && absTurning.x < ball.transform.position.x)
+                    string displayMsg = "";
+                    int points = 0;
+
+                    if (waterSpeedJson >= 0 && absTurning.x < ball.transform.position.x)
                     {
                         absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
                     }
@@ -345,7 +348,8 @@ public class ProjectileTask : BaseTask
                     {
                         absTurning = new Vector2 (ball.transform.position.x, ball.transform.position.z);
                     }
-                    DebugDrawLaunchVec();
+
+                    //DebugDrawLaunchVec();
                     ClosestPointToTarget(ball.transform.position);
                     /*
                     Vector3 toTarget = target.transform.position - home.transform.position;
@@ -354,9 +358,6 @@ public class ProjectileTask : BaseTask
                     */
                     Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
                     globalBallPos.Add(new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z));
-                    
-                    string displayMsg = "";
-                    int points = 0;
 
                     //Ball hit the target
                     if (targetScript.TargetHit && isMainBallComplete == false)
@@ -458,7 +459,71 @@ public class ProjectileTask : BaseTask
                         ballTime.Add(Time.time);
                     }
 
-                    if(isMainBallComplete)
+                    //Check if launch vector is going against the water
+                    if (waterSpeed != 0.0f && !isMainBallComplete)
+                    {
+                        float nWaterSpeed = -waterSpeed;
+                        Bounds ballBounds = ball.GetComponent<Collider>().bounds;
+                        float checkX;
+
+                        //Moving to the left
+                        if (nWaterSpeed < 0)
+                        {
+                            checkX = home.transform.position.x < target.transform.position.x ? home.transform.position.x : target.transform.position.x;
+                            if (ball.transform.position.x < checkX)
+                            {
+                                isMainBallComplete = true;
+                                hitTarget = false;
+                                displayMsg = "THROW AGAINST THE CURRENT";
+                                prefabAudio.clip = incorrectAudioClip;
+                            }
+                        }
+                        //Moving to the right
+                        else if (nWaterSpeed > 0)
+                        {
+                            checkX = home.transform.position.x > target.transform.position.x ? home.transform.position.x : target.transform.position.x;
+
+                            if (ball.transform.position.x > checkX)
+                            {
+                                isMainBallComplete = true;
+                                hitTarget = false;
+                                displayMsg = "THROW AGAINST THE CURRENT";
+                                prefabAudio.clip = incorrectAudioClip;
+                            }
+                        }
+                        /*
+                        Vector3 waterDireciton = new Vector3(-waterSpeed, ball.transform.position.y, 0.0f);
+                        Vector3 targetToBall = ball.transform.position - target.transform.position;
+
+                        float dot = Vector3.Dot(targetToBall, waterDireciton);
+
+                        //Ball is with current, fail trial
+                        if (dot > 0)
+                        {
+                            Debug.Log("Ball has been thrown in same direction of current");
+                            Debug.Log("Dot " + dot);
+                            Debug.Log("Direciton " + water);
+                            Debug.Log("TargetToBall " + dot);
+
+                            isMainBallComplete = true;
+                            hitTarget = false;
+                            displayMsg = "THROW AGAINST THE CURRENT";
+                            prefabAudio.clip = incorrectAudioClip;
+                        }
+                        //Ball is against current, do nothing
+                        else if (dot < 0)
+                        {
+                            Debug.Log("Ball has been thrown in opposite direction of current");
+                        }
+                        //Perpindicular with current do nothing
+                        else
+                        {
+
+                        }
+                        */
+                    }
+
+                    if (isMainBallComplete)
                     {
                         ballAudio.Stop();
                         ShowFeedback(points, displayMsg);
@@ -474,6 +539,7 @@ public class ProjectileTask : BaseTask
             //Let the ball move until a certain condition
             case 3:
                 {
+                    //While the ball is in the collider
                     if (targetScript.IsColliding)
                     {
                         ballMovement.canSimulate = true;
@@ -506,7 +572,8 @@ public class ProjectileTask : BaseTask
                                 closestToCenter = v;
                             }
                         }
-
+                        Debug.Log(ballPos.Count);
+                        //StartCoroutine(DelayedIncrementStep(0.5f));
                         IncrementStep();
                     }
                 }
@@ -525,7 +592,8 @@ public class ProjectileTask : BaseTask
         if (taskType != "invisible")
         {
             StartCoroutine(DisplayMessage(feedbackMsg));
-            ballCanvas.transform.position = ballPos[ballPos.Count - 1];
+            int index = ballPos.Count - 1 > 0 ? ballPos.Count - 1 : 0;
+            ballCanvas.transform.position = ballPos[index];
             ballDisplayText.text = "+" + points;
 
             prefabAudio.Play();
@@ -759,6 +827,7 @@ public class ProjectileTask : BaseTask
         base.TaskBegin();
         ball.GetComponent<MeshRenderer>().enabled = true;
         closestDistance = float.MaxValue;
+        StopAllCoroutines();
 
         if(taskType == "invisible")
         {
