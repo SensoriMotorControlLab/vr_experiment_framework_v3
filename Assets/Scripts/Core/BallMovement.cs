@@ -94,19 +94,21 @@ public class BallMovement : MonoBehaviour
         float deltaSpeed = deceleration * Time.fixedDeltaTime;
         // Ensure we don't reverse the velocity if deltaSpeed is larger than the current speed:
         float newSpeed = Mathf.Max(velocityMagnitude - deltaSpeed, 0);
+
         velocity = velocity.normalized * newSpeed;
     }
     // Apply the force of the water current on the ball
     private void ApplyWaterCurrentForce()
     {
+        float direction = waterSpeed >= 0.0f ? 1 : -1;
         // Compute the drag force in water and apply it to the ball
         float waterForce = ComputeForce(waterSpeed, area, CdWater, rhoWater);
         // Compute the total force based on the fraction of the ball in water
         float totalForce = 0.5f * waterForce;
         float acc = totalForce / mass;
-        float dealtaSpeed = acc * Time.fixedDeltaTime;
+        float deltaSpeed = acc * Time.fixedDeltaTime;
         // Apply the force in the direction of the water current
-        velocity.x += dealtaSpeed * -1;
+        velocity.x += deltaSpeed * direction;
     }
     // Compute the drag force based on the speed, object area, drag coefficient, and medium density
     private float ComputeForce(float speed, float objectArea, float dragCoefficient, float mediumDensity)
