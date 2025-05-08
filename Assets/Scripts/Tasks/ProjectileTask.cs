@@ -22,6 +22,7 @@ public class ProjectileTask : BaseTask
     List<Vector3> ballPos = new List<Vector3>();
     List<Vector3> ballPosInTarget = new List<Vector3>();
     List<float> ballTime = new List<float>();
+    List<float> ballDistToTarget = new List<float>();
     List<float> stepTime = new List<float>();
 
     List<float> targetPosX = new List<float>();
@@ -308,7 +309,7 @@ public class ProjectileTask : BaseTask
     IEnumerator DelayedIncrementStep(float timeInSeconds)
     {
         yield return new WaitForSeconds(timeInSeconds);
-
+        
         IncrementStep();
     }
 
@@ -404,7 +405,7 @@ public class ProjectileTask : BaseTask
 
                         prefabAudio.clip = incorrectAudioClip;
                     }
-                    else if((targetDistance < Vector3.Distance(Vector3.zero, ball.transform.position) || ball.transform.position.z > targetPosZ[currentTrial]) && waterSpeed == 0)
+                    else if((targetDistance < Vector3.Distance(Vector3.zero, ball.transform.position) || ball.transform.position.z > targetPosZ[currentTrial]) && waterSpeed == 0 && !isMainBallComplete)
                     {
                         isMainBallComplete = true;
                         // ballRB.isKinematic = true;
@@ -429,7 +430,7 @@ public class ProjectileTask : BaseTask
                         prefabAudio.clip = incorrectAudioClip;
                     }
                     //Ball went out of bounds
-                    else
+                    else if(!isMainBallComplete)
                     {
                         foreach (Target t in outOfBoundsCollider)
                         {
@@ -456,6 +457,7 @@ public class ProjectileTask : BaseTask
                     if(!isMainBallComplete)
                     {
                         ballPos.Add(skewedPos);
+                        ballDistToTarget.Add(Vector3.Distance(ball.transform.position, target.transform.position));
                         ballTime.Add(Time.time);
                     }
 
@@ -470,10 +472,17 @@ public class ProjectileTask : BaseTask
                         if (nWaterSpeed < 0)
                         {
                             checkX = home.transform.position.x < target.transform.position.x ? home.transform.position.x : target.transform.position.x;
+                            checkX -= ballBounds.size.x * 3;
                             if (ball.transform.position.x < checkX)
                             {
                                 isMainBallComplete = true;
                                 hitTarget = false;
+
+                                //Stop the ball
+                                ballMovement.velocity = Vector3.zero;
+                                ballMovement.canSimulate = false;
+                                ballAudio.Stop();
+
                                 displayMsg = "THROW AGAINST THE CURRENT";
                                 prefabAudio.clip = incorrectAudioClip;
                             }
@@ -482,11 +491,18 @@ public class ProjectileTask : BaseTask
                         else if (nWaterSpeed > 0)
                         {
                             checkX = home.transform.position.x > target.transform.position.x ? home.transform.position.x : target.transform.position.x;
+                            checkX += ballBounds.size.x * 3;
 
                             if (ball.transform.position.x > checkX)
                             {
                                 isMainBallComplete = true;
                                 hitTarget = false;
+
+                                //Stop the ball
+                                ballMovement.velocity = Vector3.zero;
+                                ballMovement.canSimulate = false;
+                                ballAudio.Stop();
+
                                 displayMsg = "THROW AGAINST THE CURRENT";
                                 prefabAudio.clip = incorrectAudioClip;
                             }
@@ -525,14 +541,13 @@ public class ProjectileTask : BaseTask
 
                     if (isMainBallComplete)
                     {
-                        ballAudio.Stop();
                         ShowFeedback(points, displayMsg);
                         UpdateScoreboardUI();
                         IncrementStep();
 
                         stepTime.Add(Time.time);
 
-                        isMainBallComplete = false;
+                        //isMainBallComplete = false;
                     }
                 }
                 break;
@@ -551,8 +566,10 @@ public class ProjectileTask : BaseTask
                     //Ball has exited the target or has not hit the target
                     else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST)
                     {
+                        //Stop the ball
                         ballMovement.velocity = Vector3.zero;
                         ballMovement.canSimulate = false;
+                        ballAudio.Stop();
 
                         if (ballPosInTarget.Count == 0)
                         {
@@ -572,9 +589,9 @@ public class ProjectileTask : BaseTask
                                 closestToCenter = v;
                             }
                         }
-                        Debug.Log(ballPos.Count);
-                        //StartCoroutine(DelayedIncrementStep(0.5f));
-                        IncrementStep();
+                        //Delay before increment to let feedback show
+                        StartCoroutine(DelayedIncrementStep(1.0f));
+                        //IncrementStep();
                     }
                 }
                 break;
@@ -609,7 +626,7 @@ public class ProjectileTask : BaseTask
 
     IEnumerator DisplayMessage(string displayMessage = "")
     {
-        float delayTime = 0.0f;
+        //float delayTime = 0.0f;
 
         visBallTravelPath.positionCount = globalBallPos.Count;
         visBallTravelPath.SetPositions(globalBallPos.ToArray());
@@ -620,15 +637,16 @@ public class ProjectileTask : BaseTask
         {
             displayText.text = displayMessage;
         }
-
+        /*
         while (delayTime <= DISPLAY_TIME)
         {
             delayTime += Time.fixedDeltaTime;
             yield return null;
         }
 
-        //IncrementStep();
-        yield return new WaitForEndOfFrame();
+        IncrementStep();
+        */
+        yield return new WaitForSeconds(DISPLAY_TIME);
     }
 
     private void UpdateScoreboardUI()
@@ -855,6 +873,7 @@ public class ProjectileTask : BaseTask
         closestToCenter = Vector3.zero;
 
         hitTarget = false;
+        isMainBallComplete = false;
         
         ball.transform.position = home.transform.position;
         ball.transform.rotation = Quaternion.identity;
@@ -867,6 +886,7 @@ public class ProjectileTask : BaseTask
         launchSpeedTracker.Clear();
         launchAngleTracker.Clear();
         ballPos.Clear();
+        ballDistToTarget.Clear();
         ballPosInTarget.Clear();
         globalBallPos.Clear();
         ballTime.Clear();
@@ -985,6 +1005,7 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["ball_pos_x"] = string.Join(",", ballPos.Select(i => string.Format($"{i.x:F6}")));
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
+        session.CurrentTrial.result["ball_dist_from_target"] = string.Join(",", ballDistToTarget.Select(i => string.Format($"{i:F6}")));
         session.CurrentTrial.result["closest_center_ball_pos_x"] = closestToCenter.x;
         session.CurrentTrial.result["closest_center_ball_pos_z"] = closestToCenter.z;
         session.CurrentTrial.result["final_ball_pos_x"] = ballPos[ballPos.Count - 1].x;
