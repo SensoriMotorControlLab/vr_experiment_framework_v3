@@ -464,7 +464,7 @@ public class ProjectileTask : BaseTask
                     //Check if launch vector is going against the water
                     if (waterSpeed != 0.0f && !isMainBallComplete)
                     {
-                        float nWaterSpeed = -waterSpeed;
+                        float nWaterSpeed = waterSpeed;
                         Bounds ballBounds = ball.GetComponent<Collider>().bounds;
                         float checkX;
 
@@ -767,12 +767,9 @@ public class ProjectileTask : BaseTask
         }
             
 
-        CurrentForce currentForce = water.GetComponent<CurrentForce>();
-        
-
         waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
+        Debug.Log("Current Water Speed " + waterSpeedJson);
         ballMovement.waterSpeed = waterSpeedJson;
-        currentForce.sideForce = waterSpeedJson;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
         debrisSpawner.speed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
@@ -790,9 +787,10 @@ public class ProjectileTask : BaseTask
             absTurning.x = float.MaxValue;
         }
 
-        waterSpeed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
+        waterSpeed = waterSpeedJson;
         GameObject waterSurface = GameObject.Find("WaterSurface");
-        waterSurface.GetComponent<Renderer>().material.SetFloat("_Speed", -waterSpeed/20);
+
+        waterSurface.GetComponent<Renderer>().material.SetFloat("_Speed", waterSpeed/20);
 
         //Adjusted water audio based on current water force
         if (waterSpeedJson != 0.0f)

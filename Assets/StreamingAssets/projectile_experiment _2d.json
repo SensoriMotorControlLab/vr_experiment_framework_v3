@@ -26,8 +26,8 @@
     ],
     "per_block_water_speed": [
       0,
-      1,
-      2
+      -1,
+      -2
     ],
     "per_block_otherBall_water_speed": [
       2,
