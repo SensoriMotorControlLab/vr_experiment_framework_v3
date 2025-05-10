@@ -482,6 +482,7 @@ public class ProjectileTask : BaseTask
                                 ballMovement.canSimulate = false;
                                 ballAudio.Stop();
 
+                                finalBallState = "Missed";
                                 displayMsg = "THROW AGAINST THE CURRENT";
                                 prefabAudio.clip = incorrectAudioClip;
                             }
@@ -503,6 +504,7 @@ public class ProjectileTask : BaseTask
                                 ballMovement.canSimulate = false;
                                 ballAudio.Stop();
 
+                                finalBallState = "Missed";
                                 displayMsg = "THROW AGAINST THE CURRENT";
                                 prefabAudio.clip = incorrectAudioClip;
                             }
@@ -514,16 +516,16 @@ public class ProjectileTask : BaseTask
                         ShowFeedback(points, displayMsg);
                         UpdateScoreboardUI();
                         IncrementStep();
-
+                        //This is in case of a weird edge case where the ball stops inside the target
+                        StartCoroutine(DelayedIncrementStep(3.0f));
                         stepTime.Add(Time.time);
-
-                        //isMainBallComplete = false;
                     }
                 }
                 break;
             //Let the ball move until a certain condition
             case 3:
                 {
+                    //Debug.Log("Checking for ball exit...");
                     //While the ball is in the collider
                     if (targetScript.IsColliding)
                     {
@@ -738,7 +740,6 @@ public class ProjectileTask : BaseTask
             
 
         waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
-        Debug.Log("Current Water Speed " + waterSpeedJson);
         ballMovement.waterSpeed = waterSpeedJson;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
