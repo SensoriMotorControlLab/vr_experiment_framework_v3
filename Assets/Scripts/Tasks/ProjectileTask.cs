@@ -132,7 +132,6 @@ public class ProjectileTask : BaseTask
     static int totalScore = 0;
     public TextMeshProUGUI scoreText;
 
-    private int trialsRemaining;
     public TextMeshProUGUI trialsRemainingText;
 
     float closestDistance = float.MaxValue;
@@ -169,7 +168,6 @@ public class ProjectileTask : BaseTask
     // Start is called before the first frame update
     void Start()
     {
-        trialsRemaining = ExperimentController.Instance.GetTotalTrials();
         targetScript = target.transform.GetChild(0).GetComponent<Target>();
     }
 
@@ -358,7 +356,7 @@ public class ProjectileTask : BaseTask
                     float dot = Vector3.Dot(toTarget, toBall);
                     */
                     Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z);
-                    globalBallPos.Add(new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3/4, ball.transform.position.z));
+                    globalBallPos.Add(ball.transform.position);
 
                     //Ball hit the target
                     if (targetScript.TargetHit && isMainBallComplete == false)
@@ -477,6 +475,7 @@ public class ProjectileTask : BaseTask
                             {
                                 isMainBallComplete = true;
                                 hitTarget = false;
+                                lineColor = Color.red;
 
                                 //Stop the ball
                                 ballMovement.velocity = Vector3.zero;
@@ -497,6 +496,7 @@ public class ProjectileTask : BaseTask
                             {
                                 isMainBallComplete = true;
                                 hitTarget = false;
+                                lineColor = Color.red;
 
                                 //Stop the ball
                                 ballMovement.velocity = Vector3.zero;
@@ -507,36 +507,6 @@ public class ProjectileTask : BaseTask
                                 prefabAudio.clip = incorrectAudioClip;
                             }
                         }
-                        /*
-                        Vector3 waterDireciton = new Vector3(-waterSpeed, ball.transform.position.y, 0.0f);
-                        Vector3 targetToBall = ball.transform.position - target.transform.position;
-
-                        float dot = Vector3.Dot(targetToBall, waterDireciton);
-
-                        //Ball is with current, fail trial
-                        if (dot > 0)
-                        {
-                            Debug.Log("Ball has been thrown in same direction of current");
-                            Debug.Log("Dot " + dot);
-                            Debug.Log("Direciton " + water);
-                            Debug.Log("TargetToBall " + dot);
-
-                            isMainBallComplete = true;
-                            hitTarget = false;
-                            displayMsg = "THROW AGAINST THE CURRENT";
-                            prefabAudio.clip = incorrectAudioClip;
-                        }
-                        //Ball is against current, do nothing
-                        else if (dot < 0)
-                        {
-                            Debug.Log("Ball has been thrown in opposite direction of current");
-                        }
-                        //Perpindicular with current do nothing
-                        else
-                        {
-
-                        }
-                        */
                     }
 
                     if (isMainBallComplete)
@@ -651,7 +621,7 @@ public class ProjectileTask : BaseTask
 
     private void UpdateScoreboardUI()
     {
-        trialsRemainingText.text = "Trials Remaining: " + trialsRemaining.ToString();
+        trialsRemainingText.text = "Trials Remaining: " + ExperimentController.Instance.GetTotalTrials();
 
         if (scoreText != null)
         {
@@ -951,12 +921,6 @@ public class ProjectileTask : BaseTask
         if (currentTrial == totalTrials - 1 && currentStep == maxSteps - 1)
         {
             debrisSpawner.DestroyDebris();
-        }
-
-        if(currentStep + 1 == maxSteps)
-        {
-            // Decrement trialsRemaining here
-            trialsRemaining--;
         }
 
         if(currentStep == 1 && taskType == "invisible")
