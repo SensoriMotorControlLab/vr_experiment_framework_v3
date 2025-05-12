@@ -101,7 +101,7 @@ public abstract class BaseTask : MonoBehaviour
     {
         currentStep++;
 
-        finished = currentStep == maxSteps;
+        finished = currentStep >= maxSteps;
 
         if (finished)
         {
