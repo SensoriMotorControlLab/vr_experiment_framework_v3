@@ -517,7 +517,7 @@ public class ProjectileTask : BaseTask
                         UpdateScoreboardUI();
                         IncrementStep();
                         //This is in case of a weird edge case where the ball stops inside the target
-                        //StartCoroutine(DelayedIncrementStep(3.0f));
+                        StartCoroutine(DelayedIncrementStep(2.0f));
                         stepTime.Add(Time.time);
                     }
                 }
