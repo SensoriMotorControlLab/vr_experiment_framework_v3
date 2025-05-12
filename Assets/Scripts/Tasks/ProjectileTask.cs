@@ -525,7 +525,6 @@ public class ProjectileTask : BaseTask
             //Let the ball move until a certain condition
             case 3:
                 {
-                    //Debug.Log("Checking for ball exit...");
                     //While the ball is in the collider
                     if (targetScript.IsColliding)
                     {
@@ -699,9 +698,9 @@ public class ProjectileTask : BaseTask
 
         targetScript = target.transform.GetChild(0).GetComponent<Target>();
 
-        if (targetAngles.Count == 0)
+        if (targetPosX.Count == 0 || targetPosZ.Count == 0)
         {
-            targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
+            //targetAngles = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_angle");
             targetPosX = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_pos_x");
             targetPosZ = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("target_pos_z");
         }
@@ -876,13 +875,13 @@ public class ProjectileTask : BaseTask
         displayText.text = "";
         ballDisplayText.text = "";;
 
+        target.transform.position = new Vector3(targetPosX[currentTrial], target.transform.position.y, targetPosZ[currentTrial]);
         // target.transform.position = Vector3.zero;
         // target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
-        float z = target.transform.position.z;
+        //float z = target.transform.position.z;
         // calculate x position based on angle
-        float x = Mathf.Tan(targetAngles[currentTrial] * Mathf.Deg2Rad) * z;    
-        target.transform.position = new Vector3(targetPosX[currentTrial], target.transform.position.y, targetPosZ[currentTrial]);
-        currentAngle = targetAngles[currentTrial];
+        //float x = Mathf.Tan(targetAngles[currentTrial] * Mathf.Deg2Rad) * z;    
+        //currentAngle = targetAngles[currentTrial];
         currentType = ExperimentController.Instance.Session.CurrentTrial.settings.GetStringList("per_block_task")[ExperimentController.Instance.Session.currentBlockNum - 1];
         targetDistance = Vector3.Distance(target.transform.position, ball.transform.position);
 
@@ -949,7 +948,7 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_position_x"] = target.transform.position.x;
         session.CurrentTrial.result["target_position_y"] = target.transform.position.y;
         session.CurrentTrial.result["target_position_z"] = target.transform.position.z;
-        session.CurrentTrial.result["target_angle"] = currentAngle;
+        //session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["target_width"] = targetWidth;
         session.CurrentTrial.result["launch_direction"] = launchVec;
         session.CurrentTrial.result["before_launch_velocity_x"] = string.Join(",", launchVelocityTracker.Select(i => string.Format($"{i.x:F6}")));
