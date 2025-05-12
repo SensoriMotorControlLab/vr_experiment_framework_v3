@@ -19,20 +19,10 @@
       "projectile",
       "projectile"
     ],
-    "per_block_rotation": [
-      0,
-      0,
-      0
-    ],
     "per_block_water_speed": [
       0,
       -1,
       -2
-    ],
-    "per_block_otherBall_water_speed": [
-      2,
-      0,
-      0
     ],
     "per_block_debris_spawn_rate": [
       1,
@@ -49,11 +39,6 @@
       null,
       null
     ],
-    "per_block_list_target_angle": [
-      "ta1",
-      "ta1",
-      "ta1"
-    ],
 	"per_block_list_target_pos_x": [
       "x1",
       "x1",
@@ -69,7 +54,6 @@
       0.25,
       1.00
     ],
-    "ta1": [20, -20, 0],
 	"x1": [-0.5, 0.0, 0.5],
 	"z1":[0.5, 1.0, 0.75],
     "ins1": "Toss the ball to the target."
