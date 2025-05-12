@@ -100,8 +100,9 @@ public abstract class BaseTask : MonoBehaviour
     public virtual bool IncrementStep()
     {
         currentStep++;
+        currentStep = currentStep > maxSteps ? maxSteps : currentStep;
 
-        finished = currentStep >= maxSteps;
+        finished = currentStep == maxSteps;
 
         if (finished)
         {
@@ -109,7 +110,7 @@ public abstract class BaseTask : MonoBehaviour
             LogParameters();
         }
 
-        //Debug.Log(name + "step: " + currentStep);
+        Debug.Log(name + " step: " + currentStep);
 
         return finished;
     }

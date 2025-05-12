@@ -165,6 +165,9 @@ public class ProjectileTask : BaseTask
     List<float> launchAngleTracker = new List<float>();
     float targetDistance = 0.0f;
 
+    //Used to fix some weird issue with incrementing trial numbers
+    int numInBlock = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -403,7 +406,7 @@ public class ProjectileTask : BaseTask
 
                         prefabAudio.clip = incorrectAudioClip;
                     }
-                    else if((targetDistance < Vector3.Distance(Vector3.zero, ball.transform.position) || ball.transform.position.z > targetPosZ[currentTrial]) && waterSpeed == 0 && !isMainBallComplete)
+                    else if((targetDistance < Vector3.Distance(Vector3.zero, ball.transform.position) || ball.transform.position.z > targetPosZ[numInBlock]) && waterSpeed == 0 && !isMainBallComplete)
                     {
                         isMainBallComplete = true;
                         // ballRB.isKinematic = true;
@@ -639,7 +642,7 @@ public class ProjectileTask : BaseTask
 
     private int CalculatePoints()
     {
-        float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
+        //float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
         int points = 0;
 
         if (hitTarget)
@@ -650,10 +653,10 @@ public class ProjectileTask : BaseTask
         {
             float targetWidth = target.GetComponent<MeshRenderer>().bounds.size.x;
 
-            if (distanceFromTarget > targetWidth)
+            if (closestDistance > targetWidth)
                 points = 0;
-            else if (distanceFromTarget <= targetWidth)
-                points = 1;
+            else if (closestDistance <= targetWidth)
+                points = 3;
         }
 
         Debug.Log("Scored " + points + " points");
@@ -875,7 +878,11 @@ public class ProjectileTask : BaseTask
         displayText.text = "";
         ballDisplayText.text = "";;
 
-        target.transform.position = new Vector3(targetPosX[currentTrial], target.transform.position.y, targetPosZ[currentTrial]);
+        numInBlock = ExperimentController.Instance.Session.CurrentTrial.numberInBlock - 1;
+
+        Debug.Log("Current Trial " + (numInBlock));
+
+        target.transform.position = new Vector3(targetPosX[numInBlock], target.transform.position.y, targetPosZ[numInBlock]);
         // target.transform.position = Vector3.zero;
         // target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
         //float z = target.transform.position.z;
@@ -918,7 +925,7 @@ public class ProjectileTask : BaseTask
     public override bool IncrementStep()
     {
         // check if current trial is the last in the current block
-        if (currentTrial == totalTrials - 1 && currentStep == maxSteps - 1)
+        if (ExperimentController.Instance.Session.currentTrialNum-1 == totalTrials - 1 && currentStep == maxSteps - 1)
         {
             debrisSpawner.DestroyDebris();
         }
