@@ -124,7 +124,6 @@ public class ProjectileTask : BaseTask
     const float BALL_MAX_ANGULAR_VEL = 240.0f;
     bool hitTarget = false;
 
-    float currentAngle = 0.0f;
     string currentType = "";
 
     float waterSpeedJson = 0.0f;
@@ -304,7 +303,22 @@ public class ProjectileTask : BaseTask
 
         //increment step time
         stepTime.Add(Time.time);
-        
+    }
+
+    IEnumerator DelayStartShowTarget()
+    {
+        yield return new WaitForSeconds(timeToWait);
+
+        //If we are using VR use the VR hand position else get the
+        //converted mouse position
+        startPos = GetMousePos();
+        cursorPos = startPos;
+
+        IncrementStep();
+
+        target.SetActive(true);
+        //increment step time
+        stepTime.Add(Time.time);
     }
 
     IEnumerator DelayedIncrementStep(float timeInSeconds)
@@ -323,7 +337,15 @@ public class ProjectileTask : BaseTask
             case 0:
                 if(coroutine == null)
                 {
-                    coroutine = StartCoroutine(DelayStart());
+                    if (taskType != "invisible")
+                    {
+                        //target.SetActive(true);
+                        coroutine = StartCoroutine(DelayStartShowTarget());
+                    }
+                    else
+                    {
+                        coroutine = StartCoroutine(DelayStart());
+                    }
                 }
 
                 break;
@@ -465,12 +487,11 @@ public class ProjectileTask : BaseTask
                     //Check if launch vector is going against the water
                     if (waterSpeed != 0.0f && !isMainBallComplete)
                     {
-                        float nWaterSpeed = waterSpeed;
                         Bounds ballBounds = ball.GetComponent<Collider>().bounds;
                         float checkX;
 
                         //Moving to the left
-                        if (nWaterSpeed < 0)
+                        if (waterSpeed < 0)
                         {
                             checkX = home.transform.position.x < target.transform.position.x ? home.transform.position.x : target.transform.position.x;
                             checkX -= ballBounds.size.x * 3;
@@ -485,13 +506,17 @@ public class ProjectileTask : BaseTask
                                 ballMovement.canSimulate = false;
                                 ballAudio.Stop();
 
+                                points = CalculatePoints();
+
                                 finalBallState = "Missed";
-                                displayMsg = "THROW AGAINST THE CURRENT";
+                                displayMsg = "Missed the target\n" + points + " points";
+
+                                totalScore += points;
                                 prefabAudio.clip = incorrectAudioClip;
                             }
                         }
                         //Moving to the right
-                        else if (nWaterSpeed > 0)
+                        else if (waterSpeed > 0)
                         {
                             checkX = home.transform.position.x > target.transform.position.x ? home.transform.position.x : target.transform.position.x;
                             checkX += ballBounds.size.x * 3;
@@ -507,8 +532,12 @@ public class ProjectileTask : BaseTask
                                 ballMovement.canSimulate = false;
                                 ballAudio.Stop();
 
+                                points = CalculatePoints();
+
                                 finalBallState = "Missed";
-                                displayMsg = "THROW AGAINST THE CURRENT";
+                                displayMsg = "Missed the target\n" + points + " points";
+
+                                totalScore += points;
                                 prefabAudio.clip = incorrectAudioClip;
                             }
                         }
@@ -538,7 +567,7 @@ public class ProjectileTask : BaseTask
                         ballPosInTarget.Add(skewedPos);
                     }
                     //Ball has exited the target or has not hit the target
-                    else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST)
+                    else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST && ballMovement.canSimulate)
                     {
                         //Stop the ball
                         ballMovement.velocity = Vector3.zero;
@@ -642,7 +671,7 @@ public class ProjectileTask : BaseTask
 
     private int CalculatePoints()
     {
-        //float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
+        float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
         int points = 0;
 
         if (hitTarget)
@@ -653,11 +682,18 @@ public class ProjectileTask : BaseTask
         {
             float targetWidth = target.GetComponent<MeshRenderer>().bounds.size.x;
 
-            if (closestDistance > targetWidth)
+            if (distanceFromTarget > targetWidth)
                 points = 0;
-            else if (closestDistance <= targetWidth)
+            else if (distanceFromTarget <= targetWidth)
                 points = 3;
         }
+
+        if (points == 5)
+            lineColor = Color.green;
+        else if (points == 3)
+            lineColor = Color.yellow;
+        else
+            lineColor = Color.red;
 
         Debug.Log("Scored " + points + " points");
         return points;
@@ -804,6 +840,7 @@ public class ProjectileTask : BaseTask
         invisibleTrailCard = GameObject.Find("InvisibleTrialCard");
 
         throwWarning.SetActive(false);
+        target.SetActive(false);
     }
 
     float ComputeWaterForce(float waterSpeed, float objectArea, float dragCoefficient = 0.47f, float waterDensity = 1000f)
@@ -818,6 +855,7 @@ public class ProjectileTask : BaseTask
         closestDistance = float.MaxValue;
         StopAllCoroutines();
 
+        //Set time to wait before trial start
         if(taskType == "invisible")
         {
             if(isFisrtInvisible)
@@ -829,14 +867,14 @@ public class ProjectileTask : BaseTask
             else
             {
                 invisibleTrailCard.SetActive(false);
-                timeToWait = 0;
+                timeToWait = 0.5f;
             }
         }
         else
         {
             invisibleTrailCard.SetActive(false);
             isFisrtInvisible = true;
-            timeToWait = 0;
+            timeToWait = 0.5f;
         }
 
         startPos = Vector3.zero;
@@ -894,6 +932,8 @@ public class ProjectileTask : BaseTask
 
         throwWarning.SetActive(false);
         UpdateScoreboardUI();
+
+        target.SetActive(false);
     }
 
     private Vector3 GetMousePos()
