@@ -154,7 +154,6 @@ public class ProjectileTask : BaseTask
     private Coroutine coroutine;
     private bool isFisrtInvisible = true;
     private GameObject invisibleTrailCard;
-    bool isMainBallComplete = false;
     Target targetScript;
     BallMovement ballMovement;
     public GameObject throwWarning;
@@ -166,6 +165,9 @@ public class ProjectileTask : BaseTask
 
     //Used to fix some weird issue with incrementing trial numbers
     int numInBlock = 0;
+
+    bool isMainBallComplete = false;
+    bool checkBallEnd = true;
 
     // Start is called before the first frame update
     void Start()
@@ -558,21 +560,24 @@ public class ProjectileTask : BaseTask
             case 3:
                 {
                     //While the ball is in the collider
-                    if (targetScript.IsColliding)
+                    if (targetScript.IsColliding && checkBallEnd)
                     {
                         ballMovement.canSimulate = true;
+                        checkBallEnd = false;
 
                         Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3 / 4, ball.transform.position.z);
 
                         ballPosInTarget.Add(skewedPos);
                     }
                     //Ball has exited the target or has not hit the target
-                    else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST && ballMovement.canSimulate)
+                    else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST || ballMovement.velocity == Vector3.zero && checkBallEnd)
                     {
                         //Stop the ball
                         ballMovement.velocity = Vector3.zero;
                         ballMovement.canSimulate = false;
                         ballAudio.Stop();
+
+                        checkBallEnd = false;
 
                         if (ballPosInTarget.Count == 0)
                         {
@@ -671,7 +676,6 @@ public class ProjectileTask : BaseTask
 
     private int CalculatePoints()
     {
-        float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
         int points = 0;
 
         if (hitTarget)
@@ -680,7 +684,22 @@ public class ProjectileTask : BaseTask
         }
         else
         {
+            float distanceFromTarget = Vector3.Distance(target.transform.position, ballPos[ballPos.Count - 1]);
+
+            foreach(Vector3 v in ballPos)
+            {
+                float d = Vector3.Distance(v, target.transform.position);
+                if(d < distanceFromTarget)
+                {
+                    //Debug.Log("New distance " + d);
+                    distanceFromTarget = d;
+                }
+            }
+
             float targetWidth = target.GetComponent<MeshRenderer>().bounds.size.x;
+
+            //Debug.Log("Target distance " + distanceFromTarget);
+            //Debug.Log("Target width " + targetWidth);
 
             if (distanceFromTarget > targetWidth)
                 points = 0;
@@ -883,7 +902,9 @@ public class ProjectileTask : BaseTask
 
         hitTarget = false;
         isMainBallComplete = false;
-        
+        checkBallEnd = true;
+
+
         ball.transform.position = home.transform.position;
         ball.transform.rotation = Quaternion.identity;
 
