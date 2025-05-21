@@ -110,7 +110,7 @@ public abstract class BaseTask : MonoBehaviour
             LogParameters();
         }
 
-        Debug.Log(name + " step: " + currentStep);
+        //Debug.Log(name + " step: " + currentStep);
 
         return finished;
     }

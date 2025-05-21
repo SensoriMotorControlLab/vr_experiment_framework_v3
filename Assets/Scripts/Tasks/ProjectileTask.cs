@@ -47,6 +47,8 @@ public class ProjectileTask : BaseTask
     [SerializeField]
     Text displayText;
     [SerializeField]
+    TextMeshProUGUI breakText;
+    [SerializeField]
     TextMeshProUGUI ballDisplayText;
     [SerializeField]
     Canvas ballCanvas;
@@ -128,6 +130,7 @@ public class ProjectileTask : BaseTask
 
     float waterSpeedJson = 0.0f;
     float waterInertia = 0.0f;
+    float breakTime = 0.0f;
     static int totalScore = 0;
     public TextMeshProUGUI scoreText;
 
@@ -168,6 +171,7 @@ public class ProjectileTask : BaseTask
 
     bool isMainBallComplete = false;
     bool checkBallEnd = true;
+    bool isBreakDone = false;
 
     // Start is called before the first frame update
     void Start()
@@ -597,8 +601,22 @@ public class ProjectileTask : BaseTask
                                 closestToCenter = v;
                             }
                         }
-                        //Delay before increment to let feedback show
-                        StartCoroutine(DelayedIncrementStep(1.0f));
+                        
+                        Debug.Log("CurrentTrialNum " + (ExperimentController.Instance.Session.CurrentTrial.numberInBlock - 1));
+                        Debug.Log("TotalTrialNum " + (totalTrials - 1));
+                        Debug.Log("breakTime > 0.0f " + (breakTime > 0.0f));
+                        Debug.Log("Current==Total " + ((ExperimentController.Instance.Session.CurrentTrial.numberInBlock - 1) == (totalTrials - 1)));
+
+
+                        if (breakTime > 0.0f && (ExperimentController.Instance.Session.CurrentTrial.numberInBlock - 1) == (totalTrials - 1))
+                        {
+                            Debug.Log("Applying break time");
+                            StartCoroutine(DisplayBreak());   
+                        }
+                        else
+                        {
+                            StartCoroutine(DelayedIncrementStep(1.0f));
+                        }
                         //IncrementStep();
                     }
                 }
@@ -655,6 +673,20 @@ public class ProjectileTask : BaseTask
         IncrementStep();
         */
         yield return new WaitForSeconds(DISPLAY_TIME);
+    }
+
+    IEnumerator DisplayBreak()
+    {
+        float currentBreakTime = breakTime;
+
+        while(currentBreakTime > 0.0f)
+        {
+            breakText.text = "TAKE A BREAK!\n" + ((int)currentBreakTime);
+            currentBreakTime -= Time.deltaTime;
+            yield return null;
+        }
+        IncrementStep();
+        yield return new WaitForEndOfFrame();
     }
 
     private void UpdateScoreboardUI()
@@ -764,6 +796,9 @@ public class ProjectileTask : BaseTask
         }
         targetScale = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_target_width")[currBlock];
         target.transform.localScale = new Vector3(targetScale * target.transform.localScale.x, targetScale * target.transform.localScale.y, target.transform.localScale.z);
+
+        breakTime = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_break_time")[currBlock];
+        Debug.Log("Break time " + breakTime);
 
         poleOne = GameObject.Find("PoleOne");
         poleTwo = GameObject.Find("PoleTwo");
@@ -903,7 +938,7 @@ public class ProjectileTask : BaseTask
         hitTarget = false;
         isMainBallComplete = false;
         checkBallEnd = true;
-
+        isBreakDone = false;
 
         ball.transform.position = home.transform.position;
         ball.transform.rotation = Quaternion.identity;
@@ -939,9 +974,9 @@ public class ProjectileTask : BaseTask
 
         numInBlock = ExperimentController.Instance.Session.CurrentTrial.numberInBlock - 1;
 
-        Debug.Log("Current Trial " + (numInBlock));
-
         target.transform.position = new Vector3(targetPosX[numInBlock], target.transform.position.y, targetPosZ[numInBlock]);
+
+        breakText.text = "";
         // target.transform.position = Vector3.zero;
         // target.transform.rotation = Quaternion.Euler(0f, -targetAngles[currentTrial] + 90f, 0f);
         //float z = target.transform.position.z;

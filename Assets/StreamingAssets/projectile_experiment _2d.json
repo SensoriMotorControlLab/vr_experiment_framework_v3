@@ -24,6 +24,11 @@
       -1,
       -2
     ],
+	"per_block_break_time": [
+      10,
+      5,
+      0
+    ],
     "per_block_debris_spawn_rate": [
       1,
       2,
