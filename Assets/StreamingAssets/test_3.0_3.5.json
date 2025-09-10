@@ -1,0 +1,220 @@
+{
+  "session_1": {
+    "experiment_name": "projectile",
+    "use_vr": true,
+    "optional_params": {
+    },
+  "per_block_input_name": [
+  "vr_controller",
+  "vr_controller",
+
+  "vr_controller",
+  "vr_controller",
+  "vr_controller",
+  "vr_controller",
+
+  "vr_controller",
+
+  "vr_controller",
+  "vr_controller",
+  "vr_controller",
+  "vr_controller",
+
+  "vr_controller"
+  ],
+    "trials_in_block": [
+      8,
+      8,
+
+      12,
+      12,
+      12,
+      12,
+
+      8,
+
+      12,
+      12,
+      12,
+      12,
+
+      8
+    ],
+    "per_block_task": [
+      "projectile",
+      "projectile",
+
+      "projectile",
+      "projectile",
+      "projectile",
+      "projectile",
+
+      "projectile",
+      
+      "projectile",
+      "projectile",
+      "projectile",
+      "projectile",
+
+      "projectile"
+    ],
+
+    "per_block_water_speed": [
+      0,
+      0,
+
+      -3,
+      -3,
+      -3,
+      -3,
+
+      0,
+
+      -3.5,
+      -3.5,
+      -3.5,
+      -3.5,
+
+      0
+    ],
+
+    "per_block_break_time": [
+      0,
+      0,
+
+      0,
+      0,
+      0,
+      0,
+
+      120,
+
+      0,
+      0,
+      0,
+      0,
+
+      120
+    ],
+
+    "per_block_debris_spawn_rate": [
+      0,
+      0,
+
+      0,
+      0,
+      0,
+      0,
+
+      0,
+
+      0,
+      0,
+      0,
+      0,
+
+      0
+    ],
+    "per_block_debris_count": [
+      0,
+      0,
+
+      0,
+      0,
+      0,
+      0,
+
+      0,
+
+      0,
+      0,
+      0,
+      0,
+
+      0
+    ],
+    "per_block_instruction": [
+      null,
+      null,
+
+      null,
+      null,
+      null,
+      null,
+
+      null,
+
+      null,
+      null,
+      null,
+      null,
+
+      null
+    ],
+
+  "per_block_list_target_pos_x": [
+      "x_all",
+      "x_all",
+
+      "x_all",
+      "x_all",
+      "x_all",
+      "x_all",
+
+      "x_all",
+
+      "x_all",
+      "x_all",
+      "x_all",
+      "x_all",
+
+      "x_all"
+    ],
+  "per_block_list_target_pos_z": [
+      "z_all",
+      "z_all",
+
+      "z_all",
+      "z_all",
+      "z_all",
+      "z_all",
+
+      "z_all",
+
+      "z_all",
+      "z_all",
+      "z_all",
+      "z_all",
+      
+      "z_all"
+
+    ],
+    "per_block_target_width": [
+      0.15,
+      0.15,
+
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+
+      0.15,
+
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+
+      0.15
+    ],
+
+    "x_1": [-0.6, 0.3],
+    "x_2": [0.6, -0.3],
+
+    "x_all": [-0.6, 0.6, -0.3, 0.3],
+    
+    "z_all":[1.4, 1.4],
+
+    "ins1": "Toss the ball to the target."
+  }
+}

@@ -10,9 +10,9 @@
 	"mouse"
 	],
     "trials_in_block": [
-      3,
-      3,
-      3
+      4,
+      4,
+      4
     ],
     "per_block_task": [
       "projectile",
@@ -55,12 +55,12 @@
       "z1"
     ],
     "per_block_target_width": [
-      0.5,
+      0.15,
       0.25,
       1.00
     ],
-	"x1": [-0.5, 0.0, 0.5],
-	"z1":[0.5, 1.0, 0.75],
+	"x1": [-0.6, -0.3, 0.3, 0.6],
+	"z1":[1.4, 1.4, 1.4, 1.4],
     "ins1": "Toss the ball to the target."
   }
 }

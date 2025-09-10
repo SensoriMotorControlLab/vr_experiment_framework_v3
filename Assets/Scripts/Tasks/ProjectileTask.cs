@@ -152,7 +152,7 @@ public class ProjectileTask : BaseTask
     float targetWidth;
 
     private List<Vector3> handPositions = new List<Vector3>();
-    private int pointsToConsider = 4;
+    private int pointsToConsider = 6;
     private float timeToWait = 0.0f;
     private Coroutine coroutine;
     private bool isFisrtInvisible = true;
@@ -733,9 +733,9 @@ public class ProjectileTask : BaseTask
             //Debug.Log("Target distance " + distanceFromTarget);
             //Debug.Log("Target width " + targetWidth);
 
-            if (distanceFromTarget > targetWidth)
+            if (distanceFromTarget > 2 * targetWidth)
                 points = 0;
-            else if (distanceFromTarget <= targetWidth)
+            else if (distanceFromTarget <= 2 * targetWidth)
                 points = 3;
         }
 
@@ -831,11 +831,11 @@ public class ProjectileTask : BaseTask
         }
             
 
-        waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
+        waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_water_speed")[currBlock];
         ballMovement.waterSpeed = waterSpeedJson;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
-        debrisSpawner.speed = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_water_speed")[currBlock];
+        debrisSpawner.speed = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_water_speed")[currBlock];
         debrisSpawnRate = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_debris_spawn_rate")[currBlock];
         debrisCount = ExperimentController.Instance.Session.CurrentBlock.settings.GetIntList("per_block_debris_count")[currBlock];
         debrisSpawner.spawnRate = debrisSpawnRate;
@@ -1061,7 +1061,7 @@ public class ProjectileTask : BaseTask
 
         session.CurrentTrial.result["current_force"] = waterSpeedJson;
         session.CurrentTrial.result["water_inertia"] = waterInertia;
-        session.CurrentTrial.result["water_speed_m/s"] = waterSpeed;
+        session.CurrentTrial.result["water_speed_m_s"] = waterSpeed;
 
         session.CurrentTrial.result["launch_angle"] = Vector3.Angle(Vector3.right, launchVec);
         session.CurrentTrial.result["launch_Speed"] = throwVel.magnitude;
