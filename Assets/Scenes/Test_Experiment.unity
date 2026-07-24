@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.21345012, g: 0.23423672, b: 0.24011599, a: 1}
+  m_IndirectSpecularColor: {r: 0.2133472, g: 0.23376557, b: 0.23953736, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -139,6 +139,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1172019289489613143, guid: 5899de6eee158cd4cbc3e43193b50e3f,
+        type: 3}
+      propertyPath: m_ModelPrefab
+      value: 
+      objectReference: {fileID: 3475118261464492563, guid: 1f4d373a613d0466fbd8849470265852,
+        type: 3}
     - target: {fileID: 1634115737121891950, guid: 5899de6eee158cd4cbc3e43193b50e3f,
         type: 3}
       propertyPath: m_CameraYOffset
@@ -173,6 +179,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3558569175325816746, guid: 5899de6eee158cd4cbc3e43193b50e3f,
+        type: 3}
+      propertyPath: m_Name
+      value: RightHand Controller
       objectReference: {fileID: 0}
     - target: {fileID: 4525272607684437941, guid: 5899de6eee158cd4cbc3e43193b50e3f,
         type: 3}
@@ -263,6 +274,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: XR Origin
+      objectReference: {fileID: 0}
+    - target: {fileID: 7233022407804793925, guid: 5899de6eee158cd4cbc3e43193b50e3f,
+        type: 3}
+      propertyPath: m_Name
+      value: LeftHand Controller
       objectReference: {fileID: 0}
     - target: {fileID: 8983997219684821856, guid: 5899de6eee158cd4cbc3e43193b50e3f,
         type: 3}

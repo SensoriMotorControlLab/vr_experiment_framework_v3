@@ -10,7 +10,7 @@ using InputDevice = UnityEngine.InputSystem.InputDevice;
 public class InputHandler : MonoBehaviour
 {
     private static InputHandler instance;
-    private Dictionary<string, GameObject> vrHands = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> vrHands = new Dictionary<string, GameObject>();
     /// <summary>
     /// SortedDictionary of all inputDevices, sorted by lowest priority to highest
     /// </summary>

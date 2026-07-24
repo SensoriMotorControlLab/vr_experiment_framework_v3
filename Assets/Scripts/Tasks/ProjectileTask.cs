@@ -152,7 +152,7 @@ public class ProjectileTask : BaseTask
     float targetWidth;
 
     private List<Vector3> handPositions = new List<Vector3>();
-    private int pointsToConsider = 6;
+    [SerializeField] private int pointsToConsider = 10;
     private float timeToWait = 0.0f;
     private Coroutine coroutine;
     private bool isFisrtInvisible = true;
@@ -172,6 +172,9 @@ public class ProjectileTask : BaseTask
     bool isMainBallComplete = false;
     bool checkBallEnd = true;
     bool isBreakDone = false;
+
+    private Vector3 pressPosition;
+    private Vector3 releasePosition;
 
     // Start is called before the first frame update
     void Start()
@@ -197,6 +200,18 @@ public class ProjectileTask : BaseTask
         return direction.normalized;
     }
 
+    Vector3 novelThrowDirection(Vector3 start, Vector3 end)
+    {
+        Vector3 direction = (end - start);
+        direction.y = 0.0f;
+
+        return direction.normalized;
+
+        // 
+
+
+    }
+
     void ShowThrowWarning()
     {
         throwWarning.SetActive(true);
@@ -220,8 +235,13 @@ public class ProjectileTask : BaseTask
                     //If the button is pressed again
                     if(Input.GetButtonDown(buttonCheck))
                     {
+
                         startPos = GetMousePos();
                         cursorPos = startPos;
+
+                        // log press
+                        pressPosition = cursorPos;
+
                         launchVelocityTracker.Clear();
                         launchSpeedTracker.Clear();
                         launchAngleTracker.Clear();
@@ -229,7 +249,7 @@ public class ProjectileTask : BaseTask
                         handPositions.Clear();
                         handPositions.Add(cursorPos);
                         handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
-                        launchVec = CalculateThrowDirectionSimplified();
+                        launchVec = novelThrowDirection(pressPosition, cursorPos); // CalculateThrowDirectionSimplified();
                         launchVec.y = 0.0f;
                         launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
                         launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
@@ -241,12 +261,27 @@ public class ProjectileTask : BaseTask
                         cursorPos = GetMousePos();
                         handPositions.Add(cursorPos);
                         handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
-                        launchVec = CalculateThrowDirectionSimplified();
+                        launchVec = novelThrowDirection(pressPosition, cursorPos); // CalculateThrowDirectionSimplified();
                         launchVec.y = 0.0f;
                         launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
                         launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
                         launchAngleTracker.Add(Vector3.Angle(Vector3.right, launchVec));
+
+                        Vector3 calculatedPos = launchVec; // or cursorPos depending on what you want to compare
+        
+                   if (InputHandler.Instance.vrHands.ContainsKey("RightHand") && InputHandler.Instance.vrHands["RightHand"] != null)
+                    {
+                        // 1. Get the actual world position of the hand
+                        Vector3 handWorldPos = InputHandler.Instance.vrHands["RightHand"].transform.position;
+
+                        
+                        
+                        // 2. Draw a visible red line in the Unity Scene view
+                        // It starts at the hand, and extends out in the direction/magnitude of your calculation
+                        Debug.DrawRay(handWorldPos, launchVec, Color.red);
                     }
+                    }
+
                     // else if (Input.GetButtonUp(buttonCheck))
                     // {
                     //     startPos = Vector3.zero;
@@ -255,8 +290,16 @@ public class ProjectileTask : BaseTask
                     //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
 
                     
-                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
+                    if (Input.GetButtonUp(buttonCheck) && launchVec.z > 0)
                     {
+
+                        cursorPos = GetMousePos();
+
+                        // release
+                        releasePosition = cursorPos;
+
+                        launchVec = novelThrowDirection(pressPosition, releasePosition); // CalculateThrowDirectionSimplified();
+
                         //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
                         throwVel = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
 
@@ -264,6 +307,12 @@ public class ProjectileTask : BaseTask
 
                         if (throwVel.magnitude < MIN_MAG)
                         {
+                            Debug.Log("The throw was too weak, try again");
+                            handPos.Clear();
+                            handPositions.Clear();
+                            launchVec = Vector3.zero;
+                            slowCounter++;
+                            ShowThrowWarning();
                             return;
                         }
                         ballMovement.velocity = launchVel;
@@ -276,15 +325,15 @@ public class ProjectileTask : BaseTask
                         
 
                         stepTime.Add(Time.time);
-                    }
-                    if(Input.GetButtonUp(buttonCheck) && throwVel.magnitude < MIN_MAG)
-                    {
-                        Debug.Log("The throw was too weak, try again");
-                        handPos.Clear();
-                        handPositions.Clear();
-                        launchVec = Vector3.zero;
-                        slowCounter++;
-                        ShowThrowWarning();
+                    // }
+                    // if(Input.GetButtonUp(buttonCheck) && throwVel.magnitude < MIN_MAG)
+                    // {
+                    //     Debug.Log("The throw was too weak, try again");
+                    //     handPos.Clear();
+                    //     handPositions.Clear();
+                    //     launchVec = Vector3.zero;
+                    //     slowCounter++;
+                    //     ShowThrowWarning();
                     }
                 }
                 break;
