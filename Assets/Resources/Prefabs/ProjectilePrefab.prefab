@@ -3001,6 +3001,7 @@ GameObject:
   - component: {fileID: 2772640461343414535}
   - component: {fileID: 8138248425572419106}
   - component: {fileID: 5165525262863914921}
+  - component: {fileID: 1429329658176331468}
   m_Layer: 8
   m_Name: Ball
   m_TagString: Tool
@@ -3214,6 +3215,22 @@ MonoBehaviour:
   waterSpeed: 0
   velocity: {x: 0, y: 0, z: 0}
   canSimulate: 1
+--- !u!114 &1429329658176331468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6914487447540812243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48711b310bb6b5d4781ce8c8df0b0125, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterSpeed: 0
+  velocity: {x: 0, y: 0, z: 0}
+  waterVelocity: {x: 0, y: 0, z: 0}
+  canSimulate: 0
 --- !u!1 &7440850223004248071
 GameObject:
   m_ObjectHideFlags: 0
@@ -4597,6 +4614,11 @@ PrefabInstance:
         type: 3}
       propertyPath: minSpeed
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4808205213244839536, guid: 1c8e319e0aafc7244b3657681d36e2af,
         type: 3}

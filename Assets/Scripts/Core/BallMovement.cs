@@ -19,6 +19,7 @@ public class BallMovement : MonoBehaviour
     public float waterSpeed;    // Speed of the water current
 
     public Vector3 velocity = Vector3.zero; // Velocity of the ball
+    public Vector3 waterVelocity; // velocity of water current
     public bool canSimulate = false;  // Flag to enable/disable simulation
     float startingHeight = 0;   // Starting height of the ball
     float distToReachWater = 0.1f;  // Distance to reach the water surface
@@ -38,6 +39,10 @@ public class BallMovement : MonoBehaviour
         radius = col.radius * transform.lossyScale.x;
         area = Mathf.PI * radius * radius;
         startingHeight = transform.position.y;
+
+
+        Debug.Log($"Water speed: {waterSpeed}");
+        Debug.Log($"Water vel vector: {waterVelocity}");
     }
 
     void FixedUpdate()
@@ -47,9 +52,17 @@ public class BallMovement : MonoBehaviour
         {
             return;
         }
+
+        waterVelocity = Vector3.right * waterSpeed;
+
+
         // f = FractionInWater();
         ApplyWaterCurrentForce();
         transform.position += velocity * Time.fixedDeltaTime;
+
+        Debug.Log($"velocity: {velocity}");
+        // Debug.Log($"vel mag: {velocityMagnitude}");
+
 
         if(velocity.magnitude > 0.0f)
         {
