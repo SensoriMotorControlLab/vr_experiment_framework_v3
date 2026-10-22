@@ -152,7 +152,7 @@ public class ProjectileTask : BaseTask
     float targetWidth;
 
     private List<Vector3> handPositions = new List<Vector3>();
-    private int pointsToConsider = 6;
+    private int pointsToConsider = 10;
     private float timeToWait = 0.0f;
     private Coroutine coroutine;
     private bool isFisrtInvisible = true;
