@@ -7,7 +7,7 @@ public class BallDetector : MonoBehaviour
     // Start is called before the first frame update
     private void OnTriggerEnter(Collider other)
     {
-        BallMovement bm = other.GetComponent<BallMovement>();
+        BallMovement2026 bm = other.GetComponent<BallMovement2026>();
         if(bm)
         {
             bm.velocity = Vector3.zero;
@@ -25,7 +25,7 @@ public class BallDetector : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        BallMovement bm = collision.gameObject.GetComponent<BallMovement>();
+        BallMovement2026 bm = collision.gameObject.GetComponent<BallMovement2026>();
         if(bm)
         {
             bm.velocity = Vector3.zero;

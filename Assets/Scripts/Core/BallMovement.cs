@@ -28,6 +28,9 @@ public class BallMovement : MonoBehaviour
     {
         Reset();
         startingHeight = transform.position.y;
+
+        // Debug.Log($"Water speed, old: {waterSpeed}");
+        // Debug.Log($"Water vel vector, old: {waterVelocity}");
     }
 
     public void Reset()
@@ -40,9 +43,10 @@ public class BallMovement : MonoBehaviour
         area = Mathf.PI * radius * radius;
         startingHeight = transform.position.y;
 
+        // Debug.Log($"Water speed, old: {waterSpeed}");
+        // Debug.Log($"Water vel vector, old: {waterVelocity}");
 
-        Debug.Log($"Water speed: {waterSpeed}");
-        Debug.Log($"Water vel vector: {waterVelocity}");
+
     }
 
     void FixedUpdate()
@@ -60,7 +64,7 @@ public class BallMovement : MonoBehaviour
         ApplyWaterCurrentForce();
         transform.position += velocity * Time.fixedDeltaTime;
 
-        Debug.Log($"velocity: {velocity}");
+        // Debug.Log($"velocity, old: {velocity}");
         // Debug.Log($"vel mag: {velocityMagnitude}");
 
 

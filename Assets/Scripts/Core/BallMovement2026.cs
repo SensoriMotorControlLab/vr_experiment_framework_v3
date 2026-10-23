@@ -10,7 +10,7 @@ public class BallMovement2026 : MonoBehaviour
     float CdAir = 0.47f;   // Drag coefficient for air (approximation)
     float CdWater = 0.47f; // Could be similar or adjusted based on shape and roughness in water
     float rhoAir = 1.225f;   // Air density (kg/m^3)
-    float rhoWater = 1000f;  // Water density (kg/m^3)
+    float rhoWater = 100f;  // Water density (kg/m^3)
     float CdRho; // initialize
     float mass = 1.0f;  // Mass of the ball (kg)
     float velocityMagnitude; // Magnitude of the ball velocity vector
@@ -31,54 +31,53 @@ public class BallMovement2026 : MonoBehaviour
         Reset();
         startingHeight = transform.position.y;
 
-        Debug.Log($"Water speed: {waterSpeed}");
-        Debug.Log($"Water speed: {waterVelocity}");
     }
 
     public void Reset()
-        {
-            f = 0;
-            velocity = Vector3.zero;
-            canSimulate = false;
-            col = GetComponent<SphereCollider>();
-            radius = col.radius * transform.lossyScale.x;
-            area = 4 * (Mathf.PI * radius * radius);
-            startingHeight = transform.position.y;
-            CdRho = CdWater * rhoWater;
-        }
+    {
+        f = 0;
+        velocity = Vector3.zero;
+        canSimulate = false;
+        col = GetComponent<SphereCollider>();
+        radius = col.radius * transform.lossyScale.x;
+        area = 0.5f * (Mathf.PI * radius * radius);
+        startingHeight = transform.position.y;
+        CdRho = CdWater * rhoWater;
+
+    }
 
 
     void FixedUpdate()
     {
 
+        // Check if simulation is enabled
+        if(!canSimulate)
+        {
+            return;
+        }
+
 
         waterVelocity = Vector3.right * waterSpeed;
 
-        // updateVelocity();
+        velocity = updateVelocity();
+
         velocityMagnitude = velocity.magnitude;
         transform.position += velocity * Time.fixedDeltaTime;
-
-        // check
-        // Debug.Log($"velocity: {velocity}");
-        // Debug.Log($"vel mag: {velocityMagnitude}");
-
-
 
     }
 
 
-    // void updateVelocity()
-    // {
+    Vector3 updateVelocity()
+    {
 
-    //     Vector3 v_rel = velocity - waterSpeed; // newtonian accuarte: including the drag of the water, can inlcude NO drag when both velocities; absolute of v_rel
+        Vector3 relativeVelocity = velocity - waterVelocity; // newtonian accuarte: including the drag of the water, can inlcude NO drag when both velocities; absolute of v_rel
+        Debug.Log($"relative velocity: {relativeVelocity}");
         
-    //     // Debug.Log($"relative vel: v_rel");
-        
-    //     Vector3 F = ((CdRho * area * (v_rel* v_rel) * System.Math.Sign(v_rel)) / mass);
-    //     // Debug.Log(velcoity - (F * Time.fixedDeltaTime))
+        Vector3 F = (CdRho * area * relativeVelocity.magnitude * relativeVelocity) / mass;
 
+        return velocity - (F * Time.fixedDeltaTime);
 
-    //     return F;
+    }
 
 }
 

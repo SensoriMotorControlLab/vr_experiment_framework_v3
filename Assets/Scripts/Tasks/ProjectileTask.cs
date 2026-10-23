@@ -158,7 +158,8 @@ public class ProjectileTask : BaseTask
     private bool isFisrtInvisible = true;
     private GameObject invisibleTrailCard;
     Target targetScript;
-    BallMovement ballMovement;
+    // public BallMovement ballMovement;
+    public BallMovement2026 ballMovement2026;
     public GameObject throwWarning;
     int slowCounter = 0;
     List<Vector2> launchVelocityTracker = new List<Vector2>();
@@ -266,7 +267,9 @@ public class ProjectileTask : BaseTask
                         {
                             return;
                         }
-                        ballMovement.velocity = launchVel;
+
+                        // ballMovement.velocity = launchVel;
+                        ballMovement2026.velocity = launchVel;
                         cursor.SetActive(false);
 
                         if(ExperimentController.Instance.UseVR)
@@ -366,7 +369,8 @@ public class ProjectileTask : BaseTask
             //Ball is launched, tracking for colliding with target, missing target, or slowing down
             case 2:
                 {
-                    ballMovement.canSimulate = true;
+                    // ballMovement.canSimulate = true;
+                    ballMovement2026.canSimulate = true;
                     string displayMsg = "";
                     int points = 0;
 
@@ -410,8 +414,8 @@ public class ProjectileTask : BaseTask
                         closestDistance = 0.0f;
                     }
                     //Ball slowed down
-                    else if (ballMovement.velocity.magnitude <= END_SPEED && isMainBallComplete == false)
-                    {
+                    else if (ballMovement2026.velocity.magnitude <= END_SPEED && isMainBallComplete == false)
+                       {
                         isMainBallComplete = true;
                         // ballRB.isKinematic = true;
 
@@ -508,8 +512,11 @@ public class ProjectileTask : BaseTask
                                 lineColor = Color.red;
 
                                 //Stop the ball
-                                ballMovement.velocity = Vector3.zero;
-                                ballMovement.canSimulate = false;
+                                ballMovement2026.velocity = Vector3.zero;
+                                ballMovement2026.canSimulate = false;
+                            
+
+
                                 ballAudio.Stop();
 
                                 points = CalculatePoints();
@@ -534,8 +541,9 @@ public class ProjectileTask : BaseTask
                                 lineColor = Color.red;
 
                                 //Stop the ball
-                                ballMovement.velocity = Vector3.zero;
-                                ballMovement.canSimulate = false;
+                                ballMovement2026.velocity = Vector3.zero;
+                                ballMovement2026.canSimulate = false;
+
                                 ballAudio.Stop();
 
                                 points = CalculatePoints();
@@ -566,7 +574,9 @@ public class ProjectileTask : BaseTask
                     //While the ball is in the collider
                     if (targetScript.IsColliding && checkBallEnd)
                     {
-                        ballMovement.canSimulate = true;
+                        // ballMovement.canSimulate = true;
+                        ballMovement2026.canSimulate = true;
+
                         checkBallEnd = false;
 
                         Vector3 skewedPos = new Vector3(ball.transform.position.x, home.transform.position.y - ball.GetComponent<SphereCollider>().bounds.size.y * 3 / 4, ball.transform.position.z);
@@ -574,11 +584,13 @@ public class ProjectileTask : BaseTask
                         ballPosInTarget.Add(skewedPos);
                     }
                     //Ball has exited the target or has not hit the target
-                    else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST || ballMovement.velocity == Vector3.zero && checkBallEnd)
+                    else if (!targetScript.IsColliding && Vector3.Distance(ball.transform.position, target.transform.position) > PAST_TARGET_DIST || ballMovement2026.velocity == Vector3.zero && checkBallEnd)
                     {
                         //Stop the ball
-                        ballMovement.velocity = Vector3.zero;
-                        ballMovement.canSimulate = false;
+                        ballMovement2026.velocity = Vector3.zero;
+                        // ballMovement.canSimulate = false;
+                        ballMovement2026.canSimulate = false;
+
                         ballAudio.Stop();
 
                         checkBallEnd = false;
@@ -773,8 +785,10 @@ public class ProjectileTask : BaseTask
         {
             ball = GameObject.Find("Ball");
         }
-        ballMovement = ball.GetComponent<BallMovement>();  
-        ballMovement.Reset();
+        // ballMovement = ball.GetComponent<BallMovement>(); 
+        ballMovement2026 = ball.GetComponent<BallMovement2026>();
+        // ballMovement.Reset();
+        ballMovement2026.Reset();
 
         if(outOfBoundsCollider.Count == 0)
             Debug.LogWarning("No out of bounds colliders set");
@@ -832,7 +846,8 @@ public class ProjectileTask : BaseTask
             
 
         waterSpeedJson = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_water_speed")[currBlock];
-        ballMovement.waterSpeed = waterSpeedJson;
+        // ballMovement.waterSpeed = waterSpeedJson;
+        ballMovement2026.waterSpeed = waterSpeedJson;
 
         debrisSpawner = GameObject.Find("DebrisSpawner").GetComponent<DebrisSpawner>();
         debrisSpawner.speed = ExperimentController.Instance.Session.CurrentBlock.settings.GetFloatList("per_block_water_speed")[currBlock];
@@ -944,7 +959,8 @@ public class ProjectileTask : BaseTask
         ball.transform.rotation = Quaternion.identity;
 
         coroutine = null;
-        ballMovement.Reset(); 
+        // ballMovement.Reset(); 
+        ballMovement2026.Reset();
         handPos.Clear();
         handPositions.Clear();
         launchVelocityTracker.Clear();
