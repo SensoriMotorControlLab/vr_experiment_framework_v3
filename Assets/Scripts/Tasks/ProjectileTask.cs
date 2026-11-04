@@ -110,7 +110,7 @@ public class ProjectileTask : BaseTask
     /// <summary>
     /// Minimum magnitude to be considered a launch
     /// </summary>
-    const float MIN_MAG = 0.5f;
+    const float MIN_MAG = 1.0f;
     /// <summary>
     /// Distance to determine the participant is flicking the ball
     /// </summary>

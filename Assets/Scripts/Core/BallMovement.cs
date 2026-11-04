@@ -28,9 +28,6 @@ public class BallMovement : MonoBehaviour
     {
         Reset();
         startingHeight = transform.position.y;
-
-        // Debug.Log($"Water speed, old: {waterSpeed}");
-        // Debug.Log($"Water vel vector, old: {waterVelocity}");
     }
 
     public void Reset()
@@ -42,10 +39,6 @@ public class BallMovement : MonoBehaviour
         radius = col.radius * transform.lossyScale.x;
         area = Mathf.PI * radius * radius;
         startingHeight = transform.position.y;
-
-        // Debug.Log($"Water speed, old: {waterSpeed}");
-        // Debug.Log($"Water vel vector, old: {waterVelocity}");
-
 
     }
 
