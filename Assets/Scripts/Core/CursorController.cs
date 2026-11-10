@@ -10,6 +10,7 @@ public class CursorController : MonoBehaviour
     public Vector3 planeOffset = Vector3.zero;
     GameObject cursor;
     MovementType moveType;
+    public bool TrackingEnabled { get; set; } = true;
     
     /// <summary>
     /// The behaviour of the cursor
@@ -39,6 +40,9 @@ public class CursorController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!TrackingEnabled)
+            return;
+
         //if not use vr and both a camera and a cursor object has been set
         if (ExperimentController.Instance.UseVR == false && Camera.main && cursor)
         {
@@ -52,8 +56,12 @@ public class CursorController : MonoBehaviour
         }
         else if(ExperimentController.Instance.UseVR == true && Camera.main && cursor)
         {
-            cursor.transform.position = InputHandler.Instance.GetSpatialPosition();
-            cursor.transform.rotation = InputHandler.Instance.GetSpatialRotation();
+            Vector3 cursorPosition = InputHandler.Instance.GetHandPosition();
+            // cursorPosition.x += 0.025f;
+            // cursorPosition.y -= 0.025f;
+
+            cursor.transform.position = cursorPosition;
+            cursor.transform.rotation = InputHandler.Instance.GetHandRotation();  
         }
 
 

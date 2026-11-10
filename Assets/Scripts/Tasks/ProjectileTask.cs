@@ -115,6 +115,8 @@ public class ProjectileTask : BaseTask
     /// Distance to determine the participant is flicking the ball
     /// </summary>
     const float FLICK_DIST = 0.3f;
+    const float CURSOR_CONTACT_TOLERANCE = 0.05f;
+    const int CONTACT_VELOCITY_SAMPLE_COUNT = 5;
     /// <summary>
     /// Time in seconds to display a prompt
     /// </summary>
@@ -165,6 +167,8 @@ public class ProjectileTask : BaseTask
     List<Vector2> launchVelocityTracker = new List<Vector2>();
     List<float> launchSpeedTracker = new List<float>();
     List<float> launchAngleTracker = new List<float>();
+    List<Vector3> contactVelocitySamples = new List<Vector3>();
+    List<Vector3> contactPositionSamples = new List<Vector3>();
     float targetDistance = 0.0f;
 
     //Used to fix some weird issue with incrementing trial numbers
@@ -173,6 +177,11 @@ public class ProjectileTask : BaseTask
     bool isMainBallComplete = false;
     bool checkBallEnd = true;
     bool isBreakDone = false;
+    bool cursorIntersectionLogged = false;
+    bool cursorLocked = false;
+    static bool cursorHasBeenPlaced = false;
+    static Vector3 placedCursorPosition;
+    static Quaternion placedCursorRotation;
 
     // Start is called before the first frame update
     void Start()
@@ -198,12 +207,65 @@ public class ProjectileTask : BaseTask
         return direction.normalized;
     }
 
+
     void ShowThrowWarning()
     {
         throwWarning.SetActive(true);
         prefabAudio.clip = incorrectAudioClip;
         prefabAudio.Play();
         StartCoroutine(HideThrowWarning());
+    }
+
+    bool IsControllerIntersectingCursor(out Vector3 handPosition)
+    {
+        handPosition = Vector3.zero;
+
+        if (!ExperimentController.Instance.UseVR || !cursor || !cursorLocked)
+            return false;
+
+        Collider cursorCollider = cursor.GetComponent<Collider>();
+        if (!cursorCollider)
+            return false;
+
+        handPosition = InputHandler.Instance.GetHandPosition();
+        Vector3 closestPoint = cursorCollider.ClosestPoint(handPosition);
+        bool intersects = Vector3.Distance(handPosition, closestPoint) <= CURSOR_CONTACT_TOLERANCE;
+
+        if (intersects && !cursorIntersectionLogged)
+        {
+            Debug.Log("VR controller intersects placed cursor at " + handPosition);
+            cursorIntersectionLogged = true;
+        }
+
+        return intersects;
+    }
+
+    Vector3 GetAverageContactVelocity()
+    {
+        if (contactVelocitySamples.Count == 0)
+            return Vector3.zero;
+
+        Vector3 velocitySum = Vector3.zero;
+
+        foreach (Vector3 velocity in contactVelocitySamples)
+            velocitySum += velocity;
+
+        return velocitySum / contactVelocitySamples.Count;
+    }
+
+    Vector3 CalculateContactThrowDirection()
+    {
+        if (contactPositionSamples.Count < 2)
+            return Vector3.zero;
+
+        Vector3 directionSum = Vector3.zero;
+
+        for (int i = 1; i < contactPositionSamples.Count; i++)
+            directionSum += contactPositionSamples[i] - contactPositionSamples[i - 1];
+
+        directionSum.y = 0.0f;
+        directionSum.z = Mathf.Abs(directionSum.z);
+        return directionSum.normalized;
     }
 
     IEnumerator HideThrowWarning()
@@ -218,36 +280,92 @@ public class ProjectileTask : BaseTask
         {
              case 1:
                 {
-                    //If the button is pressed again
-                    if(Input.GetButtonDown(buttonCheck))
+                    if (Input.GetKeyDown(KeyCode.R))
                     {
-                        startPos = GetMousePos();
-                        cursorPos = startPos;
-                        launchVelocityTracker.Clear();
-                        launchSpeedTracker.Clear();
-                        launchAngleTracker.Clear();
-                        handPos.Clear();
-                        handPositions.Clear();
-                        handPositions.Add(cursorPos);
-                        handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
-                        launchVec = CalculateThrowDirectionSimplified();
-                        launchVec.y = 0.0f;
-                        launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
-                        launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
-                        launchAngleTracker.Add(Vector3.Angle(Vector3.right, launchVec));
+                        CursorController.Instance.TrackingEnabled = true;
+                        cursorLocked = false;
+                        cursorHasBeenPlaced = false;
+                        cursorIntersectionLogged = false;
+                        contactVelocitySamples.Clear();
+                        contactPositionSamples.Clear();
+                        Debug.Log("Cursor replacement enabled");
                     }
-                    
-                    else if (Input.GetButton(buttonCheck))
+
+                    if (Input.GetButtonDown(buttonCheck) && !cursorLocked)
                     {
-                        cursorPos = GetMousePos();
-                        handPositions.Add(cursorPos);
-                        handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
-                        launchVec = CalculateThrowDirectionSimplified();
-                        launchVec.y = 0.0f;
-                        launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
-                        launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
-                        launchAngleTracker.Add(Vector3.Angle(Vector3.right, launchVec));
+                        if (ExperimentController.Instance.UseVR)
+                        {
+                            Vector3 placedPosition = InputHandler.Instance.GetHandPosition();
+                            // placedPosition.x += 0.025f;
+                            // placedPosition.y -= 0.025f;
+                            cursor.transform.position = placedPosition;
+                            cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
+                            CursorController.Instance.TrackingEnabled = false;
+                            cursorLocked = true;
+                            cursorHasBeenPlaced = true;
+                            placedCursorPosition = placedPosition;
+                            placedCursorRotation = cursor.transform.rotation;
+                        }
                     }
+
+                    // //If the button is pressed
+                    // if(Input.GetButtonDown(buttonCheck) && !cursorLocked)
+                    // {
+                    //     startPos = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandPosition() : GetMousePos();
+                    //     cursorPos = startPos;
+                    //     launchVelocityTracker.Clear();
+                    //     launchSpeedTracker.Clear();
+                    //     launchAngleTracker.Clear();
+                    //     handPos.Clear();
+                    //     handPositions.Clear();
+                    //     handPositions.Add(cursorPos);
+                    //     handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
+                    //     launchVec = CalculateThrowDirectionSimplified();
+                    //     launchVec.y = 0.0f;
+                    //     launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
+                    //     launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
+                    //     launchAngleTracker.Add(Vector3.Angle(Vector3.right, launchVec));
+
+                    //     if (ExperimentController.Instance.UseVR)
+                    //     {
+                    //         CursorController.Instance.TrackingEnabled = false;
+                    //         cursorLocked = true;
+                    //         cursorHasBeenPlaced = true;
+                    //         placedCursorPosition = CursorController.Instance.CursorPos;
+                    //         placedCursorRotation = CursorController.Instance.CursorRot;
+                    //     }
+
+                    }
+
+                    if (!cursorLocked)
+                        return;
+
+                    if (ExperimentController.Instance.UseVR)
+                    {
+                        contactPositionSamples.Add(InputHandler.Instance.GetHandPosition());
+
+                        if (contactPositionSamples.Count > CONTACT_VELOCITY_SAMPLE_COUNT)
+                            contactPositionSamples.RemoveAt(0);
+
+                        Vector3 currentVelocity = InputHandler.Instance.GetHandVelocity(InputHandler.Instance.GetDominantHandString());
+                        currentVelocity.y = 0.0f;
+                        contactVelocitySamples.Add(currentVelocity);
+
+                        if (contactVelocitySamples.Count > CONTACT_VELOCITY_SAMPLE_COUNT)
+                            contactVelocitySamples.RemoveAt(0);
+                    }
+
+                    // else if (Input.GetButton(buttonCheck))
+                    // {
+                    //     cursorPos = GetMousePos();
+                    //     handPositions.Add(cursorPos);
+                    //     handPos.Add(new Vector4(cursorPos.x, cursorPos.y, cursorPos.z, Time.time));
+                    //     launchVec = CalculateThrowDirectionSimplified();
+                    //     launchVec.y = 0.0f;
+                    //     launchVelocityTracker.Add(new Vector2(launchVec.x, launchVec.z));
+                    //     launchSpeedTracker.Add(ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * LAUNCH_FORCE: LAUNCH_FORCE);
+                    //     launchAngleTracker.Add(Vector3.Angle(Vector3.right, launchVec));
+                    // }
                     // else if (Input.GetButtonUp(buttonCheck))
                     // {
                     //     startPos = Vector3.zero;
@@ -256,10 +374,33 @@ public class ProjectileTask : BaseTask
                     //Debug.Log("Distance from start: " +Vector3.Distance(cursorPos, startPos));
 
                     
-                    if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
+                    if (ExperimentController.Instance.UseVR)
                     {
-                        //If using VR get the hand velocity for launch if not use the LAUNCH_FORCE constant
-                        throwVel = ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandVelocity("RightHand").magnitude * launchVec * LAUNCH_FORCE: launchVec * LAUNCH_FORCE;
+                        if (IsControllerIntersectingCursor(out Vector3 handPosition))
+                        {
+                            Vector3 controllerVelocity = GetAverageContactVelocity();
+                            launchVec = CalculateContactThrowDirection();
+                            throwVel = launchVec * (controllerVelocity.magnitude * LAUNCH_FORCE);
+
+                            Debug.Log("Cursor contact velocity: " + controllerVelocity + ", speed: " + throwVel.magnitude);
+
+                            if (throwVel.magnitude < MIN_MAG || launchVec == Vector3.zero)
+                            {
+                                Debug.LogWarning("VR launch blocked: speed=" + throwVel.magnitude + ", direction=" + launchVec + ", samples=" + contactPositionSamples.Count);
+                                return;
+                            }
+
+                            ballMovement2026.velocity = throwVel;
+                            cursor.SetActive(false);
+                            InputHandler.Instance.SendHapticFeedback(InputHandler.Instance.GetDominantHandString(), 0.9f, 1.0f);
+                            IncrementStep();
+                            stepTime.Add(Time.time);
+                        }
+                    }
+                    /*
+                    else if (Vector3.Distance(cursorPos, startPos) > FLICK_DIST && launchVec.z > 0)
+                    {
+                        throwVel = launchVec * LAUNCH_FORCE;
 
                         launchVel = throwVel;
 
@@ -280,16 +421,17 @@ public class ProjectileTask : BaseTask
 
                         stepTime.Add(Time.time);
                     }
-                    if(Input.GetButtonUp(buttonCheck) && throwVel.magnitude < MIN_MAG)
-                    {
-                        Debug.Log("The throw was too weak, try again");
-                        handPos.Clear();
-                        handPositions.Clear();
-                        launchVec = Vector3.zero;
-                        slowCounter++;
-                        ShowThrowWarning();
-                    }
-                }
+                    */
+                //     if(Input.GetButtonUp(buttonCheck) && throwVel.magnitude < MIN_MAG)
+                //     {
+                //         Debug.Log("The throw was too weak, try again");
+                //         handPos.Clear();
+                //         handPositions.Clear();
+                //         launchVec = Vector3.zero;
+                //         slowCounter++;
+                //         ShowThrowWarning();
+                //     }
+                // }
                 break;
         }
     }
@@ -919,7 +1061,41 @@ public class ProjectileTask : BaseTask
 
     public override void TaskBegin()
     {
+
         base.TaskBegin();
+        if (ExperimentController.Instance.Session.CurrentTrial == ExperimentController.Instance.Session.FirstTrial)
+            cursorHasBeenPlaced = false;
+
+        cursorIntersectionLogged = false;
+        contactVelocitySamples.Clear();
+        contactPositionSamples.Clear();
+
+        // show red cursor to indicate hand position
+
+        if (cursor)
+        {
+            cursor.SetActive(true);
+            cursorLocked = cursorHasBeenPlaced;
+
+            if (cursorLocked)
+            {
+                cursor.transform.position = placedCursorPosition;
+                cursor.transform.rotation = placedCursorRotation;
+                CursorController.Instance.TrackingEnabled = false;
+            }
+            else
+            {
+                CursorController.Instance.TrackingEnabled = true;
+
+                if (ExperimentController.Instance.UseVR)
+                {
+                    cursor.transform.position = InputHandler.Instance.GetHandPosition();
+                    cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
+                }
+            }
+        }
+
+
         ball.GetComponent<MeshRenderer>().enabled = true;
         closestDistance = float.MaxValue;
         StopAllCoroutines();
@@ -1011,7 +1187,7 @@ public class ProjectileTask : BaseTask
     private Vector3 GetMousePos()
     {
 
-        return ExperimentController.Instance.UseVR ? InputHandler.Instance.GetHandPosition() : GetMouseWorldPos();
+        return ExperimentController.Instance.UseVR ? InputHandler.Instance.GetSpatialPosition() : GetMouseWorldPos();
     }
 
     private Vector3 GetCursorScreenPercentage()

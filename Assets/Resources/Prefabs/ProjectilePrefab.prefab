@@ -901,6 +901,7 @@ MonoBehaviour:
   waterAudio: {fileID: 4805002874637025254}
   scoreText: {fileID: 1841120909813472221}
   trialsRemainingText: {fileID: 3151211983077483278}
+  ballMovement2026: {fileID: 0}
   throwWarning: {fileID: 9018112985726287679}
 --- !u!120 &8002720788700245767
 LineRenderer:
@@ -1540,7 +1541,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5175554197497706109
 Transform:
   m_ObjectHideFlags: 0
@@ -1550,8 +1551,8 @@ Transform:
   m_GameObject: {fileID: 3825054604519124607}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.03, y: 0.03, z: 0.03}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 0.0635, y: 0.0635, z: 0.0635}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9092739823578475913}
   m_RootOrder: -1
@@ -1605,7 +1606,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3825054604519124607}
-  m_Mesh: {fileID: -4957301927772954577, guid: 63e02ddb08ce42da868504e1333d48ae, type: 3}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!65 &8218122838881827228
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -287,6 +287,12 @@ public class ExperimentController : MonoBehaviour
                 Vector3 offsetVec = currentTask.VRStartPos.transform.position - vrCamera.transform.position;
                 cameraOffset.transform.position += offsetVec;
             }
+
+            if (currentTask.Cursor)
+            {
+                CursorController.Instance.CursorPos = InputHandler.Instance.GetHandPosition();
+                CursorController.Instance.CursorRot = InputHandler.Instance.GetHandRotation();
+            }
         }
     }
     /// <summary>

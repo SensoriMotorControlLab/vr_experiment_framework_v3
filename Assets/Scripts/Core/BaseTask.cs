@@ -186,9 +186,11 @@ public abstract class BaseTask : MonoBehaviour
 
         CursorController.Instance.Cursor = cursor;
 
-        if (cursor)
+        if (expController.UseVR && cursor)
         {
-            CursorController.Instance.planeOffset = new Vector3(0.0f, -cursor.transform.position.y, 0.0f);
+            // CursorController.Instance.planeOffset = new Vector3(0.0f, -cursor.transform.position.y, 0.0f);
+            cursor.transform.position = InputHandler.Instance.GetHandPosition();
+            cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
         }
     }
 

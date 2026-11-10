@@ -40,7 +40,7 @@ public class BallMovement2026 : MonoBehaviour
         canSimulate = false;
         col = GetComponent<SphereCollider>();
         radius = col.radius * transform.lossyScale.x;
-        area = 0.5f * (Mathf.PI * radius * radius);
+        area = 0.25f * (Mathf.PI * radius * radius);
         startingHeight = transform.position.y;
         CdRho = CdWater * rhoWater;
 
@@ -71,7 +71,7 @@ public class BallMovement2026 : MonoBehaviour
     {
 
         Vector3 relativeVelocity = velocity - waterVelocity; // newtonian accuarte: including the drag of the water, can inlcude NO drag when both velocities; absolute of v_rel
-        Debug.Log($"relative velocity: {relativeVelocity}");
+        // Debug.Log($"relative velocity: {relativeVelocity}");
         
         Vector3 F = (CdRho * area * relativeVelocity.magnitude * relativeVelocity) / mass;
 

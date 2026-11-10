@@ -372,7 +372,6 @@ public class InputHandler : MonoBehaviour
     /// <returns></returns>
     public Vector3 GetHandPosition()
     {
-      
         if (vrHands[domHand])
         {
             return vrHands[domHand].transform.position;
