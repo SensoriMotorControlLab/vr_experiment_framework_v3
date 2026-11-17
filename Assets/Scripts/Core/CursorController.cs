@@ -9,6 +9,7 @@ public class CursorController : MonoBehaviour
     private static CursorController instance = null;
     public Vector3 planeOffset = Vector3.zero;
     GameObject cursor;
+    GameObject cursorSource;
     MovementType moveType;
     public bool TrackingEnabled { get; set; } = true;
     
@@ -56,11 +57,14 @@ public class CursorController : MonoBehaviour
         }
         else if(ExperimentController.Instance.UseVR == true && Camera.main && cursor)
         {
-            Vector3 cursorPosition = InputHandler.Instance.GetHandPosition();
-            // cursorPosition.x += 0.025f;
-            // cursorPosition.y -= 0.025f;
+            if (!cursorSource)
+                cursorSource = GameObject.Find("Sphere");
 
-            cursor.transform.position = cursorPosition;
+            if (cursorSource)
+                cursor.transform.position = cursorSource.transform.position;
+            else
+                cursor.transform.position = InputHandler.Instance.GetHandPosition();
+
             cursor.transform.rotation = InputHandler.Instance.GetHandRotation();  
         }
 

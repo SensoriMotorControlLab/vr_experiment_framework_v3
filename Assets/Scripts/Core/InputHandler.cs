@@ -586,7 +586,7 @@ public class InputHandler : MonoBehaviour
 
             //Make the first letter upper case just in case
             //the name is written in camel case
-            deviceString = deviceString.First().ToString().ToUpper() + deviceString.Substring(1);
+            deviceString = deviceString.FirstOrDefault().ToString().ToUpper() + deviceString.Substring(1);
 
             List<string> deviceNames = new List<string>();
 

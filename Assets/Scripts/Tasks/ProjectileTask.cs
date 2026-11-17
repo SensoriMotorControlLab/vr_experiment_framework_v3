@@ -227,7 +227,9 @@ public class ProjectileTask : BaseTask
         if (!cursorCollider)
             return false;
 
-        handPosition = InputHandler.Instance.GetHandPosition();
+        handPosition = foundSphere
+            ? foundSphere.transform.position
+            : InputHandler.Instance.GetHandPosition();
         Vector3 closestPoint = cursorCollider.ClosestPoint(handPosition);
         bool intersects = Vector3.Distance(handPosition, closestPoint) <= CURSOR_CONTACT_TOLERANCE;
 
@@ -295,7 +297,10 @@ public class ProjectileTask : BaseTask
                     {
                         if (ExperimentController.Instance.UseVR)
                         {
-                            Vector3 placedPosition = InputHandler.Instance.GetHandPosition();
+                            GameObject sphere = GameObject.Find("Sphere");
+                            Vector3 placedPosition = sphere
+                                ? sphere.transform.position
+                                : InputHandler.Instance.GetHandPosition();
                             // placedPosition.x += 0.025f;
                             // placedPosition.y -= 0.025f;
                             cursor.transform.position = placedPosition;
@@ -1089,7 +1094,10 @@ public class ProjectileTask : BaseTask
 
                 if (ExperimentController.Instance.UseVR)
                 {
-                    cursor.transform.position = InputHandler.Instance.GetHandPosition();
+                    GameObject sphere = GameObject.Find("Sphere");
+                    cursor.transform.position = sphere
+                        ? sphere.transform.position
+                        : InputHandler.Instance.GetHandPosition();
                     cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
                 }
             }

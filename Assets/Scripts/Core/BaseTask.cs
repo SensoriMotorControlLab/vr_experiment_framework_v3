@@ -39,6 +39,8 @@ public abstract class BaseTask : MonoBehaviour
     public GameObject Cursor { get { return cursor; } set { cursor = value; } }
     public GameObject TaskPrefab { get { return taskPrefab; } set { taskPrefab = value; } }
 
+    protected GameObject foundSphere;
+
     /// <summary>
     /// The camera for the prefab when not using VR
     /// </summary>
@@ -92,7 +94,11 @@ public abstract class BaseTask : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (expController.UseVR && cursor && foundSphere)
+        {
+            cursor.transform.position = foundSphere.transform.position;
+            cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
+        }
     }
     /// <summary>
     /// Increment the step and return if we have reached the final step
@@ -183,14 +189,23 @@ public abstract class BaseTask : MonoBehaviour
             //expController.vrCtlr.transform.position = vrPos.transform.position;
             //expController.vrCtlr.transform.rotation = vrPos.transform.rotation;
         }
-
         CursorController.Instance.Cursor = cursor;
 
         if (expController.UseVR && cursor)
         {
-            // CursorController.Instance.planeOffset = new Vector3(0.0f, -cursor.transform.position.y, 0.0f);
-            cursor.transform.position = InputHandler.Instance.GetHandPosition();
-            cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
+            foundSphere = GameObject.Find("Sphere");
+
+            if (foundSphere)
+            {
+                Debug.Log("Found Sphere in scene, cursor position will be set to sphere position");
+            }
+            else
+            {
+                Debug.LogWarning("Sphere not found in scene, cursor position may be incorrect");
+            }
+            // // CursorController.Instance.planeOffset = new Vector3(0.0f, -cursor.transform.position.y, 0.0f);
+            // cursor.transform.position = GameObject.Find("Sphere").transform.position;
+            // cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
         }
     }
 

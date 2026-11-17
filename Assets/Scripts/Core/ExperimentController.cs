@@ -290,7 +290,10 @@ public class ExperimentController : MonoBehaviour
 
             if (currentTask.Cursor)
             {
-                CursorController.Instance.CursorPos = InputHandler.Instance.GetHandPosition();
+                GameObject sphere = GameObject.Find("Sphere");
+                CursorController.Instance.CursorPos = sphere
+                    ? sphere.transform.position
+                    : InputHandler.Instance.GetHandPosition();
                 CursorController.Instance.CursorRot = InputHandler.Instance.GetHandRotation();
             }
         }
