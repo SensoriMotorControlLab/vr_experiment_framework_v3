@@ -278,6 +278,8 @@ public class ExperimentController : MonoBehaviour
         if (UseVR == true && Session.CurrentTrial == Session.FirstTrial)
         {
             CenterOVRPlayerController();
+            // manual adjustment to the camera offset to make sure the camera is at the right height
+            Vector3 adjust = new Vector3(0, -0.10f, 0);
 
             //Offset the camera if needed
             if (currentTask.VRStartPos) {
@@ -285,7 +287,7 @@ public class ExperimentController : MonoBehaviour
                 GameObject vrCamera = cameraOffset.transform.GetChild(0).gameObject;
 
                 Vector3 offsetVec = currentTask.VRStartPos.transform.position - vrCamera.transform.position;
-                cameraOffset.transform.position += offsetVec;
+                cameraOffset.transform.position += offsetVec + adjust;
             }
 
             if (currentTask.Cursor)

@@ -397,7 +397,7 @@ public class ProjectileTask : BaseTask
 
                             ballMovement2026.velocity = throwVel;
                             cursor.SetActive(false);
-                            InputHandler.Instance.SendHapticFeedback(InputHandler.Instance.GetDominantHandString(), 0.9f, 1.0f);
+                            InputHandler.Instance.SendHapticFeedback(InputHandler.Instance.GetDominantHandString(), 1.0f, 0.30f);
                             IncrementStep();
                             stepTime.Add(Time.time);
                         }
@@ -834,9 +834,23 @@ public class ProjectileTask : BaseTask
         yield return new WaitForSeconds(DISPLAY_TIME);
     }
 
+    IEnumerator WakeController(float intervalSeconds)
+    {
+        WaitForSeconds wait = new WaitForSeconds(intervalSeconds);
+
+        while (true)
+        {
+            InputHandler.Instance.SendHapticFeedback(InputHandler.Instance.GetDominantHandString(), 0.25f, 0.1f);
+            yield return wait;
+        }
+
+    }
+
     IEnumerator DisplayBreak()
     {
         float currentBreakTime = breakTime;
+
+        // Coroutine wakeRoutine = StartCoroutine(WakeController(2.0f));
 
         while(currentBreakTime > 0.0f)
         {
@@ -844,6 +858,11 @@ public class ProjectileTask : BaseTask
             currentBreakTime -= Time.deltaTime;
             yield return null;
         }
+
+        // if (wakeRoutine != null)
+        // {
+        //     StopCoroutine(wakeRoutine);
+        // }
         IncrementStep();
         yield return new WaitForEndOfFrame();
     }

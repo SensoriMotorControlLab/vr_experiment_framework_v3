@@ -586,40 +586,45 @@ public class InputHandler : MonoBehaviour
 
             //Make the first letter upper case just in case
             //the name is written in camel case
-            deviceString = deviceString.FirstOrDefault().ToString().ToUpper() + deviceString.Substring(1);
 
-            List<string> deviceNames = new List<string>();
-
-            foreach (var e in inputDevices)
+            // if the device string is NOT null or empty, try to find the device and set it as the highest priority
+            if (!string.IsNullOrEmpty(deviceString))
             {
-                deviceNames.Add(e.Value.inputDevice.name);
-            }
+                deviceString = deviceString.FirstOrDefault().ToString().ToUpper() + deviceString.Substring(1);
 
-            //If the device name was not found in input devices
-            if (!deviceNames.Contains(deviceString))
-            {
-                float timeout = 0.0f;
+                List<string> deviceNames = new List<string>();
 
-                Debug.Log(deviceString + " could not be found trying again");
-                //TODO Maybe have a coroutine here instead?
-                while (!deviceNames.Contains(deviceString) && timeout < FIND_DEVICE_TIMEOUT)
+                foreach (var e in inputDevices)
                 {
-                    //Find all devices again to try and see if the device was connected
-                    FindDevices();
-
-                    timeout += Time.deltaTime;
-
-                    yield return null;
+                    deviceNames.Add(e.Value.inputDevice.name);
                 }
 
-                //If for some reason the device still could not be found, throw an exception
+                //If the device name was not found in input devices
                 if (!deviceNames.Contains(deviceString))
                 {
-                    throw new UnassignedReferenceException(deviceString + " could not be found");
-                }
-            }
+                    float timeout = 0.0f;
 
-            SetTheDevice(deviceString);
+                    Debug.Log(deviceString + " could not be found trying again");
+                    //TODO Maybe have a coroutine here instead?
+                    while (!deviceNames.Contains(deviceString) && timeout < FIND_DEVICE_TIMEOUT)
+                    {
+                        //Find all devices again to try and see if the device was connected
+                        FindDevices();
+
+                        timeout += Time.deltaTime;
+
+                        yield return null;
+                    }
+
+                    //If for some reason the device still could not be found, throw an exception
+                    if (!deviceNames.Contains(deviceString))
+                    {
+                        throw new UnassignedReferenceException(deviceString + " could not be found");
+                    }
+                }
+
+                SetTheDevice(deviceString);
+            }
         }
         else
         {
