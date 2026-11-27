@@ -93,6 +93,16 @@ public class ExperimentController : MonoBehaviour
                 Vector3 vec = vrCtlr.transform.position;
                 vrCtlr.transform.position = new Vector3(vec.x, vec.y + 0.05f, vec.z);
             }
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                Vector3 vec = vrCtlr.transform.position;
+                vrCtlr.transform.position = new Vector3(vec.x - 0.05f, vec.y, vec.z);
+            }
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                Vector3 vec = vrCtlr.transform.position;
+                vrCtlr.transform.position = new Vector3(vec.x + 0.05f, vec.y, vec.z);
+            }
         }
     }
 

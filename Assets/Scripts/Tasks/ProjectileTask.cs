@@ -213,7 +213,7 @@ public class ProjectileTask : BaseTask
     {
         throwWarning.SetActive(true);
         prefabAudio.clip = incorrectAudioClip;
-        prefabAudio.Play();
+        // prefabAudio.Play();
         StartCoroutine(HideThrowWarning());
     }
 
@@ -393,6 +393,7 @@ public class ProjectileTask : BaseTask
 
                             if (throwVel.magnitude < MIN_MAG || launchVec == Vector3.zero)
                             {
+                                ShowThrowWarning();
                                 Debug.LogWarning("VR launch blocked: speed=" + throwVel.magnitude + ", direction=" + launchVec + ", samples=" + contactPositionSamples.Count);
                                 return;
                             }
