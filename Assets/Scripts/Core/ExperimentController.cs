@@ -279,7 +279,7 @@ public class ExperimentController : MonoBehaviour
         {
             CenterOVRPlayerController();
             // manual adjustment to the camera offset to make sure the camera is at the right height
-            Vector3 adjust = new Vector3(0, -0.10f, 0);
+            Vector3 adjust = new Vector3(0, -0.2f, 0.10f);
 
             //Offset the camera if needed
             if (currentTask.VRStartPos) {

@@ -115,7 +115,7 @@ public class ProjectileTask : BaseTask
     /// Distance to determine the participant is flicking the ball
     /// </summary>
     const float FLICK_DIST = 0.3f;
-    const float CURSOR_CONTACT_TOLERANCE = 0.05f;
+    const float CURSOR_CONTACT_TOLERANCE = 0.025f;
     const int CONTACT_VELOCITY_SAMPLE_COUNT = 5;
     /// <summary>
     /// Time in seconds to display a prompt
@@ -182,6 +182,7 @@ public class ProjectileTask : BaseTask
     static bool cursorHasBeenPlaced = false;
     static Vector3 placedCursorPosition;
     static Quaternion placedCursorRotation;
+    Vector3 redCursorPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -305,6 +306,7 @@ public class ProjectileTask : BaseTask
                             // placedPosition.y -= 0.025f;
                             cursor.transform.position = placedPosition;
                             cursor.transform.rotation = InputHandler.Instance.GetHandRotation();
+                            redCursorPosition = cursor.transform.position;
                             CursorController.Instance.TrackingEnabled = false;
                             cursorLocked = true;
                             cursorHasBeenPlaced = true;
@@ -397,7 +399,7 @@ public class ProjectileTask : BaseTask
 
                             ballMovement2026.velocity = throwVel;
                             cursor.SetActive(false);
-                            InputHandler.Instance.SendHapticFeedback(InputHandler.Instance.GetDominantHandString(), 1.0f, 0.30f);
+                            InputHandler.Instance.SendHapticFeedback(InputHandler.Instance.GetDominantHandString(), 1.0f, 0.2f);
                             IncrementStep();
                             stepTime.Add(Time.time);
                         }
@@ -1122,6 +1124,8 @@ public class ProjectileTask : BaseTask
             }
         }
 
+        if (cursor)
+            redCursorPosition = cursor.transform.position;
 
         ball.GetComponent<MeshRenderer>().enabled = true;
         closestDistance = float.MaxValue;
@@ -1270,6 +1274,9 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["target_position_x"] = target.transform.position.x;
         session.CurrentTrial.result["target_position_y"] = target.transform.position.y;
         session.CurrentTrial.result["target_position_z"] = target.transform.position.z;
+        session.CurrentTrial.result["red_cursor_position_x"] = redCursorPosition.x;
+        session.CurrentTrial.result["red_cursor_position_y"] = redCursorPosition.y;
+        session.CurrentTrial.result["red_cursor_position_z"] = redCursorPosition.z;
         //session.CurrentTrial.result["target_angle"] = currentAngle;
         session.CurrentTrial.result["target_width"] = targetWidth;
         session.CurrentTrial.result["launch_direction"] = launchVec;
@@ -1290,6 +1297,9 @@ public class ProjectileTask : BaseTask
         session.CurrentTrial.result["ball_pos_z"] = string.Join(",", ballPos.Select(i => string.Format($"{i.z:F6}")));
         session.CurrentTrial.result["ball_time"] = string.Join(",", ballTime.Select(i => string.Format($"{i:F6}")));
         session.CurrentTrial.result["ball_dist_from_target"] = string.Join(",", ballDistToTarget.Select(i => string.Format($"{i:F6}")));
+        session.CurrentTrial.result["contact_position_x"] = string.Join(",", contactPositionSamples.Select(i => string.Format($"{i.x:F6}")));
+        session.CurrentTrial.result["contact_position_y"] = string.Join(",", contactPositionSamples.Select(i => string.Format($"{i.y:F6}")));
+        session.CurrentTrial.result["contact_position_z"] = string.Join(",", contactPositionSamples.Select(i => string.Format($"{i.z:F6}")));
         session.CurrentTrial.result["closest_center_ball_pos_x"] = closestToCenter.x;
         session.CurrentTrial.result["closest_center_ball_pos_z"] = closestToCenter.z;
         session.CurrentTrial.result["final_ball_pos_x"] = ballPos[ballPos.Count - 1].x;
